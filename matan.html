@@ -175,8 +175,8 @@ h3 .beyond{margin-left:6px}
 .lab{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px; margin:18px 0}
 .lab > *{position:relative; z-index:1}
 .lab-t{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); letter-spacing:1.2px; margin-bottom:10px}
-.lab svg{width:100%; height:auto; display:block}
-.lab svg text{font-family:'JetBrains Mono',monospace; font-size:11px; fill:var(--dim)}
+.lab > svg{width:100%; height:auto; display:block}
+.lab > svg text{font-family:'JetBrains Mono',monospace; font-size:11px; fill:var(--dim)}
 .ctl{display:flex; flex-wrap:wrap; gap:14px 26px; align-items:center; margin-top:12px; font-size:14px; color:var(--dim)}
 .ctl label{display:flex; align-items:center; gap:10px; cursor:pointer}
 .ctl output{font-family:'JetBrains Mono',monospace; color:var(--accent); min-width:3.2em}
@@ -198,8 +198,10 @@ details.self{background:var(--panel); border:1px solid var(--line); border-radiu
 .track a.new{border-style:dashed}
 .track i{font-style:normal; color:var(--accent); font-family:'JetBrains Mono',monospace}
 
-mjx-container{max-width:100%}
+mjx-container{max-width:100%; vertical-align:-.08em}
+mjx-container svg{width:auto!important; height:auto!important; max-width:100%; display:inline-block!important}
 mjx-container[display="true"]{overflow-x:auto; overflow-y:hidden; margin:.6em 0!important}
+mjx-container[display="true"] svg{display:block!important; margin:0 auto}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
@@ -1606,7 +1608,7 @@ html{scroll-behavior:smooth}
 window.MathJax={
   tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     macros:{tg:'\\operatorname{tg}',ctg:'\\operatorname{ctg}',arctg:'\\operatorname{arctg}',arcctg:'\\operatorname{arcctg}'}},
-  svg:{fontCache:'global'},
+  svg:{fontCache:'global',scale:1.06,minScale:.6},
   options:{skipHtmlTags:['script','noscript','style','textarea','pre','code','svg']}
 };
 </script>
