@@ -1,0 +1,844 @@
+<title>Дискретка с нуля</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#09060F; --panel:#140F21; --panel2:#1C1531; --ink:#EDE8F7; --dim:#998FB2;
+  --line:#2A2140; --line2:#3E3159; --accent:#A855F7; --accent2:#D8B4FE; --accent-soft:rgba(168,85,247,.12);
+  --ok:#4FD6A8; --ok-soft:rgba(79,214,168,.09); --red:#FF7B9C; --red-soft:rgba(255,123,156,.1); --code:#17122A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg); scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Onest',system-ui,-apple-system,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+::selection{background:var(--accent); color:#09060F}
+
+#bg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
+.aura{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+.aura::before,.aura::after{content:""; position:absolute; width:60vmax; height:60vmax; border-radius:50%; filter:blur(95px); opacity:.22}
+.aura::before{background:#8B2FD6; top:-28vmax; right:-16vmax; animation:drift1 25s ease-in-out infinite alternate}
+.aura::after{background:#4C1D95; bottom:-30vmax; left:-20vmax; animation:drift2 31s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-13vmax,10vmax) scale(1.12)}}
+@keyframes drift2{to{transform:translate(12vmax,-9vmax) scale(.9)}}
+.gridbg{position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(168,85,247,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,.05) 1px,transparent 1px);
+  background-size:30px 30px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 32%,transparent 80%); mask-image:radial-gradient(ellipse at 50% 0%,#000 32%,transparent 80%)}
+.progress{position:fixed; left:0; top:env(safe-area-inset-top,0px); height:2px; width:0; z-index:40; background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 12px var(--accent)}
+
+.wrap{position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 18px 100px}
+.hero{padding-top:54px}
+.kicker{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--accent2); letter-spacing:1.5px; margin-bottom:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.kicker::before{content:""; width:28px; height:1px; background:var(--accent)}
+h1{font-family:'Unbounded','Onest',sans-serif; font-weight:600; font-size:clamp(34px,7.4vw,66px); line-height:1.02; letter-spacing:-1.5px; margin:0 0 18px; text-wrap:balance;
+  background:linear-gradient(100deg,var(--ink) 0%,var(--ink) 30%,var(--accent) 48%,var(--accent2) 57%,var(--ink) 75%,var(--ink) 100%); background-size:250% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 7s ease-in-out infinite}
+@keyframes shine{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+.lede{color:var(--dim); max-width:60ch; font-size:17px}
+.lede b{color:var(--accent2); font-weight:600}
+.crosses{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+.cross{display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--accent2); font-size:14.5px; border:1px solid var(--line2); border-radius:10px; padding:9px 15px; transition:border-color .2s,box-shadow .2s}
+.cross:hover,.cross:focus-visible{border-color:var(--accent); box-shadow:0 0 18px rgba(168,85,247,.3); outline:none}
+.stats{display:flex; flex-wrap:wrap; gap:26px; margin-top:22px}
+.stat b{display:block; font-family:'Unbounded',sans-serif; font-weight:500; font-size:30px; line-height:1; font-variant-numeric:tabular-nums}
+.stat span{font-size:13px; color:var(--dim)}
+.stat.hot b{color:var(--accent); text-shadow:0 0 18px rgba(168,85,247,.5)}
+
+nav.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:30; margin:30px -18px 0; padding:12px 18px; background:rgba(9,6,15,.78); backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--line)}
+.chips{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:0 0 auto; text-decoration:none; color:var(--dim); font-size:13.5px; padding:7px 14px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.02); transition:color .2s,border-color .2s,background .2s,box-shadow .2s}
+.chips a:hover,.chips a:focus-visible{color:var(--ink); border-color:var(--line2); outline:none}
+.chips a.on{color:#09060F; background:var(--accent); border-color:var(--accent); box-shadow:0 0 18px rgba(168,85,247,.5); font-weight:500}
+
+section{padding-top:64px; scroll-margin-top:64px}
+h2{font-family:'Unbounded','Onest',sans-serif; font-weight:500; font-size:clamp(22px,3.6vw,30px); line-height:1.15; letter-spacing:-.4px; margin:0 0 8px; text-wrap:balance; display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
+h2 .ix{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); letter-spacing:1px; font-weight:400}
+h3{font-size:17px; font-weight:600; margin:30px 0 10px}
+h3::before{content:"// "; font-family:'JetBrains Mono',monospace; color:var(--accent); font-weight:400}
+h4{font-size:15px; font-weight:600; margin:18px 0 8px; color:var(--accent2)}
+p{margin:0 0 12px}
+.sec-sub{color:var(--dim); font-size:15px; margin-bottom:20px; max-width:66ch}
+.beyond{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:1px; color:var(--accent2); border:1px solid rgba(216,180,254,.4); border-radius:6px; padding:2px 7px; vertical-align:middle; white-space:nowrap; text-transform:uppercase}
+
+.spot{position:relative}
+.spot::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; opacity:0; transition:opacity .35s;
+  background:radial-gradient(260px circle at var(--mx,-200px) var(--my,-200px),rgba(200,140,255,.95),transparent 55%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude}
+.spot::after{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .35s;
+  background:radial-gradient(360px circle at var(--mx,-200px) var(--my,-200px),rgba(168,85,247,.09),transparent 60%)}
+.spot:hover::before,.spot:hover::after{opacity:1}
+
+.blk{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:6px 20px}
+.r{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:20px; padding:15px 0; border-top:1px solid var(--line); align-items:start; position:relative; z-index:1}
+.r:first-of-type{border-top:none}
+.r .m{overflow-x:auto; overflow-y:hidden}
+.r .t{font-size:14.5px; color:var(--dim)}
+.r .t b{color:var(--ink); font-weight:600}
+@media (max-width:640px){.r{grid-template-columns:1fr; gap:6px}}
+
+.tw{overflow-x:auto; margin:12px 0 4px; border:1px solid var(--line); border-radius:14px; background:var(--panel)}
+table{width:100%; border-collapse:collapse; font-size:14.5px}
+th{text-align:left; font-weight:500; font-size:12px; color:var(--accent2); padding:11px 14px; border-bottom:1px solid var(--line2); background:var(--panel2); letter-spacing:.6px; font-family:'JetBrains Mono',monospace}
+td{padding:9px 14px; border-bottom:1px solid var(--line); vertical-align:top}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--accent-soft)}
+tr:last-child td{border-bottom:none}
+td.n,td.mono{font-family:'JetBrains Mono',monospace; font-size:13.5px; white-space:nowrap}
+td.n{color:var(--accent)}
+.yes{color:var(--ok); font-weight:600}
+.no{color:var(--red); font-weight:600}
+
+.note{background:var(--accent-soft); border:1px solid rgba(168,85,247,.28); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.note b{color:var(--accent2)}
+.ok{background:var(--ok-soft); border:1px solid rgba(79,214,168,.22); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.ok b{color:var(--ok)}
+.warn{background:var(--red-soft); border:1px solid rgba(255,123,156,.25); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.warn b{color:var(--red)}
+
+.lab{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px; margin:18px 0}
+.lab > *{position:relative; z-index:1}
+.lab-t{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); letter-spacing:1.2px; margin-bottom:12px}
+.tt{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; max-width:420px; font-family:'JetBrains Mono',monospace; font-size:13px}
+.tt .h{color:var(--dim); font-size:11px; text-align:center; padding-bottom:2px}
+.tt .c{text-align:center; padding:7px 0; color:var(--dim); background:var(--panel2); border-radius:7px}
+.bit{font:inherit; font-family:'JetBrains Mono',monospace; font-size:14px; padding:7px 0; border-radius:7px; border:1px solid var(--line2); background:var(--panel2); color:var(--dim); cursor:pointer; transition:background .15s,color .15s,border-color .15s,box-shadow .15s}
+.bit[data-v="1"]{background:var(--accent); border-color:var(--accent); color:#09060F; font-weight:600; box-shadow:0 0 12px rgba(168,85,247,.5)}
+.bit:focus-visible{outline:2px solid var(--accent2); outline-offset:2px}
+.out{margin-top:16px; display:grid; gap:10px}
+.out .row{display:grid; grid-template-columns:120px minmax(0,1fr); gap:12px; font-size:14px; align-items:start}
+.out .k{color:var(--dim); font-family:'JetBrains Mono',monospace; font-size:12px; padding-top:2px}
+.out .v{font-family:'JetBrains Mono',monospace; font-size:13.5px; overflow-x:auto; color:var(--ink)}
+@media (max-width:560px){.out .row{grid-template-columns:1fr; gap:2px}}
+.pills{display:flex; gap:6px; flex-wrap:wrap}
+.pill{font-family:'JetBrains Mono',monospace; font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--line2); color:var(--dim)}
+.pill[data-in="1"]{color:var(--ok); border-color:rgba(79,214,168,.45); background:var(--ok-soft)}
+.pill[data-in="0"]{color:var(--red); border-color:rgba(255,123,156,.35)}
+.ctl{display:flex; flex-wrap:wrap; gap:12px 22px; align-items:center; margin-top:14px; font-size:14px; color:var(--dim)}
+.ctl label{display:flex; align-items:center; gap:10px}
+.ctl output{font-family:'JetBrains Mono',monospace; color:var(--accent); min-width:2.5em}
+.btn{font:inherit; font-size:13px; background:var(--panel2); border:1px solid var(--line2); color:var(--accent2); border-radius:8px; padding:7px 13px; cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+input[type=range]{-webkit-appearance:none; appearance:none; width:140px; max-width:42vw; height:4px; background:var(--line2); border-radius:4px; outline:none; margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px; height:16px; border:none; border-radius:50%; background:var(--accent)}
+input[type=range]:focus-visible{outline:2px solid var(--accent); outline-offset:6px}
+.verdict{margin-top:14px; font-size:14.5px; border-top:1px solid var(--line); padding-top:12px; color:var(--dim)}
+.verdict b{color:var(--accent2)}
+
+details{margin:10px 0; font-size:14.5px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 16px}
+summary{cursor:pointer; color:var(--accent2); font-size:14px; list-style:none; display:inline-flex; align-items:center; gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+"; display:inline-grid; place-items:center; width:18px; height:18px; border:1px solid var(--accent); border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:12px; transition:transform .25s}
+details[open] summary::before{transform:rotate(45deg)}
+summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:4px}
+details .body{margin-top:10px; padding:12px 15px; background:var(--code); border:1px solid var(--line); border-radius:10px; overflow-x:auto}
+
+.search{width:100%; font:inherit; font-size:15px; padding:13px 16px; border:1px solid var(--line2); border-radius:12px; background:var(--panel); color:var(--ink); margin-bottom:16px}
+.search::placeholder{color:var(--dim)}
+.search:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(168,85,247,.15)}
+.hidden{display:none!important}
+.empty{color:var(--dim); text-align:center; padding:20px}
+.foot{color:var(--dim); font-size:13px; margin-top:60px; border-top:1px solid var(--line); padding-top:18px}
+svg.fig{width:100%; max-width:560px; height:auto; display:block; margin:14px auto 4px}
+svg.fig text{font-family:'JetBrains Mono',monospace; font-size:12px; fill:var(--dim)}
+mjx-container{max-width:100%}
+mjx-container[display="true"]{overflow-x:auto; overflow-y:hidden; margin:.6em 0!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important; transition:none!important} html{scroll-behavior:auto}}
+</style>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="aura" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="progress" id="prog" aria-hidden="true"></div>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">АККРЕДИТАЦИЯ 01.03.03 · ДИСКРЕТНАЯ МАТЕМАТИКА</div>
+  <h1>Дискретка с нуля</h1>
+  <p class="lede">Самый подробный из трёх разделов: логические функции, нормальные формы, полином Жегалкина, классы Поста, графы и комбинаторика — с определениями, алгоритмами и разбором всех задач из списка. Материал сверх списка помечен меткой <span class="beyond">вне списка</span>.</p>
+  <div class="crosses">
+    <a class="cross" href="matan.html">Матанализ</a>
+    <a class="cross" href="linal.html">Линейная алгебра</a>
+  </div>
+  <div class="stats">
+    <div class="stat hot"><b>9</b><span>тем</span></div>
+    <div class="stat"><b>2</b><span>живые модели</span></div>
+    <div class="stat"><b>20</b><span>задач с решениями</span></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Разделы">
+  <div class="chips">
+    <a href="#func">Логические функции</a>
+    <a href="#laws">Законы</a>
+    <a href="#forms">СДНФ и СКНФ</a>
+    <a href="#zheg">Жегалкин</a>
+    <a href="#post">Классы Поста</a>
+    <a href="#min">Минимизация</a>
+    <a href="#graph">Графы</a>
+    <a href="#comb">Комбинаторика</a>
+    <a href="#sets">Множества</a>
+    <a href="#idx">Задачи с ответами</a>
+  </div>
+</nav>
+
+<!-- 01 ЛОГИЧЕСКИЕ ФУНКЦИИ -->
+<section id="func">
+  <h2><span class="ix">01</span>Логические функции</h2>
+  <p class="sec-sub">Булева функция — это правило, которое каждому набору нулей и единиц сопоставляет ноль или единицу. Вся тема держится на одном объекте: векторе значений.</p>
+
+  <h3>Определения</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(f:\{0,1\}^n\to\{0,1\}\)</div><div class="t">Функция от \(n\) переменных. Задаётся таблицей истинности: \(2^n\) строк.</div></div>
+    <div class="r"><div class="m">Наборов: \(2^n\)</div><div class="t">При \(n=2\) четыре набора, при \(n=3\) — восемь.</div></div>
+    <div class="r"><div class="m">Функций: \(2^{2^n}\)</div><div class="t">Каждому набору можно независимо назначить 0 или 1. При \(n=2\) получается \(2^4=16\) функций, при \(n=3\) уже \(2^8=256\).</div></div>
+    <div class="r"><div class="m">Вектор значений</div><div class="t">Столбец значений, выписанный в строку: наборы идут в порядке возрастания двоичного числа — \(00,01,10,11\) для двух переменных.</div></div>
+    <div class="r"><div class="m">Обозначение \(f_{n,i}\)</div><div class="t">Функция от \(n\) переменных, у которой вектор значений — двоичная запись числа \(i\). Например \(11=1011\) даёт \(f(00)=1,\ f(01)=0,\ f(10)=1,\ f(11)=1\).</div></div>
+  </div>
+  <div class="warn"><b>Осторожно с нумерацией.</b> В разных учебниках \(f_{2,i}\) может нумероваться по-разному: отличается, какой бит считается старшим. Проверьте по любому разобранному примеру из вашей методички — удобный маркер \(f_{2,1}\): если это конъюнкция, конвенция стандартная. Но для решения имя функции не нужно вовсе: все алгоритмы работают прямо с вектором значений.</div>
+
+  <h3>Основные операции</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Операция</th><th>Вектор</th><th>Когда равна 1</th><th>Как запомнить</th></tr></thead>
+    <tbody>
+      <tr><td>\(\bar x\) — отрицание</td><td class="mono">1, 0</td><td>когда \(x=0\)</td><td>переключатель</td></tr>
+      <tr><td>\(x\wedge y\) — конъюнкция</td><td class="mono">0001</td><td>оба равны 1</td><td>это умножение: \(x\wedge y=xy\)</td></tr>
+      <tr><td>\(x\vee y\) — дизъюнкция</td><td class="mono">0111</td><td>хотя бы один равен 1</td><td>ноль только в нуле</td></tr>
+      <tr><td>\(x\oplus y\) — сложение по модулю 2</td><td class="mono">0110</td><td>аргументы разные</td><td>«не равны»; для многих переменных — нечётное число единиц</td></tr>
+      <tr><td>\(x\sim y\) — эквивалентность</td><td class="mono">1001</td><td>аргументы равны</td><td>отрицание \(\oplus\)</td></tr>
+      <tr><td>\(x\to y\) — импликация</td><td class="mono">1101</td><td>всегда, кроме \(x=1,y=0\)</td><td>обещание: нарушено, только если из истины следует ложь</td></tr>
+      <tr><td>\(x\mid y\) — штрих Шеффера</td><td class="mono">1110</td><td>не оба равны 1</td><td>отрицание конъюнкции</td></tr>
+      <tr><td>\(x\downarrow y\) — стрелка Пирса</td><td class="mono">1000</td><td>оба равны 0</td><td>отрицание дизъюнкции</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Приоритет операций</b> (от сильного к слабому): \(\bar{\phantom x}\), затем \(\wedge\), затем \(\vee\) и \(\oplus\), затем \(\to\), затем \(\sim\). То есть \(x\vee y\wedge z\) читается как \(x\vee(y\wedge z)\). Когда сомневаетесь — ставьте скобки.</div>
+
+  <h3>Карта всех шестнадцати функций двух переменных</h3>
+  <p>Шестнадцать таблиц запоминать не нужно: они разбиваются на четыре группы по числу единиц в векторе, и внутри группы всё определяется позицией.</p>
+
+  <h4>Ровно одна единица — это конъюнкции</h4>
+  <p>Переменная берётся <b>без отрицания там, где в наборе стоит 1</b> — то же правило, что в СДНФ.</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>№</th><th>Вектор</th><th>Единица на наборе</th><th>Функция</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="mono">0001</td><td class="mono">11</td><td>\(x\wedge y\)</td></tr>
+      <tr><td class="n">2</td><td class="mono">0010</td><td class="mono">10</td><td>\(x\wedge\bar y\)</td></tr>
+      <tr><td class="n">4</td><td class="mono">0100</td><td class="mono">01</td><td>\(\bar x\wedge y\)</td></tr>
+      <tr><td class="n">8</td><td class="mono">1000</td><td class="mono">00</td><td>\(\bar x\wedge\bar y=x\downarrow y\)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Ровно один ноль — это дизъюнкции</h4>
+  <p>Зеркальное правило: переменная берётся <b>с отрицанием там, где в наборе стоит 1</b> — правило СКНФ.</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>№</th><th>Вектор</th><th>Ноль на наборе</th><th>Функция</th></tr></thead>
+    <tbody>
+      <tr><td class="n">7</td><td class="mono">0111</td><td class="mono">00</td><td>\(x\vee y\)</td></tr>
+      <tr><td class="n">11</td><td class="mono">1011</td><td class="mono">01</td><td>\(x\vee\bar y=y\to x\)</td></tr>
+      <tr><td class="n">13</td><td class="mono">1101</td><td class="mono">10</td><td>\(\bar x\vee y=x\to y\)</td></tr>
+      <tr><td class="n">14</td><td class="mono">1110</td><td class="mono">11</td><td>\(\bar x\vee\bar y=x\mid y\)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4>Две единицы и крайние случаи</h4>
+  <div class="tw spot"><table>
+    <thead><tr><th>№</th><th>Вектор</th><th>Функция</th><th>Смысл</th></tr></thead>
+    <tbody>
+      <tr><td class="n">0</td><td class="mono">0000</td><td>\(0\)</td><td>константа ноль</td></tr>
+      <tr><td class="n">3</td><td class="mono">0011</td><td>\(x\)</td><td>проекция: повторяет первый аргумент</td></tr>
+      <tr><td class="n">5</td><td class="mono">0101</td><td>\(y\)</td><td>проекция: повторяет второй</td></tr>
+      <tr><td class="n">6</td><td class="mono">0110</td><td>\(x\oplus y\)</td><td>единица там, где аргументы различны</td></tr>
+      <tr><td class="n">9</td><td class="mono">1001</td><td>\(x\sim y\)</td><td>единица там, где аргументы равны</td></tr>
+      <tr><td class="n">10</td><td class="mono">1010</td><td>\(\bar y\)</td><td>отрицание второго</td></tr>
+      <tr><td class="n">12</td><td class="mono">1100</td><td>\(\bar x\)</td><td>отрицание первого</td></tr>
+      <tr><td class="n">15</td><td class="mono">1111</td><td>\(1\)</td><td>константа единица</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Существенные и фиктивные переменные</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Переменная \(x_i\) фиктивна, если</div><div class="t">для любых значений остальных переменных смена \(x_i\) не меняет значение функции.</div></div>
+    <div class="r"><div class="m">Алгоритм проверки</div><div class="t">Разбиваем наборы на пары, отличающиеся только по \(x_i\). Если во <b>всех</b> парах значения совпали — переменная фиктивна. Достаточно одного несовпадения, чтобы признать её существенной.</div></div>
+    <div class="r"><div class="m">Приём для старшей переменной</div><div class="t">Для \(x_1\) (самой левой) пары — это первая и вторая половины вектора значений. Совпали половины — переменная фиктивна. Для вектора \((1,0,0,1,1,0,0,1)\) половины равны \((1,0,0,1)\), значит \(x_1\) фиктивна.</div></div>
+    <div class="r"><div class="m">Зачем это нужно</div><div class="t">Фиктивную переменную можно выбросить: функция трёх переменных окажется функцией двух. Так из \((1,0,0,1,1,0,0,1)\) получается \(y\sim z\).</div></div>
+  </div>
+
+  <div class="lab spot" id="lab-fn">
+    <div class="lab-t">МОДЕЛЬ · КОНСТРУКТОР ФУНКЦИИ ТРЁХ ПЕРЕМЕННЫХ</div>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:12px">Нажимайте на значения \(f\), чтобы задать функцию. Всё остальное считается автоматически.</p>
+    <div class="tt" id="tt"></div>
+    <div class="ctl">
+      <button class="btn" id="fn-rand">Случайная</button>
+      <button class="btn" id="fn-zero">Обнулить</button>
+      <button class="btn" id="fn-xor">x ⊕ y ⊕ z</button>
+      <button class="btn" id="fn-maj">Медиана</button>
+    </div>
+    <div class="out">
+      <div class="row"><div class="k">ВЕКТОР</div><div class="v" id="o-vec"></div></div>
+      <div class="row"><div class="k">СДНФ</div><div class="v" id="o-sdnf"></div></div>
+      <div class="row"><div class="k">СКНФ</div><div class="v" id="o-sknf"></div></div>
+      <div class="row"><div class="k">ЖЕГАЛКИН</div><div class="v" id="o-zh"></div></div>
+      <div class="row"><div class="k">ДВОЙСТВЕННАЯ</div><div class="v" id="o-dual"></div></div>
+      <div class="row"><div class="k">ПЕРЕМЕННЫЕ</div><div class="v" id="o-ess"></div></div>
+      <div class="row"><div class="k">КЛАССЫ</div><div class="pills" id="o-post"></div></div>
+    </div>
+    <div class="verdict" id="o-note"></div>
+  </div>
+</section>
+
+<!-- 02 ЗАКОНЫ -->
+<section id="laws">
+  <h2><span class="ix">02</span>Законы алгебры логики</h2>
+  <p class="sec-sub">Этими тождествами упрощают формулы и доказывают равносильности. Любое из них проверяется таблицей истинности за минуту — если забыли, не зубрите, а проверьте.</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>Закон</th><th>Для \(\wedge\)</th><th>Для \(\vee\)</th></tr></thead>
+    <tbody>
+      <tr><td>коммутативность</td><td>\(x\wedge y=y\wedge x\)</td><td>\(x\vee y=y\vee x\)</td></tr>
+      <tr><td>ассоциативность</td><td>\((x\wedge y)\wedge z=x\wedge(y\wedge z)\)</td><td>\((x\vee y)\vee z=x\vee(y\vee z)\)</td></tr>
+      <tr><td>дистрибутивность</td><td>\(x\wedge(y\vee z)=xy\vee xz\)</td><td>\(x\vee yz=(x\vee y)(x\vee z)\)</td></tr>
+      <tr><td>идемпотентность</td><td>\(x\wedge x=x\)</td><td>\(x\vee x=x\)</td></tr>
+      <tr><td>с константами</td><td>\(x\wedge1=x,\ x\wedge0=0\)</td><td>\(x\vee0=x,\ x\vee1=1\)</td></tr>
+      <tr><td>с отрицанием</td><td>\(x\wedge\bar x=0\)</td><td>\(x\vee\bar x=1\)</td></tr>
+      <tr><td>поглощение</td><td>\(x\wedge(x\vee y)=x\)</td><td>\(x\vee xy=x\)</td></tr>
+      <tr><td>де Моргана</td><td>\(\overline{x\wedge y}=\bar x\vee\bar y\)</td><td>\(\overline{x\vee y}=\bar x\wedge\bar y\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="warn"><b>Главная ошибка темы.</b> Закон де Моргана <b>меняет операцию</b>: отрицание дизъюнкции даёт конъюнкцию, и наоборот. Равенство \(\overline{x\vee y}=\bar x\vee\bar y\) неверно — проверьте на \(x=1,y=0\): слева 0, справа 1.</div>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\bar{\bar x}=x\)</div><div class="t">Двойное отрицание.</div></div>
+    <div class="r"><div class="m">\(x\to y=\bar x\vee y\)</div><div class="t">Выражение импликации — обязательная формула: с неё начинается почти любое упрощение.</div></div>
+    <div class="r"><div class="m">\(x\sim y=(x\to y)(y\to x)=\overline{x\oplus y}\)</div><div class="t">Эквивалентность через импликации или через сложение по модулю 2.</div></div>
+    <div class="r"><div class="m">\(x\oplus y=x\bar y\vee\bar xy\)</div><div class="t">И обратно: \(x\vee y=x\oplus y\oplus xy\).</div></div>
+    <div class="r"><div class="m">Склеивание</div><div class="t">\(xy\vee x\bar y=x\) — основа минимизации: переменная, встречающаяся в обоих знаках, выпадает.</div></div>
+    <div class="r"><div class="m">\(x\vee\bar xy=x\vee y\)</div><div class="t">Обобщённое поглощение, часто экономит шаг.</div></div>
+  </div>
+</section>
+
+<!-- 03 ФОРМЫ -->
+<section id="forms">
+  <h2><span class="ix">03</span>СДНФ и СКНФ</h2>
+  <p class="sec-sub">Две стандартные записи функции формулой. Обе строятся прямо по таблице истинности, правила зеркальны — и именно поэтому их легко перепутать.</p>
+
+  <h3>Термины</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Элементарная конъюнкция</div><div class="t">Произведение переменных и их отрицаний: \(x\bar yz\).</div></div>
+    <div class="r"><div class="m">ДНФ</div><div class="t">Дизъюнкция элементарных конъюнкций: \(xy\vee\bar z\).</div></div>
+    <div class="r"><div class="m">СДНФ — совершенная</div><div class="t">Та же ДНФ, но в <b>каждую</b> конъюнкцию входят <b>все</b> переменные ровно по одному разу.</div></div>
+    <div class="r"><div class="m">КНФ и СКНФ</div><div class="t">То же самое с переставленными ролями: конъюнкция дизъюнкций, и в совершенной форме каждая дизъюнкция содержит все переменные.</div></div>
+  </div>
+
+  <h3>Алгоритм СДНФ — по единицам</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Берём строки, где \(f=1\)</div><div class="t">Нулевые строки игнорируем.</div></div>
+    <div class="r"><div class="m">2. Для каждой пишем конъюнкцию</div><div class="t">Переменная <b>без отрицания</b>, если в наборе стоит 1, и <b>с отрицанием</b>, если 0.</div></div>
+    <div class="r"><div class="m">3. Соединяем знаками \(\vee\)</div><div class="t">Готово. Число слагаемых равно числу единиц в векторе.</div></div>
+    <div class="r"><div class="m">Пример: набор \((1,0,1)\)</div><div class="t">Даёт \(x\bar yz\).</div></div>
+  </div>
+
+  <h3>Алгоритм СКНФ — по нулям</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Берём строки, где \(f=0\)</div><div class="t">Единичные строки игнорируем.</div></div>
+    <div class="r"><div class="m">2. Для каждой пишем дизъюнкцию</div><div class="t">Переменная <b>с отрицанием</b>, если в наборе стоит 1, и <b>без отрицания</b>, если 0. Правило противоположно СДНФ.</div></div>
+    <div class="r"><div class="m">3. Соединяем знаками \(\wedge\)</div><div class="t">Число множителей равно числу нулей в векторе.</div></div>
+    <div class="r"><div class="m">Пример: набор \((0,1,1)\)</div><div class="t">Даёт \((x\vee\bar y\vee\bar z)\).</div></div>
+  </div>
+
+  <div class="note"><b>Мнемоника.</b> СДНФ строится по единицам и «списывает набор как есть»; СКНФ строится по нулям и «переворачивает» каждый бит. Проверка: число слагаемых СДНФ плюс число множителей СКНФ всегда равно \(2^n\).</div>
+
+  <h3>Разобранный пример</h3>
+  <p>Функция задана вектором \((0,1,1,0,0,1,1,0)\) на наборах \(000,001,\ldots,111\).</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">Единицы на наборах \(001,010,101,110\)</div><div class="t">СДНФ: \(\bar x\bar yz\ \vee\ \bar xy\bar z\ \vee\ x\bar yz\ \vee\ xy\bar z\)</div></div>
+    <div class="r"><div class="m">Нули на наборах \(000,011,100,111\)</div><div class="t">СКНФ: \((x\vee y\vee z)(x\vee\bar y\vee\bar z)(\bar x\vee y\vee z)(\bar x\vee\bar y\vee\bar z)\)</div></div>
+    <div class="r"><div class="m">Наблюдение</div><div class="t">Половины вектора совпадают, значит \(x\) фиктивна, и на самом деле это \(y\oplus z\). Поэтому слагаемые идут парами.</div></div>
+  </div>
+
+  <div class="note"><b>Когда СДНФ не существует.</b> У тождественного нуля единиц нет — СДНФ не строится. Симметрично, у тождественной единицы нет СКНФ. Это единственные два исключения.</div>
+</section>
+
+<!-- 04 ЖЕГАЛКИН -->
+<section id="zheg">
+  <h2><span class="ix">04</span>Полином Жегалкина</h2>
+  <p class="sec-sub">Запись функции только через \(\oplus\), умножение и единицу. Для каждой функции такой полином существует и единственен — поэтому метод неопределённых коэффициентов всегда срабатывает.</p>
+
+  <h3>Общий вид</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Две переменные</div><div class="t">\(f=a_0\oplus a_1x\oplus a_2y\oplus a_3xy\) — четыре коэффициента.</div></div>
+    <div class="r"><div class="m">Три переменные</div><div class="t">\(f=a_0\oplus a_1x\oplus a_2y\oplus a_3z\oplus a_4xy\oplus a_5xz\oplus a_6yz\oplus a_7xyz\) — восемь коэффициентов, по одному на каждое подмножество переменных.</div></div>
+    <div class="r"><div class="m">Правила упрощения</div><div class="t">\(x\oplus x=0\), \(x\cdot x=x\), \(x\oplus0=x\), \(x\cdot1=x\). Поэтому в полиноме не бывает ни степеней, ни повторяющихся слагаемых.</div></div>
+  </div>
+
+  <h3>Метод 1 — неопределённые коэффициенты</h3>
+  <p>Работает, когда функция задана <b>таблицей</b>. Наборы подставляются <b>по возрастанию</b>: каждый следующий добавляет ровно один новый коэффициент.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(f_{2,11}\), вектор \(1011\)</div><div class="t">Разбор по шагам ниже.</div></div>
+    <div class="r"><div class="m">Набор \((0,0)\)</div><div class="t">Все слагаемые с переменными обнуляются: \(a_0=f(0,0)=1\).</div></div>
+    <div class="r"><div class="m">Набор \((0,1)\)</div><div class="t">Выживают \(a_0\) и \(a_2\): \(1\oplus a_2=0\Rightarrow a_2=1\).</div></div>
+    <div class="r"><div class="m">Набор \((1,0)\)</div><div class="t">Выживают \(a_0\) и \(a_1\): \(1\oplus a_1=1\Rightarrow a_1=0\).</div></div>
+    <div class="r"><div class="m">Набор \((1,1)\)</div><div class="t">Все четыре: \(1\oplus0\oplus1\oplus a_3=1\Rightarrow a_3=1\).</div></div>
+    <div class="r"><div class="m">Ответ</div><div class="t">\(f=1\oplus y\oplus xy\). Проверка на \((0,1)\): \(1\oplus1\oplus0=0\) — сходится.</div></div>
+  </div>
+
+  <h3>Метод 2 — эквивалентные преобразования</h3>
+  <p>Удобен, когда функция задана <b>формулой</b>. Избавляемся от отрицаний и дизъюнкций, раскрываем скобки, приводим подобные по модулю 2.</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>Операция</th><th>Через \(\oplus\) и умножение</th></tr></thead>
+    <tbody>
+      <tr><td>\(\bar x\)</td><td>\(x\oplus1\)</td></tr>
+      <tr><td>\(x\vee y\)</td><td>\(x\oplus y\oplus xy\)</td></tr>
+      <tr><td>\(x\to y\)</td><td>\(1\oplus x\oplus xy\)</td></tr>
+      <tr><td>\(x\sim y\)</td><td>\(1\oplus x\oplus y\)</td></tr>
+      <tr><td>\(x\mid y\)</td><td>\(1\oplus xy\)</td></tr>
+      <tr><td>\(x\downarrow y\)</td><td>\(1\oplus x\oplus y\oplus xy\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="blk spot">
+    <div class="r"><div class="m">Пример: \(\bar x\vee y\)</div><div class="t">\((x\oplus1)\vee y=(x\oplus1)\oplus y\oplus(x\oplus1)y=x\oplus1\oplus y\oplus xy\oplus y\).</div></div>
+    <div class="r"><div class="m">Приводим подобные</div><div class="t">\(y\oplus y=0\), остаётся \(1\oplus x\oplus xy\) — это импликация, что и ожидалось.</div></div>
+  </div>
+
+  <h3>Метод 3 — треугольник Паскаля <span class="beyond">вне списка</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Пишем вектор значений строкой</div><div class="t">Например \(1\ 0\ 1\ 1\).</div></div>
+    <div class="r"><div class="m">2. Под каждой парой соседей пишем их сумму по модулю 2</div><div class="t">Строка укорачивается на единицу: \(1\ 1\ 0\), затем \(0\ 1\), затем \(1\).</div></div>
+    <div class="r"><div class="m">3. Читаем левый столбец сверху вниз</div><div class="t">Это коэффициенты \(a_0,a_1,a_2,a_3\) в порядке \(1,\ y,\ x,\ xy\) — то есть по возрастанию номера набора.</div></div>
+    <div class="r"><div class="m">Для нашего примера</div><div class="t">Левый столбец \(1,1,0,1\) даёт \(1\oplus y\oplus xy\) — тот же ответ, что двумя другими методами.</div></div>
+  </div>
+
+  <div class="ok"><b>Зачем нужен полином.</b> По нему мгновенно видно линейность функции (класс \(L\)): если нет ни одного произведения переменных — функция линейна. Это самая быстрая из пяти проверок Поста.</div>
+</section>
+
+<!-- 05 КЛАССЫ ПОСТА -->
+<section id="post">
+  <h2><span class="ix">05</span>Классы Поста и полнота</h2>
+  <p class="sec-sub">Система функций полна, если через неё выражается любая булева функция. Критерий Поста сводит этот вопрос к пяти проверкам.</p>
+
+  <h3>Пять замкнутых классов</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(T_0\) — сохраняющие ноль</div><div class="t">\(f(0,0,\ldots,0)=0\). Проверка: смотрим <b>первый</b> бит вектора значений.</div></div>
+    <div class="r"><div class="m">\(T_1\) — сохраняющие единицу</div><div class="t">\(f(1,1,\ldots,1)=1\). Проверка: <b>последний</b> бит вектора.</div></div>
+    <div class="r"><div class="m">\(S\) — самодвойственные</div><div class="t">\(f^*=f\), то есть \(f(\bar x_1,\ldots,\bar x_n)=\overline{f(x_1,\ldots,x_n)}\). Проверка: значения на противоположных наборах должны быть разными.</div></div>
+    <div class="r"><div class="m">\(M\) — монотонные</div><div class="t">Если набор \(\alpha\) не больше набора \(\beta\) покоординатно, то \(f(\alpha)\le f(\beta)\). Проверка: перебираем сравнимые пары наборов, ищем падение с 1 на 0.</div></div>
+    <div class="r"><div class="m">\(L\) — линейные</div><div class="t">Полином Жегалкина без произведений переменных.</div></div>
+  </div>
+
+  <h3>Двойственность подробно</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Определение</div><div class="t">\(f^*(x_1,\ldots,x_n)=\overline{f(\bar x_1,\ldots,\bar x_n)}\): инвертируем входы, считаем функцию, инвертируем результат.</div></div>
+    <div class="r"><div class="m">По вектору значений</div><div class="t">Перевернуть вектор задом наперёд и инвертировать каждый бит. Две операции, обе обязательны.</div></div>
+    <div class="r"><div class="m">Примеры</div><div class="t">\((x\wedge y)^*=x\vee y\) и наоборот; \(\bar x\) и константы: \(0^*=1\). Отрицание самодвойственно.</div></div>
+    <div class="r"><div class="m">Принцип двойственности</div><div class="t">Если в верном тождестве поменять местами \(\wedge\) и \(\vee\), а также 0 и 1, получится снова верное тождество. Так законы в таблице выше идут парами.</div></div>
+  </div>
+
+  <h3>Таблица принадлежности</h3>
+  <p>Эту таблицу полезно уметь восстанавливать, а не помнить: каждая клетка — одна короткая проверка.</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>Функция</th><th>\(T_0\)</th><th>\(T_1\)</th><th>\(S\)</th><th>\(M\)</th><th>\(L\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(0\)</td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td><td class="yes">да</td><td class="yes">да</td></tr>
+      <tr><td>\(1\)</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td><td class="yes">да</td><td class="yes">да</td></tr>
+      <tr><td>\(\bar x\)</td><td class="no">нет</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td><td class="yes">да</td></tr>
+      <tr><td>\(x\wedge y\)</td><td class="yes">да</td><td class="yes">да</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td></tr>
+      <tr><td>\(x\vee y\)</td><td class="yes">да</td><td class="yes">да</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td></tr>
+      <tr><td>\(x\oplus y\)</td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td><td class="yes">да</td></tr>
+      <tr><td>\(x\sim y\)</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td><td class="yes">да</td></tr>
+      <tr><td>\(x\to y\)</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td></tr>
+      <tr><td>\(x\mid y\)</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td></tr>
+      <tr><td>\(x\downarrow y\)</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td></tr>
+    </tbody>
+  </table></div>
+  <div class="ok"><b>Следствие из последних двух строк.</b> Штрих Шеффера не лежит ни в одном из пяти классов, поэтому система из одной этой функции уже полна — через неё выражается всё. То же верно для стрелки Пирса. На этом построены схемы NAND и NOR в электронике.</div>
+
+  <h3>Критерий Поста</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Формулировка</div><div class="t">Система функций полна тогда и только тогда, когда для <b>каждого</b> из пяти классов в ней найдётся функция, этому классу <b>не</b> принадлежащая.</div></div>
+    <div class="r"><div class="m">Алгоритм</div><div class="t">Строим таблицу: строки — функции системы, столбцы — пять классов. В каждом столбце должно оказаться хотя бы одно «нет». Одна функция может закрывать сразу несколько столбцов.</div></div>
+    <div class="r"><div class="m">Частая ошибка</div><div class="t">Требовать, чтобы все функции были вне классов. Достаточно по одной на столбец.</div></div>
+  </div>
+
+  <h4>Разбор: полна ли система \(\{f_{2,4},\ f_{2,11}\}\)?</h4>
+  <p>Это \(\bar xy\) (вектор 0100) и \(x\vee\bar y\) (вектор 1011).</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>Функция</th><th>\(T_0\)</th><th>\(T_1\)</th><th>\(S\)</th><th>\(M\)</th><th>\(L\)</th></tr></thead>
+    <tbody>
+      <tr><td>\(f_{2,4}=\bar xy\)</td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td></tr>
+      <tr><td>\(f_{2,11}=x\vee\bar y\)</td><td class="no">нет</td><td class="yes">да</td><td class="no">нет</td><td class="no">нет</td><td class="no">нет</td></tr>
+    </tbody>
+  </table></div>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(T_0\)</div><div class="t">Первый бит у \(f_{2,11}\) равен 1, значит она вне класса. Столбец закрыт.</div></div>
+    <div class="r"><div class="m">\(T_1\)</div><div class="t">Последний бит у \(f_{2,4}\) равен 0 — вне класса.</div></div>
+    <div class="r"><div class="m">\(S\)</div><div class="t">Двойственная к \(0100\): переворот даёт \(0010\), инверсия — \(1101\ne0100\). Не самодвойственна.</div></div>
+    <div class="r"><div class="m">\(M\)</div><div class="t">У \(\bar xy\) на наборе \(01\) значение 1, а на большем наборе \(11\) — ноль. Монотонность нарушена.</div></div>
+    <div class="r"><div class="m">\(L\)</div><div class="t">Полином \(\bar xy=(x\oplus1)y=y\oplus xy\) содержит произведение — функция нелинейна.</div></div>
+    <div class="r"><div class="m">Вывод</div><div class="t">В каждом столбце есть «нет». <b>Система полна.</b></div></div>
+  </div>
+</section>
+
+<!-- 06 МИНИМИЗАЦИЯ -->
+<section id="min">
+  <h2><span class="ix">06</span>Минимизация <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">СДНФ почти всегда избыточна. Минимизация ищет самую короткую равносильную ДНФ — в тестах встречается как «упростить формулу».</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">Операция склеивания</div><div class="t">\(xy\vee x\bar y=x\): две конъюнкции, различающиеся одной переменной в разных знаках, сливаются, и эта переменная исчезает.</div></div>
+    <div class="r"><div class="m">Поглощение</div><div class="t">\(x\vee xy=x\): более длинное слагаемое выбрасывается.</div></div>
+    <div class="r"><div class="m">Карта Карно</div><div class="t">Таблица \(2\times4\) или \(4\times4\), где соседние клетки отличаются одной переменной (код Грея: \(00,01,11,10\)). Единицы объединяют в прямоугольники со сторонами-степенями двойки; каждый прямоугольник даёт одну конъюнкцию. Края карты считаются склеенными.</div></div>
+    <div class="r"><div class="m">Правило выбора блоков</div><div class="t">Чем больше прямоугольник, тем короче конъюнкция: блок из 2 клеток убирает одну переменную, из 4 — две, из 8 — три.</div></div>
+    <div class="r"><div class="m">Метод Квайна</div><div class="t">Та же идея без картинки: попарно склеиваем все конъюнкции, пока можно, затем выбираем минимальное покрытие.</div></div>
+  </div>
+  <div class="note"><b>Пример.</b> \(\bar x\bar yz\vee\bar xyz\vee x\bar yz\vee xyz\). Первые две склеиваются в \(\bar xz\), вторые две — в \(xz\), и эти две снова склеиваются: остаётся просто \(z\). Проверка по таблице: функция равна 1 ровно там, где \(z=1\).</div>
+</section>
+
+<!-- 07 ГРАФЫ -->
+<section id="graph">
+  <h2><span class="ix">07</span>Графы</h2>
+  <p class="sec-sub">Граф — это вершины и связи между ними. В задачах списка встречаются матрица смежности, кратчайший путь и коммивояжёр.</p>
+
+  <h3>Основные понятия</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(G=(V,E)\)</div><div class="t">Вершины и рёбра. В орграфе рёбра направлены и называются дугами.</div></div>
+    <div class="r"><div class="m">Степень вершины</div><div class="t">Число инцидентных рёбер. В орграфе различают полустепень захода и полустепень исхода.</div></div>
+    <div class="r"><div class="m">Лемма о рукопожатиях</div><div class="t">\(\sum\deg v=2|E|\) — сумма степеней вдвое больше числа рёбер, поэтому вершин нечётной степени всегда чётное число.</div></div>
+    <div class="r"><div class="m">Путь, цикл, связность</div><div class="t">Путь не повторяет рёбра; цикл замкнут. Граф связен, если между любыми двумя вершинами есть путь.</div></div>
+    <div class="r"><div class="m">Дерево</div><div class="t">Связный граф без циклов. У дерева с \(n\) вершинами ровно \(n-1\) ребро, и между любыми двумя вершинами единственный путь.</div></div>
+    <div class="r"><div class="m">Эйлеров цикл</div><div class="t">Проходит по каждому <b>ребру</b> один раз. Существует \(\iff\) граф связен и все степени чётны. Эйлеров путь (без возврата) — если ровно две вершины нечётной степени.</div></div>
+    <div class="r"><div class="m">Гамильтонов цикл</div><div class="t">Проходит по каждой <b>вершине</b> один раз. Простого критерия нет — это принципиально более сложная задача; на ней основан коммивояжёр.</div></div>
+  </div>
+
+  <h3>Способы задания</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Матрица смежности</div><div class="t">\(a_{ij}\) — число рёбер из \(i\) в \(j\). У неориентированного графа симметрична; \(a_{ii}\ne0\) означает петлю.</div></div>
+    <div class="r"><div class="m">Матрица инцидентности</div><div class="t">Строки — вершины, столбцы — рёбра. В орграфе \(+1\) для начала дуги и \(-1\) для конца.</div></div>
+    <div class="r"><div class="m">Степени матрицы смежности</div><div class="t">Элемент \((A^k)_{ij}\) равен числу маршрутов длины \(k\) из \(i\) в \(j\). Удобный факт для тестовых вопросов.</div></div>
+    <div class="r"><div class="m">Пример из задания 5</div><div class="t">Матрица \((0\,1\,2;\ 1\,0\,1;\ 0\,0\,1)\): из \(v_1\) одна дуга в \(v_2\) и две в \(v_3\), из \(v_2\) дуги в \(v_1\) и \(v_3\), у \(v_3\) петля. Всего 5 дуг и петля.</div></div>
+  </div>
+
+  <h3>Алгоритм Дейкстры</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Начальной вершине метка 0</div><div class="t">Остальным — бесконечность.</div></div>
+    <div class="r"><div class="m">2. Выбираем незафиксированную вершину с наименьшей меткой</div><div class="t">Фиксируем её: эта метка уже окончательна.</div></div>
+    <div class="r"><div class="m">3. Пересчитываем соседей</div><div class="t">Если метка фиксированной вершины плюс вес ребра меньше текущей метки соседа — обновляем.</div></div>
+    <div class="r"><div class="m">4. Повторяем</div><div class="t">Пока не зафиксируем конечную вершину.</div></div>
+    <div class="r"><div class="m">Ограничение</div><div class="t">Веса должны быть неотрицательными.</div></div>
+  </div>
+
+  <svg class="fig" viewBox="0 0 560 260" role="img" aria-label="Граф задачи 6 с весами рёбер и найденным кратчайшим путём">
+    <line x1="60" y1="130" x2="190" y2="60" stroke="#A855F7" stroke-width="2.5"/>
+    <line x1="190" y1="60" x2="320" y2="130" stroke="#A855F7" stroke-width="2.5"/>
+    <line x1="320" y1="130" x2="430" y2="70" stroke="#A855F7" stroke-width="2.5"/>
+    <line x1="430" y1="70" x2="500" y2="170" stroke="#A855F7" stroke-width="2.5"/>
+    <line x1="60" y1="130" x2="320" y2="130" stroke="#3E3159" stroke-width="1.6"/>
+    <line x1="190" y1="60" x2="430" y2="70" stroke="#3E3159" stroke-width="1.6"/>
+    <line x1="190" y1="60" x2="500" y2="170" stroke="#3E3159" stroke-width="1.6"/>
+    <text x="118" y="88">2</text><text x="258" y="88">2</text><text x="378" y="92">1</text><text x="475" y="116">1</text>
+    <text x="186" y="148">5</text><text x="310" y="52">4</text><text x="350" y="186">7</text>
+    <circle cx="60" cy="130" r="20" fill="#1C1531" stroke="#A855F7" stroke-width="2"/><text x="60" y="135" text-anchor="middle" fill="#EDE8F7">v₀</text>
+    <circle cx="190" cy="60" r="20" fill="#1C1531" stroke="#A855F7" stroke-width="2"/><text x="190" y="65" text-anchor="middle" fill="#EDE8F7">v₁</text>
+    <circle cx="320" cy="130" r="20" fill="#1C1531" stroke="#A855F7" stroke-width="2"/><text x="320" y="135" text-anchor="middle" fill="#EDE8F7">v₂</text>
+    <circle cx="430" cy="70" r="20" fill="#1C1531" stroke="#A855F7" stroke-width="2"/><text x="430" y="75" text-anchor="middle" fill="#EDE8F7">v₃</text>
+    <circle cx="500" cy="170" r="20" fill="#1C1531" stroke="#A855F7" stroke-width="2"/><text x="500" y="175" text-anchor="middle" fill="#EDE8F7">v₄</text>
+    <text x="280" y="232" text-anchor="middle" fill="#D8B4FE">фиолетовым — кратчайший путь длины 6</text>
+  </svg>
+
+  <div class="blk spot">
+    <div class="r"><div class="m">Разбор задания 6</div><div class="t">Метки после первого шага: \(v_1=2\), \(v_2=5\). Через \(v_1\) метка \(v_2\) улучшается до 4, затем \(v_3=5\), затем \(v_4=6\). Прямая дуга \(v_1\to v_4\) весом 7 проигрывает обходу.</div></div>
+    <div class="r"><div class="m">Ответ</div><div class="t">6, маршрут \(v_0\to v_1\to v_2\to v_3\to v_4\).</div></div>
+  </div>
+
+  <h3>Задача коммивояжёра</h3>
+  <p>Нужен гамильтонов цикл минимального веса: обойти все города по разу и вернуться. Перебор для \(n\) городов требует \((n-1)!/2\) вариантов, поэтому используют метод приведения матрицы — основу метода ветвей и границ.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Вычитаем минимум из каждой строки</div><div class="t">Любой маршрут выходит из каждой строки ровно раз, поэтому все маршруты дешевеют на одну и ту же величину — порядок не меняется.</div></div>
+    <div class="r"><div class="m">2. Затем минимум из каждого столбца</div><div class="t">По той же причине: в каждый столбец маршрут входит ровно раз.</div></div>
+    <div class="r"><div class="m">3. Сумма вычтенного — нижняя граница</div><div class="t">Дешевле этой суммы не бывает ни один маршрут.</div></div>
+    <div class="r"><div class="m">4. Ищем цикл по нулям</div><div class="t">Если удалось составить гамильтонов цикл из нулевых клеток — он оптимален, ветвиться не нужно.</div></div>
+    <div class="r"><div class="m">Разбор задания 7</div><div class="t">Минимум каждой строки равен 5, сумма 25; затем вычитается единица из третьего столбца. Граница 26, и цикл \(1\to3\to4\to2\to5\to1\) из нулей даёт ровно 26.</div></div>
+  </div>
+</section>
+
+<!-- 08 КОМБИНАТОРИКА -->
+<section id="comb">
+  <h2><span class="ix">08</span>Комбинаторика</h2>
+  <p class="sec-sub">Почти все задачи решаются выбором одной из четырёх формул. Выбор определяется двумя вопросами: важен ли порядок и разрешены ли повторения.</p>
+
+  <h3>Два базовых правила</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Правило суммы</div><div class="t">Если объект выбирается <b>или</b> первым способом (\(m\) вариантов), <b>или</b> вторым (\(n\) вариантов), и способы не пересекаются — всего \(m+n\).</div></div>
+    <div class="r"><div class="m">Правило произведения</div><div class="t">Если выбор состоит из двух независимых шагов (\(m\) и \(n\) вариантов) — всего \(m\cdot n\). Отсюда растут все формулы ниже.</div></div>
+  </div>
+
+  <h3>Таблица выбора формулы</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Порядок важен</th><th>Повторы</th><th>Формула</th><th>Название</th></tr></thead>
+    <tbody>
+      <tr><td>да</td><td>да</td><td>\(n^k\)</td><td>размещения с повторениями</td></tr>
+      <tr><td>да</td><td>нет</td><td>\(A_n^k=\dfrac{n!}{(n-k)!}\)</td><td>размещения</td></tr>
+      <tr><td>нет</td><td>нет</td><td>\(C_n^k=\dfrac{n!}{k!(n-k)!}\)</td><td>сочетания</td></tr>
+      <tr><td>нет</td><td>да</td><td>\(C_{n+k-1}^{k}\)</td><td>сочетания с повторениями</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Как быстро определить «важен ли порядок».</b> Поменяйте два выбранных объекта местами. Если получился другой исход — порядок важен (размещения). Если тот же самый — не важен (сочетания). Различимые люди и пронумерованные места дают порядок; одинаковые кости и безымянные группы — нет.</div>
+
+  <h3>Остальные формулы</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(P_n=n!\)</div><div class="t">Перестановки: все \(n\) объектов в ряд.</div></div>
+    <div class="r"><div class="m">\(\dfrac{n!}{n_1!\,n_2!\cdots n_k!}\)</div><div class="t">Перестановки с повторениями, когда среди объектов есть одинаковые (слово «математика»).</div></div>
+    <div class="r"><div class="m">\(\dfrac{n!}{(k!)^m\cdot m!}\)</div><div class="t">Разбиение на \(m\) групп по \(k\). Делим на \(m!\), только если группы <b>неразличимы</b>.</div></div>
+    <div class="r"><div class="m">\(C_n^k=C_n^{n-k}\)</div><div class="t">Симметрия: выбрать \(k\) объектов — то же, что выбрать \(n-k\) остающихся.</div></div>
+    <div class="r"><div class="m">\(C_n^k=C_{n-1}^{k-1}+C_{n-1}^{k}\)</div><div class="t">Правило Паскаля — строки треугольника.</div></div>
+    <div class="r"><div class="m">\(\sum_{k=0}^{n}C_n^k=2^n\)</div><div class="t">Число всех подмножеств \(n\)-элементного множества.</div></div>
+    <div class="r"><div class="m">Бином Ньютона</div><div class="t">\((a+b)^n=\sum C_n^k a^{n-k}b^k\).</div></div>
+    <div class="r"><div class="m">Включения-исключения <span class="beyond">вне списка</span></div><div class="t">\(|A\cup B|=|A|+|B|-|A\cap B|\); для трёх множеств добавляются тройные пересечения со знаком плюс.</div></div>
+  </div>
+
+  <h3>Разбор заданий 8–11</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Задание 8: четыре пассажира, семь этажей</div><div class="t">Каждый независимо выбирает этаж, повторы разрешены: \(7^4=2401\). Ошибка \(4^7\) возникает, когда путают, кто выбирает: основание — число вариантов у одного пассажира.</div></div>
+    <div class="r"><div class="m">Задание 9: не более одного на этаже</div><div class="t">Повторы запрещены, пассажиры различимы: \(A_7^4=7\cdot6\cdot5\cdot4=840\).</div></div>
+    <div class="r"><div class="m">Задание 10: три одинаковые кости</div><div class="t">Кости неразличимы, значит важен только состав: \(C_{6+3-1}^{3}=C_8^3=56\). Вариант \(6^3=216\) считал бы кости разноцветными.</div></div>
+    <div class="r"><div class="m">Задание 11: 20 человек на 5 коалиций по 4</div><div class="t">\(\dfrac{20!}{(4!)^5\cdot5!}\) для неразличимых коалиций; если они пронумерованы — без деления на \(5!\).</div></div>
+  </div>
+
+  <div class="lab spot" id="lab-comb">
+    <div class="lab-t">МОДЕЛЬ · КОМБИНАТОРНЫЙ КАЛЬКУЛЯТОР</div>
+    <div class="ctl">
+      <label for="c-n">n <input type="range" id="c-n" min="1" max="20" step="1" value="7"><output id="c-nv">7</output></label>
+      <label for="c-k">k <input type="range" id="c-k" min="1" max="10" step="1" value="4"><output id="c-kv">4</output></label>
+    </div>
+    <div class="out" style="margin-top:14px">
+      <div class="row"><div class="k">nᵏ</div><div class="v" id="c-pow"></div></div>
+      <div class="row"><div class="k">A(n,k)</div><div class="v" id="c-a"></div></div>
+      <div class="row"><div class="k">C(n,k)</div><div class="v" id="c-c"></div></div>
+      <div class="row"><div class="k">C(n+k−1,k)</div><div class="v" id="c-cr"></div></div>
+    </div>
+    <div class="verdict" id="c-note"></div>
+  </div>
+</section>
+
+<!-- 09 МНОЖЕСТВА -->
+<section id="sets">
+  <h2><span class="ix">09</span>Множества и отношения <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">База курса дискретной математики. В тестах на остаточные знания встречается как теоретические вопросы.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">Операции</div><div class="t">\(A\cup B\) — объединение, \(A\cap B\) — пересечение, \(A\setminus B\) — разность, \(\bar A\) — дополнение, \(A\triangle B\) — симметрическая разность (аналог \(\oplus\)).</div></div>
+    <div class="r"><div class="m">Законы те же, что в логике</div><div class="t">Коммутативность, ассоциативность, дистрибутивность, де Моргана: \(\overline{A\cup B}=\bar A\cap\bar B\). Множества и булевы функции — одна и та же алгебра.</div></div>
+    <div class="r"><div class="m">Число подмножеств</div><div class="t">У множества из \(n\) элементов ровно \(2^n\) подмножеств, включая пустое и само множество.</div></div>
+    <div class="r"><div class="m">Декартово произведение</div><div class="t">\(A\times B\) — множество пар; \(|A\times B|=|A|\cdot|B|\).</div></div>
+    <div class="r"><div class="m">Отношение</div><div class="t">Подмножество \(A\times A\). Свойства: рефлексивность (\(aRa\)), симметричность, транзитивность, антисимметричность.</div></div>
+    <div class="r"><div class="m">Эквивалентность</div><div class="t">Рефлексивно, симметрично, транзитивно. Разбивает множество на непересекающиеся классы.</div></div>
+    <div class="r"><div class="m">Частичный порядок</div><div class="t">Рефлексивно, антисимметрично, транзитивно. Пример: отношение «быть подмножеством».</div></div>
+    <div class="r"><div class="m">Отображения</div><div class="t">Инъекция — разные переходят в разные; сюръекция — покрывает всю область значений; биекция — то и другое, значит существует обратное отображение.</div></div>
+  </div>
+</section>
+
+<!-- 10 ЗАДАЧИ -->
+<section id="idx">
+  <h2><span class="ix">10</span>Задачи с ответами</h2>
+  <p class="sec-sub">Все задачи раздела из списка: метод и ответ.</p>
+  <input class="search" id="q" type="search" placeholder="Поиск: Жегалкин, лифт, Дейкстра, СКНФ…" aria-label="Поиск по задачам">
+  <div class="tw spot"><table>
+    <thead><tr><th>№</th><th>Метод</th><th>Ответ</th></tr></thead>
+    <tbody>
+      <tr class="idx"><td class="n">1</td><td>лексикографический порядок — сравнение покоординатно слева направо</td><td class="a">(0,0,1), (0,1,0), (1,0,0)</td></tr>
+      <tr class="idx"><td class="n">2</td><td>\(f_{2,5}\) — проекция на второй аргумент, значит композиция равна \(f_{2,7}\)</td><td class="a">\(x\vee y\)</td></tr>
+      <tr class="idx"><td class="n">3</td><td>половины вектора \((1,0,0,1\,|\,1,0,0,1)\) совпали</td><td class="a">\(x\) фиктивна, \(y,z\) существенны; это \(y\sim z\)</td></tr>
+      <tr class="idx"><td class="n">4</td><td>неопределённые коэффициенты для вектора 1011</td><td class="a">\(1\oplus y\oplus xy\)</td></tr>
+      <tr class="idx"><td class="n">5</td><td>чтение матрицы смежности по строкам</td><td class="a">5 дуг, две кратные \(v_1\to v_3\), петля у \(v_3\)</td></tr>
+      <tr class="idx"><td class="n">6</td><td>Дейкстра: обход дешевле прямой дуги</td><td class="a">6, путь \(v_0\to v_1\to v_2\to v_3\to v_4\)</td></tr>
+      <tr class="idx"><td class="n">7</td><td>приведение матрицы: строки по 5, затем столбец</td><td class="a">26, цикл \(1\to3\to4\to2\to5\to1\)</td></tr>
+      <tr class="idx"><td class="n">8</td><td>размещения с повторениями</td><td class="a">\(7^4=2401\)</td></tr>
+      <tr class="idx"><td class="n">9</td><td>размещения без повторений</td><td class="a">\(A_7^4=840\)</td></tr>
+      <tr class="idx"><td class="n">10</td><td>сочетания с повторениями (кости неразличимы)</td><td class="a">\(C_8^3=56\)</td></tr>
+      <tr class="idx"><td class="n">11</td><td>разбиение на группы</td><td class="a">\(\dfrac{20!}{(4!)^5\cdot5!}\)</td></tr>
+      <tr class="idx"><td class="n">доп. 3</td><td>лексикографический порядок четырёх координат</td><td class="a">(0,0,1,0) &lt; (1,0,0,1) &lt; (1,1,0,0)</td></tr>
+      <tr class="idx"><td class="n">доп. 4</td><td>внешняя \(f_{2,5}\) оставляет второй аргумент</td><td class="a">эквивалентна \(f_{2,7}=x_1\vee x_2\)</td></tr>
+      <tr class="idx"><td class="n">доп. 5</td><td>подстановка: \((1\vee1)\oplus(0\wedge0)\)</td><td class="a">1</td></tr>
+      <tr class="idx"><td class="n">доп. 6</td><td>де Морган меняет операцию; контрпример \(x_1=1,x_2=0\)</td><td class="a">соотношение неверно</td></tr>
+      <tr class="idx"><td class="n">доп. 7</td><td>та же таблица, что в задаче 3</td><td class="a">\(x_1\) фиктивна</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 1</td><td>проверка обеих строк таблицы</td><td class="a">\(x\wedge\bar x=0\), закон противоречия</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 2</td><td>эквивалентные преобразования \(\bar x\vee y\)</td><td class="a">\(1\oplus x\oplus xy\)</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 4–5</td><td>СДНФ по единицам, СКНФ по нулям для \((0,1,1,0,0,1,1,0)\)</td><td class="a">четыре слагаемых и четыре множителя; по сути \(y\oplus z\)</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 2′</td><td>переворот вектора и инверсия битов</td><td class="a">\((0,0,0,1,1,0,0,1)\)</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 3′</td><td>наборы 001 и 011 сравнимы, значение падает</td><td class="a">не монотонна</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 4′</td><td>полином \(y\oplus z\oplus xyz\)</td><td class="a">не линейна</td></tr>
+      <tr class="idx"><td class="n">стр. 15, 5′</td><td>критерий Поста: в каждом столбце есть «нет»</td><td class="a">система полна</td></tr>
+    </tbody>
+  </table></div>
+  <p class="empty hidden" id="none">Ничего не найдено.</p>
+  <div class="warn" style="margin-top:16px"><b>Одна оговорка.</b> В задаче «стр. 15, 3» таблица в скане обрезана — строки повторяются, и вектор значений прочитать нельзя. Метод тот же: подставляем наборы по возрастанию и находим коэффициенты по очереди.</div>
+</section>
+
+<p class="foot">Сводка к аккредитации 01.03.03 · дискретная математика. Третья из трёх вкладок — ссылки на матанализ и линейную алгебру в шапке.</p>
+</div>
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('pointermove',function(e){
+    var el=e.target.closest&&e.target.closest('.spot'); if(!el) return;
+    var r=el.getBoundingClientRect();
+    el.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    el.style.setProperty('--my',(e.clientY-r.top)+'px');
+  },{passive:true});
+
+  var prog=document.getElementById('prog');
+  var links=[].slice.call(document.querySelectorAll('.chips a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function onScroll(){
+    var h=document.documentElement,max=h.scrollHeight-h.clientHeight;
+    if(prog) prog.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+    var cur=-1;
+    secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<140) cur=i; });
+    links.forEach(function(a,i){ a.classList.toggle('on',i===cur); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  var q=document.getElementById('q');
+  if(q){
+    var rows=[].slice.call(document.querySelectorAll('tr.idx')), none=document.getElementById('none');
+    q.addEventListener('input',function(){
+      var s=q.value.trim().toLowerCase(), n=0;
+      rows.forEach(function(r){ var hit=!s||r.textContent.toLowerCase().indexOf(s)>-1; r.classList.toggle('hidden',!hit); if(hit)n++; });
+      none.classList.toggle('hidden',n>0);
+    });
+  }
+
+  var cv=document.getElementById('bg'); if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext('2d'),W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  var glyphs=['∧','∨','¬','⊕','→','↓','|','∼','0','1','∈','⊆','∅','≡','C(n,k)','n!'];
+  var parts=[],mx=0,my=0;
+  function resize(){
+    W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.round(Math.min(46,W*H/26000));parts=[];
+    for(var i=0;i<n;i++)parts.push({x:Math.random()*W,y:Math.random()*H,z:.3+Math.random()*.9,g:glyphs[i%glyphs.length],v:.07+Math.random()*.2,r:(Math.random()-.5)*.5,rs:(Math.random()-.5)*.002});
+  }
+  window.addEventListener('resize',resize);resize();
+  window.addEventListener('pointermove',function(e){mx=(e.clientX/W-.5);my=(e.clientY/H-.5)},{passive:true});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      if(!reduce){p.y-=p.v*p.z;p.r+=p.rs;if(p.y<-40){p.y=H+40;p.x=Math.random()*W}}
+      var ox=-mx*26*p.z,oy=-my*26*p.z;
+      ctx.save();ctx.translate(p.x+ox,p.y+oy);ctx.rotate(p.r);
+      ctx.font=(13+p.z*20)+'px "JetBrains Mono", monospace';
+      ctx.fillStyle='rgba('+(150+Math.round(p.z*50))+',85,247,'+(0.05+p.z*0.08).toFixed(3)+')';
+      ctx.fillText(p.g,0,0);ctx.restore();
+    }
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+(function(){
+  /* конструктор булевой функции трёх переменных */
+  var v=[0,1,1,0,0,1,1,0], tt=document.getElementById('tt');
+  if(!tt) return;
+  var VN=['x','y','z'];
+  function sets(i){return [(i>>2)&1,(i>>1)&1,i&1]}
+  function build(){
+    tt.innerHTML='';
+    ['x','y','z','f'].forEach(function(h){var d=document.createElement('div');d.className='h';d.textContent=h;tt.appendChild(d)});
+    for(var i=0;i<8;i++){
+      var s=sets(i);
+      for(var j=0;j<3;j++){var c=document.createElement('div');c.className='c';c.textContent=s[j];tt.appendChild(c)}
+      var b=document.createElement('button');
+      b.className='bit';b.type='button';b.dataset.i=i;b.dataset.v=v[i];b.textContent=v[i];
+      b.setAttribute('aria-label','Значение функции на наборе '+s.join(''));
+      b.addEventListener('click',function(){var k=+this.dataset.i;v[k]=1-v[k];upd()});
+      tt.appendChild(b);
+    }
+  }
+  function mobius(vec){
+    var a=vec.slice();
+    for(var step=1;step<8;step*=2)for(var i=0;i<8;i++)if(i&step)a[i]=a[i]^a[i^step];
+    return a;
+  }
+  function pc(i){return (i&1)+((i>>1)&1)+((i>>2)&1)}
+  function term(i){
+    if(i===0)return '1';
+    var s='';
+    if(i&4)s+='x'; if(i&2)s+='y'; if(i&1)s+='z';
+    return s;
+  }
+  function upd(){
+    [].slice.call(tt.querySelectorAll('.bit')).forEach(function(b){var k=+b.dataset.i;b.dataset.v=v[k];b.textContent=v[k]});
+    document.getElementById('o-vec').textContent='('+v.join(', ')+')  ·  число единиц: '+v.reduce(function(a,b){return a+b},0);
+
+    var sd=[],sk=[];
+    for(var i=0;i<8;i++){
+      var s=sets(i);
+      if(v[i]===1) sd.push(s.map(function(b,j){return (b?'':'¬')+VN[j]}).join('∧'));
+      else sk.push('('+s.map(function(b,j){return (b?'¬':'')+VN[j]}).join('∨')+')');
+    }
+    document.getElementById('o-sdnf').textContent=sd.length?sd.join('  ∨  '):'не существует: функция тождественно равна 0';
+    document.getElementById('o-sknf').textContent=sk.length?sk.join(' ∧ '):'не существует: функция тождественно равна 1';
+
+    var c=mobius(v),zt=[];
+    for(var i=0;i<8;i++) if(c[i]) zt.push(term(i));
+    document.getElementById('o-zh').textContent=zt.length?zt.join(' ⊕ '):'0';
+
+    var dual=[];for(var i=0;i<8;i++)dual.push(1-v[7-i]);
+    document.getElementById('o-dual').textContent='('+dual.join(', ')+')'+(dual.join('')===v.join('')?'  — совпала с исходной':'');
+
+    var ess=[];
+    for(var bit=0;bit<3;bit++){
+      var mask=[4,2,1][bit],e=false;
+      for(var i=0;i<8;i++) if(!(i&mask) && v[i]!==v[i|mask]) e=true;
+      if(e) ess.push(VN[bit]);
+    }
+    document.getElementById('o-ess').textContent=ess.length?('существенные: '+ess.join(', ')+(ess.length<3?'; фиктивные: '+VN.filter(function(n){return ess.indexOf(n)<0}).join(', '):'')):'все три переменные фиктивны (функция — константа)';
+
+    var T0=v[0]===0,T1=v[7]===1,S=true,M=true,L=true;
+    for(var i=0;i<8;i++) if(v[i]===v[7-i]) S=false;
+    for(var i=0;i<8;i++)for(var j=0;j<8;j++) if((i&j)===i && v[i]>v[j]) M=false;
+    for(var i=0;i<8;i++) if(c[i] && pc(i)>=2) L=false;
+    var cls=[['T₀',T0],['T₁',T1],['S',S],['M',M],['L',L]];
+    var box=document.getElementById('o-post');box.innerHTML='';
+    cls.forEach(function(p){
+      var s=document.createElement('span');s.className='pill';s.dataset.in=p[1]?'1':'0';
+      s.textContent=p[0]+(p[1]?' ∈':' ∉');box.appendChild(s);
+    });
+    var out=cls.filter(function(p){return !p[1]}).length;
+    document.getElementById('o-note').innerHTML=out===5
+      ? '<b>Одна эта функция образует полную систему:</b> она не лежит ни в одном из пяти классов Поста, значит через неё выражается любая булева функция.'
+      : 'Функция лежит в '+(5-out)+' из пяти классов. Для полноты системы нужны ещё функции, выходящие из классов: '+cls.filter(function(p){return p[1]}).map(function(p){return p[0]}).join(', ')+'.';
+  }
+  build();upd();
+  document.getElementById('fn-rand').addEventListener('click',function(){for(var i=0;i<8;i++)v[i]=Math.random()<0.5?0:1;upd()});
+  document.getElementById('fn-zero').addEventListener('click',function(){for(var i=0;i<8;i++)v[i]=0;upd()});
+  document.getElementById('fn-xor').addEventListener('click',function(){for(var i=0;i<8;i++)v[i]=((i>>2)&1)^((i>>1)&1)^(i&1);upd()});
+  document.getElementById('fn-maj').addEventListener('click',function(){for(var i=0;i<8;i++)v[i]=(((i>>2)&1)+((i>>1)&1)+(i&1))>=2?1:0;upd()});
+})();
+
+(function(){
+  /* комбинаторный калькулятор */
+  var n=document.getElementById('c-n'),k=document.getElementById('c-k');
+  if(!n) return;
+  function fact(x){var r=1;for(var i=2;i<=x;i++)r*=i;return r}
+  function C(a,b){return (b<0||b>a)?0:Math.round(fact(a)/(fact(b)*fact(a-b)))}
+  function A(a,b){return (b<0||b>a)?0:Math.round(fact(a)/fact(a-b))}
+  function f(x){return x>1e15?x.toExponential(4):x.toLocaleString('ru-RU')}
+  function upd(){
+    var N=+n.value,K=+k.value;
+    document.getElementById('c-nv').textContent=N;
+    document.getElementById('c-kv').textContent=K;
+    document.getElementById('c-pow').textContent=f(Math.pow(N,K))+'   — порядок важен, повторы разрешены';
+    document.getElementById('c-a').textContent=(K>N?'0 — нельзя выбрать больше, чем есть':f(A(N,K))+'   — порядок важен, без повторов');
+    document.getElementById('c-c').textContent=(K>N?'0 — нельзя выбрать больше, чем есть':f(C(N,K))+'   — порядок не важен, без повторов');
+    document.getElementById('c-cr').textContent=f(C(N+K-1,K))+'   — порядок не важен, повторы разрешены';
+    document.getElementById('c-note').innerHTML='При n = '+N+', k = '+K+' разница между формулами — в '+ (C(N,K)>0?Math.round(Math.pow(N,K)/C(N,K)):'много')+' раз между крайними случаями. Сначала отвечайте на два вопроса: <b>важен ли порядок</b> и <b>разрешены ли повторы</b>, и только потом берите формулу.';
+  }
+  n.addEventListener('input',upd);k.addEventListener('input',upd);upd();
+})();
+</script>
+<script>
+window.MathJax={
+  tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},
+  svg:{fontCache:'global'},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code','svg']}
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>

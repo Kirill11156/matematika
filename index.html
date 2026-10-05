@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Аккредитация 01.03.03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#070708; --panel:#121216; --panel2:#1A1A21; --ink:#ECECF1; --dim:#90909F;
+  --line:#26262F; --line2:#383845;
+  --matan:#FF8A3D; --matan2:#FFC08A;
+  --linal:#4D9FFF; --linal2:#A8CEFF;
+  --disk:#A855F7; --disk2:#D8B4FE;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg); scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Onest',system-ui,-apple-system,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+::selection{background:var(--matan); color:#070708}
+a{color:inherit}
+
+#bg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
+.aura{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+.aura i{position:absolute; width:52vmax; height:52vmax; border-radius:50%; filter:blur(100px); opacity:.2}
+.aura i:nth-child(1){background:#FF6A00; top:-26vmax; left:-14vmax; animation:d1 26s ease-in-out infinite alternate}
+.aura i:nth-child(2){background:#1D6AE5; top:10vmax; right:-20vmax; animation:d2 31s ease-in-out infinite alternate}
+.aura i:nth-child(3){background:#7C3AED; bottom:-28vmax; left:18vmax; animation:d3 36s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate(10vmax,8vmax) scale(1.1)}}
+@keyframes d2{to{transform:translate(-9vmax,12vmax) scale(.9)}}
+@keyframes d3{to{transform:translate(8vmax,-10vmax) scale(1.08)}}
+.gridbg{position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:32px 32px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 78%); mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 78%)}
+
+.wrap{position:relative; z-index:1; max-width:940px; margin:0 auto; padding:0 18px 90px}
+.hero{padding-top:58px}
+.kicker{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--dim); letter-spacing:1.6px; margin-bottom:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.kicker::before{content:""; width:28px; height:1px; background:var(--matan)}
+h1{font-family:'Unbounded','Onest',sans-serif; font-weight:600; font-size:clamp(34px,7.6vw,70px); line-height:1.02; letter-spacing:-1.6px; margin:0 0 18px; text-wrap:balance;
+  background:linear-gradient(100deg,var(--ink) 0%,var(--ink) 22%,var(--matan) 38%,var(--linal) 52%,var(--disk) 64%,var(--ink) 82%,var(--ink) 100%); background-size:250% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 8s ease-in-out infinite}
+@keyframes shine{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+.lede{color:var(--dim); max-width:62ch; font-size:17px}
+.lede b{color:var(--ink); font-weight:600}
+.stats{display:flex; flex-wrap:wrap; gap:28px; margin-top:26px}
+.stat b{display:block; font-family:'Unbounded',sans-serif; font-weight:500; font-size:30px; line-height:1; font-variant-numeric:tabular-nums}
+.stat span{font-size:13px; color:var(--dim)}
+.stat:nth-child(1) b{color:var(--matan)} .stat:nth-child(2) b{color:var(--linal)} .stat:nth-child(3) b{color:var(--disk)}
+
+section{padding-top:62px}
+h2{font-family:'Unbounded','Onest',sans-serif; font-weight:500; font-size:clamp(21px,3.4vw,28px); letter-spacing:-.4px; margin:0 0 10px; display:flex; align-items:baseline; gap:13px; flex-wrap:wrap}
+h2 .ix{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--dim); letter-spacing:1px; font-weight:400}
+p{margin:0 0 12px}
+.sub{color:var(--dim); max-width:62ch}
+
+.cards{display:grid; gap:18px; margin-top:26px}
+@media(min-width:760px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{position:relative; display:flex; flex-direction:column; text-decoration:none; color:inherit; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:24px 22px 22px; overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.8,.3,1),border-color .25s,box-shadow .25s}
+.card::before{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .25s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),var(--c-soft),transparent 60%)}
+.card:hover,.card:focus-visible{transform:translateY(-5px); border-color:var(--c); box-shadow:0 18px 50px -22px var(--c); outline:none}
+.card:hover::before,.card:focus-visible::before{opacity:1}
+.card .num{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:1.4px; color:var(--c)}
+.card h3{font-family:'Unbounded','Onest',sans-serif; font-weight:500; font-size:22px; letter-spacing:-.4px; margin:12px 0 8px}
+.card .d{color:var(--dim); font-size:14.5px; flex:1}
+.card ul{list-style:none; margin:14px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
+.card li{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--dim); border:1px solid var(--line2); border-radius:7px; padding:4px 8px}
+.card .go{margin-top:18px; font-size:14.5px; color:var(--c); font-weight:600; display:inline-flex; align-items:center; gap:7px}
+.card .go i{font-style:normal; transition:transform .25s}
+.card:hover .go i{transform:translateX(5px)}
+.c-matan{--c:var(--matan); --c-soft:rgba(255,138,61,.14)}
+.c-linal{--c:var(--linal); --c-soft:rgba(77,159,255,.14)}
+.c-disk{--c:var(--disk); --c-soft:rgba(168,85,247,.14)}
+
+.panel{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; margin-top:20px}
+.steps{counter-reset:s; list-style:none; margin:0; padding:0}
+.steps li{counter-increment:s; position:relative; padding:0 0 0 42px; margin-bottom:16px}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(s); position:absolute; left:0; top:1px; width:28px; height:28px; border-radius:9px; display:grid; place-items:center;
+  font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--matan); background:rgba(255,138,61,.1); border:1px solid rgba(255,138,61,.3)}
+.steps b{display:block; font-weight:600; margin-bottom:2px}
+.steps span{color:var(--dim); font-size:14.5px}
+
+.note{border:1px solid var(--line2); border-left:3px solid var(--linal); border-radius:12px; padding:16px 18px; margin-top:20px; background:rgba(77,159,255,.05); font-size:15px; color:var(--dim)}
+.note b{color:var(--ink)}
+
+footer{margin-top:70px; padding-top:22px; border-top:1px solid var(--line); color:var(--dim); font-size:13.5px; display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap}
+footer .mono{font-family:'JetBrains Mono',monospace}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important; scroll-behavior:auto !important}
+}
+</style>
+
+<canvas id="bg"></canvas>
+<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="gridbg" aria-hidden="true"></div>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">АККРЕДИТАЦИЯ · 01.03.03 ПРИКЛАДНАЯ МАТЕМАТИКА</div>
+  <h1>Три предмета. Один заход.</h1>
+  <p class="lede">Конспекты для тестирования на остаточные знания: <b>математический анализ</b>, <b>линейная алгебра</b> и <b>дискретная математика</b>. Теория без воды, разбор типовых задач, живые модели, которые можно покрутить, и таблицы ответов. Всё работает в браузере телефона — ничего скачивать не надо.</p>
+  <div class="stats">
+    <div class="stat"><b>32</b><span>раздела теории</span></div>
+    <div class="stat"><b>9</b><span>интерактивных моделей</span></div>
+    <div class="stat"><b>230+</b><span>разобранных задач</span></div>
+  </div>
+</header>
+
+<section>
+  <h2><span class="ix">01</span>Вкладки</h2>
+  <p class="sub">Три независимые страницы — заходи в любую, порядок не важен. Сверху на каждой есть ссылки на две другие.</p>
+  <div class="cards">
+
+    <a class="card c-matan" href="matan.html">
+      <span class="num">01 / МАТАНАЛИЗ</span>
+      <h3>Матан без путаницы</h3>
+      <p class="d">От тригонометрического круга до потоков векторного поля. Отдельный упор на то, где обычно теряются: подстановки в интегралах, сходимость рядов, составление уравнений касательной и нормали.</p>
+      <ul><li>пределы</li><li>производные</li><li>интегралы</li><li>ряды</li><li>ФНП</li><li>кратные</li><li>поле</li><li>дифуры</li></ul>
+      <span class="go">Открыть <i>→</i></span>
+    </a>
+
+    <a class="card c-linal" href="linal.html">
+      <span class="num">02 / ЛИНЕЙНАЯ АЛГЕБРА</span>
+      <h3>Линал по полочкам</h3>
+      <p class="d">Определители, ранг и системы, линейная зависимость и базис, собственные векторы, квадратичные формы. Три модели: площадь как определитель, действие матрицы на круг, линии уровня квадратичной формы.</p>
+      <ul><li>определители</li><li>ранг</li><li>СЛАУ</li><li>базис</li><li>ортогональность</li><li>λ и векторы</li><li>Сильвестр</li></ul>
+      <span class="go">Открыть <i>→</i></span>
+    </a>
+
+    <a class="card c-disk" href="diskretka.html">
+      <span class="num">03 / ДИСКРЕТНАЯ МАТЕМАТИКА</span>
+      <h3>Дискретка с нуля</h3>
+      <p class="d">Самая подробная вкладка — рассчитана на то, что предмет забыт полностью. Конструктор булевой функции сам считает СДНФ, СКНФ, полином Жегалкина и классы Поста по вектору значений.</p>
+      <ul><li>булевы функции</li><li>СДНФ/СКНФ</li><li>Жегалкин</li><li>классы Поста</li><li>графы</li><li>Дейкстра</li><li>комбинаторика</li></ul>
+      <span class="go">Открыть <i>→</i></span>
+    </a>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="ix">02</span>Как этим пользоваться</h2>
+  <p class="sub">Если до теста осталась неделя — вот рабочий порядок, проверенный на себе.</p>
+  <div class="panel">
+    <ol class="steps">
+      <li><b>Сначала таблица ответов, а не теория.</b><span>Внизу каждой вкладки — список задач с ответами и поиском. Пробегись и отметь, какие темы вообще не узнаёшь. Это и есть твой план.</span></li>
+      <li><b>Читай только провалившиеся разделы.</b><span>Каждый раздел самодостаточен: определение → алгоритм по шагам → разобранный пример. Листать подряд не нужно.</span></li>
+      <li><b>Покрути модели.</b><span>Их девять. Пять минут с конструктором булевой функции заменяют час зубрёжки классов Поста: меняешь вектор значений — сразу видно, как меняются СДНФ и принадлежность классам.</span></li>
+      <li><b>Решай с закрытым ответом.</b><span>В тесте варианты подобраны так, чтобы типичная ошибка тоже была в списке. Сошёлся ответ с одним из вариантов — это ещё не проверка.</span></li>
+      <li><b>За день до — только блоки «главная ошибка темы».</b><span>Они выделены цветом в каждом разделе. Там собрано то, на чём теряют баллы чаще всего: потерянное условие, знак, подмена операции в де Моргане.</span></li>
+    </ol>
+  </div>
+  <div class="note"><b>Формат теста.</b> Вопросы с выбором ответа и короткие числовые ответы по трём разделам. Материал сверх официального списка тем помечен на страницах меткой «вне списка» — его можно пропустить, если времени мало.</div>
+</section>
+
+<footer>
+  <span>Конспекты для подготовки к аккредитации 01.03.03</span>
+  <span class="mono">матан · линал · дискретка</span>
+</footer>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // cursor spotlight on cards
+  document.querySelectorAll('.card').forEach(function(c){
+    c.addEventListener('pointermove', function(e){
+      var r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  // floating glyph background
+  var cv = document.getElementById('bg'), ctx = cv.getContext('2d');
+  var GL = ['∫','Σ','∂','λ','det','∇','⊕','∧','∨','¬','≡','√','π','∞','A','⊗','n!','C','x²','dx','→','∈'];
+  var COL = ['255,138,61','77,159,255','168,85,247'];
+  var items = [], W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var mx = 0, my = 0, tx = 0, ty = 0;
+
+  function resize(){
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function build(){
+    items = [];
+    var n = Math.round(Math.min(46, Math.max(16, W * H / 26000)));
+    for (var i = 0; i < n; i++){
+      items.push({
+        x: Math.random() * W, y: Math.random() * H,
+        s: 11 + Math.random() * 24,
+        a: 0.05 + Math.random() * 0.13,
+        d: 0.35 + Math.random() * 0.9,
+        vy: 0.08 + Math.random() * 0.22,
+        g: GL[(Math.random() * GL.length) | 0],
+        c: COL[(Math.random() * COL.length) | 0]
+      });
+    }
+  }
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    tx += (mx - tx) * 0.06; ty += (my - ty) * 0.06;
+    for (var i = 0; i < items.length; i++){
+      var o = items[i];
+      if (!reduce){ o.y -= o.vy; if (o.y < -40) { o.y = H + 30; o.x = Math.random() * W; } }
+      ctx.font = o.s + 'px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(' + o.c + ',' + o.a + ')';
+      ctx.fillText(o.g, o.x + tx * o.d, o.y + ty * o.d);
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', function(){ resize(); build(); });
+  window.addEventListener('pointermove', function(e){
+    mx = (e.clientX / window.innerWidth - 0.5) * 26;
+    my = (e.clientY / window.innerHeight - 0.5) * 26;
+  });
+  resize(); build(); draw();
+})();
+</script>
+</html>

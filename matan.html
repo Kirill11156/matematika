@@ -1,0 +1,1687 @@
+<title>Матан без путаницы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@600&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0A0A0B; --panel:#131315; --panel2:#1A1A1D; --ink:#F3EEE7; --dim:#9C958C;
+  --line:#2A2724; --line2:#3A3530; --accent:#FF7A1A; --accent2:#FFB347; --accent-soft:rgba(255,122,26,.11);
+  --red:#FF5B4A; --red-soft:rgba(255,91,74,.10); --ok:#8FDBA8; --ok-soft:rgba(143,219,168,.08);
+  --mark:rgba(255,122,26,.38); --code:#17171A;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Onest',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+::selection{background:var(--accent); color:#0A0A0B}
+
+/* фон: сетка + свечения + символы */
+#bg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
+.aura{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+.aura::before,.aura::after{content:""; position:absolute; width:62vmax; height:62vmax; border-radius:50%; filter:blur(90px); opacity:.20}
+.aura::before{background:#FF6A00; top:-28vmax; right:-18vmax; animation:drift1 22s ease-in-out infinite alternate}
+.aura::after{background:#B8420A; bottom:-32vmax; left:-22vmax; opacity:.16; animation:drift2 28s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-14vmax,10vmax) scale(1.1)}}
+@keyframes drift2{to{transform:translate(12vmax,-8vmax) scale(.92)}}
+.gridbg{position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(255,122,26,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,122,26,.045) 1px,transparent 1px);
+  background-size:32px 32px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 80%); mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 80%)}
+.progress{position:fixed; left:0; top:env(safe-area-inset-top,0px); height:2px; width:0; z-index:40; background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 12px var(--accent)}
+
+.wrap{position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 18px 100px}
+
+/* hero */
+.hero{padding-top:54px}
+.kicker{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--accent); letter-spacing:1.5px; margin-bottom:14px; display:flex; gap:10px; align-items:center}
+.kicker::before{content:""; width:28px; height:1px; background:var(--accent)}
+h1{font-family:'Unbounded','Onest',sans-serif; font-weight:600; font-size:clamp(34px,7.4vw,68px); line-height:1.02; letter-spacing:-1.5px; margin:0 0 18px; text-wrap:balance;
+  background:linear-gradient(100deg,var(--ink) 0%,var(--ink) 30%,var(--accent) 48%,var(--accent2) 56%,var(--ink) 74%,var(--ink) 100%); background-size:250% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 7s ease-in-out infinite}
+@keyframes shine{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+.lede{color:var(--dim); max-width:60ch; font-size:17px}
+.lede b{color:var(--accent); font-weight:600}
+.wave{display:block; width:100%; height:auto; margin:26px 0 4px}
+.wave .axis{stroke:var(--line2); stroke-width:1}
+.wave .s{fill:none; stroke:var(--accent); stroke-width:2.2; filter:drop-shadow(0 0 6px rgba(255,122,26,.6))}
+.wave .c{fill:none; stroke:var(--dim); stroke-width:1.2; stroke-dasharray:4 5; opacity:.6}
+.wave .dot{fill:var(--accent2); filter:drop-shadow(0 0 8px var(--accent))}
+.wave text{font-family:'JetBrains Mono',monospace; font-size:12px; fill:var(--dim)}
+.stats{display:flex; flex-wrap:wrap; gap:26px; margin-top:18px}
+.stat b{display:block; font-family:'Unbounded',sans-serif; font-weight:500; font-size:30px; color:var(--ink); line-height:1; font-variant-numeric:tabular-nums}
+.stat span{font-size:13px; color:var(--dim)}
+.stat.hot b{color:var(--accent); text-shadow:0 0 18px rgba(255,122,26,.45)}
+
+/* навигация */
+nav.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:30; margin:30px -18px 0; padding:12px 18px; background:rgba(10,10,11,.72); backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--line)}
+.chips{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:0 0 auto; text-decoration:none; color:var(--dim); font-size:13.5px; padding:7px 14px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.02); transition:color .2s,border-color .2s,background .2s,box-shadow .2s}
+.chips a:hover,.chips a:focus-visible{color:var(--ink); border-color:var(--line2); outline:none}
+.chips a.on{color:#0A0A0B; background:var(--accent); border-color:var(--accent); box-shadow:0 0 18px rgba(255,122,26,.45)}
+.chips a.red{color:var(--red); border-color:rgba(255,91,74,.35)}
+.chips a.red.on{color:#0A0A0B; background:var(--red); border-color:var(--red); box-shadow:0 0 18px rgba(255,91,74,.45)}
+
+section{padding-top:64px; scroll-margin-top:64px}
+h2{font-family:'Unbounded','Onest',sans-serif; font-weight:500; font-size:clamp(22px,3.6vw,30px); line-height:1.15; letter-spacing:-.4px; margin:0 0 8px; text-wrap:balance; display:flex; align-items:baseline; gap:14px}
+h2 .ix{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); letter-spacing:1px; font-weight:400}
+h3{font-size:17px; font-weight:600; margin:30px 0 10px; color:var(--ink)}
+h3::before{content:"// "; font-family:'JetBrains Mono',monospace; color:var(--accent); font-weight:400}
+p{margin:0 0 12px}
+.sec-sub{color:var(--dim); font-size:15px; margin-bottom:20px; max-width:64ch}
+
+/* прожектор под курсором */
+.spot{position:relative}
+.spot::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; opacity:0; transition:opacity .35s;
+  background:radial-gradient(260px circle at var(--mx,-200px) var(--my,-200px),rgba(255,140,40,.95),transparent 55%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude}
+.spot::after{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .35s;
+  background:radial-gradient(360px circle at var(--mx,-200px) var(--my,-200px),rgba(255,122,26,.07),transparent 60%)}
+.spot:hover::before,.spot:hover::after{opacity:1}
+
+.blk{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:6px 20px}
+.r{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:20px; padding:15px 0; border-top:1px solid var(--line); align-items:start; position:relative; z-index:1}
+.r:first-of-type{border-top:none}
+.r .m{overflow-x:auto; overflow-y:hidden}
+.r .t{font-size:14.5px; color:var(--dim)}
+.r .t b{color:var(--ink); font-weight:600}
+@media (max-width:640px){.r{grid-template-columns:1fr; gap:6px}}
+
+.tw{overflow-x:auto; margin:12px 0 4px; border:1px solid var(--line); border-radius:14px; background:var(--panel)}
+table{width:100%; border-collapse:collapse; font-size:14.5px}
+th{text-align:left; font-weight:500; font-size:12px; color:var(--accent); padding:11px 14px; border-bottom:1px solid var(--line2); background:var(--panel2); letter-spacing:.6px; font-family:'JetBrains Mono',monospace}
+td{padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--accent-soft)}
+tr:last-child td{border-bottom:none}
+td.n{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums}
+td.a{white-space:nowrap; color:var(--ink)}
+
+.hl{background:linear-gradient(transparent 58%,var(--mark) 58%); padding:0 2px}
+.note{background:var(--accent-soft); border:1px solid rgba(255,122,26,.25); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.note b{color:var(--accent2)}
+.ok{background:var(--ok-soft); border:1px solid rgba(143,219,168,.22); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.ok b{color:var(--ok)}
+
+/* ловушки — предупреждающая лента */
+.traps{display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:12px}
+.trap{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 18px 16px; overflow:hidden; transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.trap:hover{transform:translateY(-3px)}
+.trap .tape{position:absolute; top:0; left:0; right:0; height:5px; background:repeating-linear-gradient(-45deg,var(--accent) 0 9px,#0A0A0B 9px 18px); opacity:.85}
+.trap:hover .tape{animation:tape .7s linear infinite}
+@keyframes tape{to{background-position:25.4px 0}}
+.trap h4{margin:4px 0 4px; font-size:15.5px; font-weight:600; position:relative; z-index:1}
+.trap .where{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); position:relative; z-index:1}
+.trap p{font-size:14px; color:var(--dim); margin:6px 0 0; position:relative; z-index:1}
+.trap .fix{color:var(--ink)}
+.trap .fix::before{content:"Проверка: "; font-weight:600; color:var(--ok)}
+.flag{display:inline-block; font-family:'Caveat',cursive; font-weight:600; font-size:19px; color:var(--accent); line-height:1; margin-left:6px; transform:rotate(-4deg)}
+
+/* тригонометрический круг */
+.trig{display:grid; grid-template-columns:minmax(0,340px) minmax(0,1fr); gap:24px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px}
+@media (max-width:680px){.trig{grid-template-columns:1fr}}
+#circle{width:100%; max-width:340px; height:auto; display:block; margin:0 auto; position:relative; z-index:1}
+#circle .pt{cursor:pointer}
+#circle .pt circle{fill:var(--bg); stroke:var(--dim); stroke-width:1.5; transition:fill .2s,stroke .2s,r .2s}
+#circle .pt:hover circle{stroke:var(--accent)}
+#circle .pt.on circle{fill:var(--accent); stroke:var(--accent2); filter:drop-shadow(0 0 7px var(--accent))}
+#circle .pt:focus-visible{outline:none}
+#circle .pt:focus-visible circle{stroke:var(--accent2); stroke-width:3}
+#circle text{font-family:'JetBrains Mono',monospace; font-size:11px; fill:var(--dim)}
+#circle .ray{filter:drop-shadow(0 0 5px var(--accent))}
+.readout{position:relative; z-index:1}
+.readout .ang{font-family:'Unbounded',sans-serif; font-size:40px; font-weight:500; line-height:1; color:var(--accent); text-shadow:0 0 24px rgba(255,122,26,.4)}
+.readout .deg{color:var(--dim); font-size:14px; margin:8px 0 16px; font-family:'JetBrains Mono',monospace}
+.readout dl{display:grid; grid-template-columns:auto 1fr; gap:8px 18px; margin:0; font-size:19px}
+.readout dt{color:var(--dim); font-family:'JetBrains Mono',monospace; font-size:15px; padding-top:3px}
+.readout dd{margin:0; font-weight:600; font-variant-numeric:tabular-nums}
+.readout dd.neg{color:var(--red)}
+.readout .q{margin-top:16px; font-size:13.5px; color:var(--dim); border-top:1px solid var(--line); padding-top:12px}
+.pop{animation:pop .35s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes pop{from{transform:scale(.9); opacity:.3}to{transform:none; opacity:1}}
+
+/* номера */
+.search{width:100%; font:inherit; font-size:15px; padding:13px 16px; border:1px solid var(--line2); border-radius:12px; background:var(--panel); color:var(--ink); margin-bottom:16px; transition:border-color .2s,box-shadow .2s}
+.search::placeholder{color:var(--dim)}
+.search:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(255,122,26,.15),0 0 24px rgba(255,122,26,.18)}
+.task{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:10px}
+.task > *{position:relative; z-index:1}
+.task-h{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:8px}
+.task-h .no{font-family:'JetBrains Mono',monospace; font-weight:500; color:var(--accent); font-size:14px; background:var(--accent-soft); border:1px solid rgba(255,122,26,.3); padding:2px 9px; border-radius:6px}
+.task-h .ty{font-size:13px; color:var(--dim)}
+.task .cond{overflow-x:auto; overflow-y:hidden; margin-bottom:6px; font-size:16.5px}
+.task .how{font-size:14.5px; color:var(--dim); margin:0 0 8px}
+.task .ans{font-size:15px}
+.task .ans b{font-weight:600; color:var(--accent2)}
+.task .err{font-size:14px; color:var(--red); margin-top:8px}
+.task .err::before{content:"✕ "}
+details{margin-top:10px; font-size:14.5px}
+summary{cursor:pointer; color:var(--accent); font-size:14px; list-style:none; display:inline-flex; align-items:center; gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+"; display:inline-grid; place-items:center; width:18px; height:18px; border:1px solid var(--accent); border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:12px; transition:transform .25s}
+details[open] summary::before{transform:rotate(45deg)}
+summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:4px}
+details .body{margin-top:10px; padding:12px 15px; background:var(--code); border:1px solid var(--line); border-radius:10px; overflow-x:auto; animation:open .3s ease}
+@keyframes open{from{opacity:0; transform:translateY(-4px)}to{opacity:1; transform:none}}
+.miss{color:var(--dim); font-size:14px; font-style:italic}
+.hidden{display:none!important}
+.empty{color:var(--dim); text-align:center; padding:20px}
+
+svg.tri{width:100%; max-width:260px; height:auto; display:block; position:relative; z-index:1}
+.trig .t{position:relative; z-index:1}
+.foot{color:var(--dim); font-size:13px; margin-top:60px; border-top:1px solid var(--line); padding-top:18px}
+
+.beyond{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:1px; color:var(--accent2); border:1px solid rgba(255,179,71,.4); border-radius:6px; padding:2px 7px; vertical-align:middle; white-space:nowrap; text-transform:uppercase}
+h3 .beyond{margin-left:6px}
+.lab{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px; margin:18px 0}
+.lab > *{position:relative; z-index:1}
+.lab-t{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); letter-spacing:1.2px; margin-bottom:10px}
+.lab svg{width:100%; height:auto; display:block}
+.lab svg text{font-family:'JetBrains Mono',monospace; font-size:11px; fill:var(--dim)}
+.ctl{display:flex; flex-wrap:wrap; gap:14px 26px; align-items:center; margin-top:12px; font-size:14px; color:var(--dim)}
+.ctl label{display:flex; align-items:center; gap:10px; cursor:pointer}
+.ctl output{font-family:'JetBrains Mono',monospace; color:var(--accent); min-width:3.2em}
+.ctl input[type=checkbox]{accent-color:var(--accent); width:16px; height:16px}
+.lab .verdict{margin-top:12px; font-size:14.5px; border-top:1px solid var(--line); padding-top:12px}
+.lab .verdict b{color:var(--accent2); font-weight:600}
+input[type=range]{-webkit-appearance:none; appearance:none; width:170px; max-width:48vw; height:4px; background:var(--line2); border-radius:4px; outline:none; margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px; height:16px; border:none; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+input[type=range]:focus-visible{outline:2px solid var(--accent); outline-offset:6px}
+details.self{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 16px; margin:10px 0}
+.cross{display:inline-flex; align-items:center; gap:8px; margin-top:18px; text-decoration:none; color:var(--accent2); font-size:14.5px; border:1px solid var(--line2); border-radius:10px; padding:9px 15px; transition:border-color .2s,box-shadow .2s}
+.cross:hover,.cross:focus-visible{border-color:var(--accent); box-shadow:0 0 18px rgba(255,122,26,.3); outline:none}
+.map{margin-top:28px; display:grid; gap:10px}
+.map-l{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim); letter-spacing:1px}
+.track{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px}
+.track a{color:var(--ink); text-decoration:none; font-size:14px; padding:6px 12px; border:1px solid var(--line2); border-radius:10px; background:rgba(255,255,255,.02); transition:border-color .2s,color .2s,box-shadow .2s}
+.track a:hover,.track a:focus-visible{border-color:var(--accent); color:var(--accent); box-shadow:0 0 16px rgba(255,122,26,.25); outline:none}
+.track a.new{border-style:dashed}
+.track i{font-style:normal; color:var(--accent); font-family:'JetBrains Mono',monospace}
+
+mjx-container{max-width:100%}
+mjx-container[display="true"]{overflow-x:auto; overflow-y:hidden; margin:.6em 0!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="aura" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="progress" id="prog" aria-hidden="true"></div>
+<div class="wrap">
+
+<header class="hero">
+<div class="kicker">АККРЕДИТАЦИЯ 01.03.03 · МАТАНАЛИЗ</div>
+<h1>Матан без путаницы</h1>
+<p class="lede">Весь курс математического анализа на одной странице: всё, что разобрано по списку к аккредитации (номера 1–187), и темы, которых в списке нет, — ряды, кратные интегралы, поле и потоки, дифференциальные уравнения. Такой материал помечен меткой <span class="beyond">вне списка</span>.</p>
+<svg class="wave" id="wave" viewBox="0 0 800 130" role="img" aria-label="Синусоида и косинусоида">
+  <line class="axis" x1="0" y1="65" x2="800" y2="65"/>
+  <path class="c" id="wc"/>
+  <path class="s" id="ws"/>
+  <circle class="dot" id="wd" r="5" cx="0" cy="65"/>
+  <text x="6" y="16">y = sin x</text>
+  <text x="6" y="124" style="opacity:.7">y = cos x</text>
+</svg>
+<a class="cross" href="linal.html">Линейная алгебра →</a>
+<a class="cross" href="diskretka.html">Дискретная математика →</a>
+<div class="stats">
+  <div class="stat hot"><b>11</b><span>тем курса</span></div>
+  <div class="stat"><b>4</b><span>живые модели</span></div>
+  <div class="stat"><b>187</b><span>номеров с ответами</span></div>
+</div>
+<div class="map" aria-label="Как связаны темы">
+  <div class="map-l">КАК СВЯЗАНЫ ТЕМЫ</div>
+  <div class="track"><a href="#lim">Пределы</a><i>→</i><a href="#der">Производные</a><i>→</i><a href="#int">Интегралы</a><i>→</i><a href="#ser" class="new">Ряды</a></div>
+  <div class="track"><a href="#der">Производные</a><i>→</i><a href="#fnp">ФНП</a><i>→</i><a href="#mult" class="new">Кратные интегралы</a><i>→</i><a href="#vec" class="new">Поле и потоки</a></div>
+  <div class="track"><a href="#der">Производные</a><i>+</i><a href="#int">Интегралы</a><i>→</i><a href="#ode" class="new">Дифференциальные уравнения</a></div>
+</div>
+</header>
+
+<nav class="bar" aria-label="Разделы">
+  <div class="chips">
+    <a href="#trig">Тригонометрия</a>
+    <a href="#cx">Комплексные</a>
+    <a href="#lim">Пределы</a>
+    <a href="#der">Производные</a>
+    <a href="#eq">Касательные</a>
+    <a href="#int">Интегралы</a>
+    <a href="#ser">Ряды</a>
+    <a href="#fnp">ФНП</a>
+    <a href="#mult">Кратные интегралы</a>
+    <a href="#vec">Поле и потоки</a>
+    <a href="#ode">Дифуры</a>
+    <a href="#hard">Номера 156–187</a>
+    <a href="#idx">Номера 1–155</a>
+  </div>
+</nav>
+
+<section id="trig">
+  <h2><span class="ix">01</span>Тригонометрия</h2>
+  <p class="sec-sub">Запоминать всю таблицу не нужно. Хватает пяти значений первой четверти и правила знаков — остальное достраивается кругом. Нажмите на любую точку.</p>
+
+  <div class="trig spot">
+    <svg id="circle" viewBox="0 0 340 340" role="img" aria-label="Тригонометрический круг с основными углами"></svg>
+    <div class="readout" aria-live="polite">
+      <div class="ang" id="ro-rad">7π/6</div>
+      <div class="deg" id="ro-deg">210°</div>
+      <dl>
+        <dt>cos</dt><dd id="ro-cos">−√3/2</dd>
+        <dt>sin</dt><dd id="ro-sin">−1/2</dd>
+        <dt>tg</dt><dd id="ro-tg">√3/3</dd>
+      </dl>
+      <div class="q" id="ro-q">III четверть: синус и косинус отрицательны.</div>
+    </div>
+  </div>
+
+  <h3>Пять значений, которые надо знать</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>угол</th><th>0</th><th>\(\frac{\pi}{6}\) = 30°</th><th>\(\frac{\pi}{4}\) = 45°</th><th>\(\frac{\pi}{3}\) = 60°</th><th>\(\frac{\pi}{2}\) = 90°</th></tr></thead>
+    <tbody>
+      <tr><td>sin</td><td>\(\frac{\sqrt0}{2}=0\)</td><td>\(\frac{\sqrt1}{2}=\frac12\)</td><td>\(\frac{\sqrt2}{2}\)</td><td>\(\frac{\sqrt3}{2}\)</td><td>\(\frac{\sqrt4}{2}=1\)</td></tr>
+      <tr><td>cos</td><td>1</td><td>\(\frac{\sqrt3}{2}\)</td><td>\(\frac{\sqrt2}{2}\)</td><td>\(\frac12\)</td><td>0</td></tr>
+      <tr><td>tg</td><td>0</td><td>\(\frac{\sqrt3}{3}\)</td><td>1</td><td>\(\sqrt3\)</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Как вспомнить за секунду.</b> У синуса под корнем идут 0, 1, 2, 3, 4, и всё делится на 2. Косинус — та же строка задом наперёд. Тангенс = синус / косинус.</div>
+
+  <h3>Знаки по четвертям</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">I четверть \((0;\frac{\pi}{2})\)</div><div class="t"><b>всё положительно</b></div></div>
+    <div class="r"><div class="m">II четверть \((\frac{\pi}{2};\pi)\)</div><div class="t">положителен только <b>sin</b></div></div>
+    <div class="r"><div class="m">III четверть \((\pi;\frac{3\pi}{2})\)</div><div class="t">положительны только <b>tg и ctg</b></div></div>
+    <div class="r"><div class="m">IV четверть \((\frac{3\pi}{2};2\pi)\)</div><div class="t">положителен только <b>cos</b></div></div>
+  </div>
+  <p class="sec-sub" style="margin-top:10px">Логика простая: косинус — это x точки на круге, синус — это y. Знак определяется тем, куда смотрит точка.</p>
+
+  <h3>Формулы приведения — правило «кивка»</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\frac{\pi}{2}\pm\alpha,\ \frac{3\pi}{2}\pm\alpha\)</div><div class="t">Угол «вертикальный» — голова кивает вверх-вниз, «да, меняю»: sin ↔ cos, tg ↔ ctg.</div></div>
+    <div class="r"><div class="m">\(\pi\pm\alpha,\ 2\pi\pm\alpha\)</div><div class="t">Угол «горизонтальный» — голова качается «нет»: функция остаётся той же.</div></div>
+    <div class="r"><div class="m">Знак</div><div class="t">Ставится по <b>исходной</b> функции в той четверти, где окажется угол (α считаем острым).</div></div>
+    <div class="r"><div class="m">\(\sin\frac{7\pi}{6}=\sin(\pi+\frac{\pi}{6})\)</div><div class="t">Функция не меняется; угол в III четверти, синус там минус: <b>\(-\frac12\)</b>.</div></div>
+  </div>
+
+  <h3>Тождества, которые используются в интегралах</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\sin^2x+\cos^2x=1\)</div><div class="t">Основное.</div></div>
+    <div class="r"><div class="m">\(1+\tg^2x=\dfrac{1}{\cos^2x},\quad 1+\ctg^2x=\dfrac{1}{\sin^2x}\)</div><div class="t">Основное, делённое на \(\cos^2x\) или \(\sin^2x\). Работало в № 176 и в подстановке \(x=a\tg t\).</div></div>
+    <div class="r"><div class="m">\(\sin2x=2\sin x\cos x,\quad \cos2x=\cos^2x-\sin^2x\)</div><div class="t">Двойной угол.</div></div>
+    <div class="r"><div class="m">\(\sin^2x=\dfrac{1-\cos2x}{2},\quad \cos^2x=\dfrac{1+\cos2x}{2}\)</div><div class="t">Понижение степени. № 88, 101.</div></div>
+    <div class="r"><div class="m">\(\tg x\cdot\ctg x=1\)</div><div class="t">Спасает пределы вида \((1+\ctg x)^{\tg x}\) — № 163.</div></div>
+  </div>
+</section>
+
+<section id="cx">
+  <h2><span class="ix">02</span>Комплексные числа</h2>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(z=a+bi,\ \mathrm{Re}\,z=a,\ \mathrm{Im}\,z=b\)</div><div class="t">\(\mathrm{Im}\) — число без \(i\).<span class="flag">№ 4</span></div></div>
+    <div class="r"><div class="m">\(\dfrac{a+bi}{c+di}\cdot\dfrac{c-di}{c-di}\)</div><div class="t">Деление: на сопряжённое. Знаменатель становится \(c^2+d^2\). Делить на \(i\) — домножать на \(-i\).</div></div>
+    <div class="r"><div class="m">\(|z|=\sqrt{a^2+b^2}\)</div><div class="t">Модуль частного = частное модулей: \(\left|\frac{1+i}{1-i}\right|=1\).</div></div>
+    <div class="r"><div class="m">\(z=r(\cos\varphi+i\sin\varphi)=re^{i\varphi}\)</div><div class="t">В показателе обязательно \(i\).</div></div>
+    <div class="r"><div class="m">Аргумент</div><div class="t">Сначала <b>четверть</b>, потом угол по \(\cos\varphi=\frac ar\), \(\sin\varphi=\frac br\). \(\arg(-3)=\pi\), \(\arg(2i)=\frac\pi2\), \(\arg(-4i)=-\frac\pi2\).</div></div>
+    <div class="r"><div class="m">\[\sqrt[n]{z}=\sqrt[n]{r}\,e^{i\frac{\varphi+2\pi k}{n}},\ k=0,\ldots,n-1\]</div><div class="t">Корней ровно \(n\), все с одним модулем, в вершинах правильного \(n\)-угольника (шаг \(\frac{2\pi}{n}\)). Без \(2\pi k\) получится один корень.</div></div>
+    <div class="r"><div class="m">Корень из действительного числа</div><div class="t">Комплексные корни идут <b>сопряжёнными парами</b>: \(\sqrt[3]{-27}\): \(-3\), \(\frac32\pm\frac{3\sqrt3}{2}i\).</div></div>
+  </div>
+</section>
+
+<section id="lim">
+  <h2><span class="ix">03</span>Пределы</h2>
+  <p class="sec-sub">Первое действие всегда одно: подставить точку и посмотреть, что получилось. Результат подсказывает приём.</p>
+
+  <div class="tw spot"><table>
+    <thead><tr><th>Подставили — получили</th><th>Приём</th><th>Номера</th></tr></thead>
+    <tbody>
+      <tr><td>число</td><td>это и есть ответ</td><td class="n">14</td></tr>
+      <tr><td>\(\frac{c}{0}\), \(c\ne0\)</td><td>бесконечность; знак смотреть по сторонам</td><td class="n">24, 25</td></tr>
+      <tr><td>\(\frac{\infty}{\infty}\), многочлены</td><td>сравнить старшие степени</td><td class="n">18, 20–22, 28</td></tr>
+      <tr><td>\(\frac00\), рациональная дробь</td><td>разложить на множители и сократить</td><td class="n">19, 23</td></tr>
+      <tr><td>\(\frac00\) с корнями</td><td>домножить на сопряжённое; разбить дробь</td><td class="n">159</td></tr>
+      <tr><td>\(\frac00\) с sin, ln, e</td><td>эквивалентности; в разности — Тейлор</td><td class="n">26, 27, 172</td></tr>
+      <tr><td>\(1^\infty\)</td><td>\(e^{\lim v(u-1)}\)</td><td class="n">156, 163</td></tr>
+      <tr><td>\(\infty-\infty\)</td><td>общий знаменатель или сопряжённое</td><td class="n">172</td></tr>
+      <tr><td>\(0\cdot\infty\)</td><td>переписать в виде дроби</td><td class="n">27</td></tr>
+      <tr><td>у множителя нет предела (\(\sin\frac1x\))</td><td>ограниченная × бесконечно малая = 0</td><td class="n">171</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Старшие степени при \(x\to\infty\)</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">степени равны</div><div class="t">отношение коэффициентов при старших степенях, <b>со знаком</b>: \(\frac{3n^2-n}{1-5n^2}\to-\frac35\)</div></div>
+    <div class="r"><div class="m">степень числителя меньше</div><div class="t">0</div></div>
+    <div class="r"><div class="m">степень числителя больше</div><div class="t">∞</div></div>
+    <div class="r"><div class="m">корни: \(\sqrt{n^3}\sim n^{3/2}\)</div><div class="t">дробные степени сравниваются так же: \(\frac{\sqrt{n^3}}{n^2}\to0\).</div></div>
+  </div>
+
+  <h3>Таблица эквивалентностей при \(\alpha\to0\)</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\sin\alpha\sim\tg\alpha\sim\arcsin\alpha\sim\arctg\alpha\sim\alpha\)</div><div class="t">Тригонометрия у нуля ведёт себя как сам аргумент.</div></div>
+    <div class="r"><div class="m">\(\ln(1+\alpha)\sim\alpha,\quad e^\alpha-1\sim\alpha\)</div><div class="t">Логарифм и экспонента.</div></div>
+    <div class="r"><div class="m">\(1-\cos\alpha\sim\dfrac{\alpha^2}{2}\)</div><div class="t">Единственная «квадратичная» — порядок малости второй.</div></div>
+    <div class="r"><div class="m">\((1+\alpha)^p-1\sim p\alpha,\quad a^\alpha-1\sim\alpha\ln a\)</div><div class="t">Степени и показательные функции.</div></div>
+  </div>
+  <div class="note"><b>Заменять можно только множители.</b> В произведении и частном — да. В сумме и разности — нельзя: \(x-\sin x\) после замены превратится в 0, и вся информация пропадёт. Тогда нужен Тейлор.</div>
+
+  <h3>Неопределённость \(1^\infty\) полностью</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\[\lim_{x\to a}u^v=e^{\lim\limits_{x\to a}v\,(u-1)}\]</div><div class="t">Предел внутри показателя берётся <b>к той же точке</b> \(a\), что и исходный.</div></div>
+    <div class="r"><div class="m">\(u-1\) — отдельно</div><div class="t">Считать не саму дробь, а её отклонение от единицы: \(\frac{x+2}{x-1}-1=\frac{3}{x-1}\). Иксы в числителе сокращаются.</div></div>
+    <div class="r"><div class="m">Откуда формула</div><div class="t">\(u^v=\big[(1+\alpha)^{1/\alpha}\big]^{\alpha v}\), где \(\alpha=u-1\to0\); скобка стремится к \(e\).</div></div>
+    <div class="r"><div class="m">Проверка перед применением</div><div class="t">Основание должно стремиться <b>именно к 1</b>. При \(u\to\frac12\) никакой неопределённости нет: \((\frac12)^\infty=0\).</div></div>
+  </div>
+
+  <h3>Формула Тейлора — зачем и как</h3>
+  <p>Эквивалентность \(\sin x\sim x\) — это Тейлор, обрезанный после первого слагаемого. Когда главные слагаемые в разности сокращаются, берут следующее. Знаменатели — факториалы: \(3!=6\), \(4!=24\), \(5!=120\).</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\sin x=x-\dfrac{x^3}{6}+\dfrac{x^5}{120}-\ldots\)</div><div class="t">Только нечётные степени.</div></div>
+    <div class="r"><div class="m">\(\cos x=1-\dfrac{x^2}{2}+\dfrac{x^4}{24}-\ldots\)</div><div class="t">Только чётные.</div></div>
+    <div class="r"><div class="m">\(e^x=1+x+\dfrac{x^2}{2}+\dfrac{x^3}{6}+\ldots\)</div><div class="t">Все степени, все с плюсом.</div></div>
+    <div class="r"><div class="m">\(\ln(1+x)=x-\dfrac{x^2}{2}+\dfrac{x^3}{3}-\ldots\)</div><div class="t">Без факториалов, знаки чередуются.</div></div>
+    <div class="r"><div class="m">\(\tg x=x+\dfrac{x^3}{3}+\ldots,\quad \arctg x=x-\dfrac{x^3}{3}+\ldots\)</div><div class="t">Сверх списка, но встречаются в тестах.</div></div>
+    <div class="r"><div class="m">\(x-\sin x=\dfrac{x^3}{6}+o(x^3)\)</div><div class="t">Отсюда \(\lim\frac{x-\sin x}{x^3}=\frac16\) и № 172 = \(\frac13\).</div></div>
+  </div>
+  <div class="ok"><b>Быстрый отсев вариантов.</b> Сравните порядок малости числителя и знаменателя. Равны — ответ конечное ненулевое число. Числитель «мельче» — 0. Крупнее — ∞.</div>
+
+  <h3>Правило Лопиталя — сверх списка</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\lim\dfrac{f}{g}=\lim\dfrac{f'}{g'}\)</div><div class="t">Только для \(\frac00\) и \(\frac\infty\infty\). Числитель и знаменатель дифференцируются <b>отдельно</b>, не по правилу частного.</div></div>
+    <div class="r"><div class="m">\(\lim\dfrac{x-\sin x}{x^3}=\lim\dfrac{1-\cos x}{3x^2}=\lim\dfrac{\sin x}{6x}=\dfrac16\)</div><div class="t">Тот же ответ, что через Тейлор. На тесте часто быстрее.</div></div>
+  </div>
+
+  <h3>Односторонние пределы и непрерывность</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\lim f\) существует ⇔ \(f(a-0)=f(a+0)\)</div><div class="t">Оба односторонних существуют и равны.</div></div>
+    <div class="r"><div class="m">Непрерывность в точке</div><div class="t">Значение \(f(a)\) есть, оба односторонних предела равны, и равны \(f(a)\). У кусочной функции проверяются <b>только точки склейки</b>.</div></div>
+    <div class="r"><div class="m">\(x\to1+0\) в № 159</div><div class="t">Предел односторонний, потому что слева от точки функция не определена (\(\sqrt{x-1}\)).</div></div>
+    <div class="r"><div class="m">\(\alpha\to0,\ |g|\le M\Rightarrow\alpha g\to0\)</div><div class="t">От \(g\) нужна только ограниченность. Так \(x\sin\frac1x\to0\).</div></div>
+    <div class="r"><div class="m">\(\sin\frac1x\) при \(x\to0\)</div><div class="t">Предела нет: по \(x_n=\frac{1}{2\pi n}\) получаем 0, по \(y_n=\frac{1}{\pi/2+2\pi n}\) — 1 (метод Гейне).</div></div>
+  </div>
+
+  <h3>Что такое предел, строго <span class="beyond">вне списка</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">По Коши: \(\forall\varepsilon>0\ \exists\delta>0:\ 0\lt|x-a|\lt\delta\Rightarrow|f(x)-A|\lt\varepsilon\)</div><div class="t">Как ни сужай полосу вокруг \(A\), найдётся окрестность точки \(a\), где график целиком внутри полосы. Удобно, чтобы <b>доказать</b>, что предел равен \(A\).</div></div>
+    <div class="r"><div class="m">По Гейне: для любой \(x_n\to a,\ x_n\ne a\) верно \(f(x_n)\to A\)</div><div class="t">Удобно, чтобы доказать, что предела <b>нет</b>: две последовательности с разными пределами, как для \(\sin\frac1x\).</div></div>
+    <div class="r"><div class="m">Определения равносильны</div><div class="t">Это теорема, поэтому выбирайте то, что удобнее под задачу.</div></div>
+  </div>
+
+  <h3>Сравнение бесконечно малых</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\alpha=o(\beta)\iff\frac{\alpha}{\beta}\to0\)</div><div class="t">\(\alpha\) убывает быстрее.</div></div>
+    <div class="r"><div class="m">\(\alpha\sim\beta\iff\frac{\alpha}{\beta}\to1\)</div><div class="t">Эквивалентны — можно заменять в произведении и частном.</div></div>
+    <div class="r"><div class="m">\(\alpha=O(\beta)\)</div><div class="t">Отношение ограничено: одного порядка или меньше.</div></div>
+    <div class="r"><div class="m">Порядок \(k\): \(\frac{\alpha}{\beta^k}\to c\ne0\)</div><div class="t">\(1-\cos x\) — второго порядка относительно \(x\), \(x-\sin x\) — третьего.</div></div>
+  </div>
+
+  <h3>Точки разрыва <span class="beyond">вне списка</span></h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Тип</th><th>Условие</th><th>Пример</th></tr></thead>
+    <tbody>
+      <tr><td>устранимый</td><td>односторонние пределы равны, но не совпадают с \(f(a)\) или \(f(a)\) нет</td><td>\(\frac{\sin x}{x}\) в нуле</td></tr>
+      <tr><td>первого рода (скачок)</td><td>оба односторонних конечны, но различны</td><td>\(\frac{|x|}{x}\) в нуле</td></tr>
+      <tr><td>второго рода</td><td>хотя бы один односторонний бесконечен или не существует</td><td>\(\frac1x\), \(\sin\frac1x\) в нуле</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Теоремы о непрерывных на отрезке</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Вейерштрасс</div><div class="t">Непрерывная на \([a;b]\) функция ограничена и <b>достигает</b> наибольшего и наименьшего значений. Поэтому задача «найти max на отрезке» всегда имеет ответ.</div></div>
+    <div class="r"><div class="m">Больцано–Коши</div><div class="t">Если \(f(a)\) и \(f(b)\) разных знаков, на \((a;b)\) есть корень. На этом держится метод деления отрезка пополам.</div></div>
+    <div class="r"><div class="m">Почему нужен отрезок</div><div class="t">На интервале теорема ломается: \(\frac1x\) на \((0;1)\) непрерывна, но неограниченна.</div></div>
+  </div>
+
+  <h3>Следствия замечательных пределов</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\lim\limits_{x\to0}(1+x)^{1/x}=e\)</div><div class="t">Второй замечательный в другой записи.</div></div>
+    <div class="r"><div class="m">\(\lim\limits_{x\to0}\dfrac{a^x-1}{x}=\ln a,\quad \lim\limits_{x\to0}\dfrac{\log_a(1+x)}{x}=\dfrac1{\ln a}\)</div><div class="t">Показательная и логарифм с любым основанием.</div></div>
+    <div class="r"><div class="m">\(\lim\limits_{x\to0}\dfrac{(1+x)^p-1}{x}=p\)</div><div class="t">Отсюда \(\sqrt{1+x}-1\sim\frac x2\).</div></div>
+  </div>
+  <details class="self"><summary>Проверь себя: \(\lim\limits_{x\to0}\frac{e^{3x}-1}{\sin2x}\)</summary><div class="body">\(\frac32\): числитель эквивалентен \(3x\), знаменатель \(2x\).</div></details>
+  <details class="self"><summary>Проверь себя: тип разрыва \(\frac{x^2-1}{x-1}\) в точке 1</summary><div class="body">Устранимый: предел равен 2, а в самой точке функция не определена. Доопределив \(f(1)=2\), получим непрерывную функцию.</div></details>
+</section>
+
+<section id="der">
+  <h2><span class="ix">04</span>Производные</h2>
+
+  <h3>Таблица</h3>
+  <div class="tw spot"><table>
+    <tbody>
+      <tr><td>\((x^n)'=nx^{n-1}\)</td><td>\((\sin x)'=\cos x\)</td><td>\((\arcsin x)'=\dfrac{1}{\sqrt{1-x^2}}\)</td></tr>
+      <tr><td>\((a^x)'=a^x\ln a\)</td><td>\((\cos x)'=-\sin x\)</td><td>\((\arccos x)'=-\dfrac{1}{\sqrt{1-x^2}}\)</td></tr>
+      <tr><td>\((e^x)'=e^x\)</td><td>\((\tg x)'=\dfrac{1}{\cos^2x}\)</td><td>\((\arctg x)'=\dfrac{1}{1+x^2}\)</td></tr>
+      <tr><td>\((\ln x)'=\dfrac1x\)</td><td>\((\ctg x)'=-\dfrac{1}{\sin^2x}\)</td><td>\((\arcctg x)'=-\dfrac{1}{1+x^2}\)</td></tr>
+      <tr><td>\((\sqrt x)'=\dfrac{1}{2\sqrt x}\)</td><td>\((\log_a x)'=\dfrac{1}{x\ln a}\)</td><td>все «ко-» функции — с минусом</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Правила</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\((uv)'=u'v+uv'\)</div><div class="t">Произведение.</div></div>
+    <div class="r"><div class="m">\(\left(\dfrac uv\right)'=\dfrac{u'v-uv'}{v^2}\)</div><div class="t">Частное. Минус в числителе — главное место ошибки.</div></div>
+    <div class="r"><div class="m">\(\big(f(g(x))\big)'=f'(g)\cdot g'(x)\)</div><div class="t">Цепное правило: не терять производную внутренней функции. \(\big((2x+1)^3\big)'=6(2x+1)^2\).</div></div>
+    <div class="r"><div class="m">\(y'_x=\dfrac{y'_t}{x'_t}\)</div><div class="t">Параметрическая функция. № 34, 35.</div></div>
+  </div>
+
+  <h3>Логарифмическое дифференцирование</h3>
+  <p>Нужно в двух ситуациях: переменная и в основании, и в показателе (№ 164, 168), или громоздкое произведение-частное со степенями (№ 166).</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\ln y=v\ln u\ \Rightarrow\ \dfrac{y'}{y}=(v\ln u)'\)</div><div class="t">Логарифм спускает показатель вниз множителем.</div></div>
+    <div class="r"><div class="m">\[\left(u^v\right)'=u^v\left(v'\ln u+v\,\dfrac{u'}{u}\right)\]</div><div class="t"><b>Готовый шаблон.</b> Производная показателя на логарифм основания плюс показатель на производную логарифма основания.</div></div>
+    <div class="r"><div class="m">\((x^{2x})'=2x^{2x}(\ln x+1)\)</div><div class="t">Проверка структуры: в ответе обязана остаться сама функция множителем.</div></div>
+    <div class="r"><div class="m">\(\ln\dfrac{(x+1)^3\sqrt{x-2}}{(x+3)^4}=3\ln(x+1)+\tfrac12\ln(x-2)-4\ln(x+3)\)</div><div class="t">Дробь → разность, произведение → сумма, степень → множитель.</div></div>
+  </div>
+
+  <h3>Производная интеграла с переменными пределами</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\[\left(\int_{a(x)}^{b(x)}f(t)\,dt\right)'=f\big(b(x)\big)\,b'(x)-f\big(a(x)\big)\,a'(x)\]</div><div class="t">Верхний предел с плюсом, нижний с минусом, каждый со своей производной. Интегрировать ничего не нужно.</div></div>
+    <div class="r"><div class="m">№ 181: \(\varphi=\int_0^{\sqrt x}f(t^2)dt\)</div><div class="t">\(\varphi'=\dfrac{f(x)}{2\sqrt x}\), \(\varphi'(4)=2\). Если в ответе нужно \(f(16)\), которого нет в условии, — подставили не туда.</div></div>
+  </div>
+
+  <h3>Приложения производной</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(f(x_0+\Delta x)\approx f(x_0)+f'(x_0)\Delta x\)</div><div class="t">Приближённое значение. Опорную точку берут так, чтобы функция считалась устно (№ 169: \(x_0=1\)).</div></div>
+    <div class="r"><div class="m">Экстремум</div><div class="t">Критические точки: \(f'=0\) или \(f'\) не существует (излом модуля — № 43). Экстремум есть, только если \(f'\) <b>меняет знак</b>: + на − максимум, − на + минимум.</div></div>
+    <div class="r"><div class="m">\(f'(x_0)=0,\ f''(x_0)>0\)</div><div class="t">Минимум (график «улыбается»); \(f''\lt 0\) — максимум.</div></div>
+    <div class="r"><div class="m">Перегиб</div><div class="t">\(f''\) меняет знак. \(f''>0\) — выпуклость вниз.</div></div>
+    <div class="r"><div class="m">Наибольшее / наименьшее на отрезке</div><div class="t">Сравнить значения <b>функции</b> в критических точках внутри отрезка и на обоих концах. Отвечать значением, а не точкой.</div></div>
+    <div class="r"><div class="m">Производная в точке склейки</div><div class="t">Только по определению: \(\lim\limits_{\Delta x\to0}\frac{f(\Delta x)-f(0)}{\Delta x}\) отдельно слева и справа (№ 171).</div></div>
+  </div>
+
+  <h3>Производная: определение и смысл <span class="beyond">вне списка</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(f'(x_0)=\lim\limits_{\Delta x\to0}\dfrac{f(x_0+\Delta x)-f(x_0)}{\Delta x}\)</div><div class="t">Геометрически — наклон касательной, механически — мгновенная скорость.</div></div>
+    <div class="r"><div class="m">дифференцируема ⇒ непрерывна</div><div class="t">Обратное неверно: \(|x|\) в нуле непрерывна, но производной нет.</div></div>
+    <div class="r"><div class="m">\(\Delta y=dy+o(\Delta x)\)</div><div class="t">Дифференциал \(dy=f'(x)dx\) — главная линейная часть приращения. На этом держатся все приближённые вычисления.</div></div>
+  </div>
+
+  <h3>Производная обратной функции</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\((f^{-1})'(y_0)=\dfrac{1}{f'(x_0)}\)</div><div class="t">График обратной — отражение относительно \(y=x\), поэтому наклоны взаимно обратны.</div></div>
+    <div class="r"><div class="m">Вывод \((\arcsin x)'\)</div><div class="t">\(y=\arcsin x\Rightarrow x=\sin y\), \(y'=\frac1{\cos y}=\frac1{\sqrt{1-\sin^2y}}=\frac1{\sqrt{1-x^2}}\). Так выводится вся правая колонка таблицы — зубрить не обязательно.</div></div>
+  </div>
+
+  <h3>Высшие производные</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\((\sin x)^{(n)}=\sin\!\left(x+\frac{n\pi}{2}\right)\)</div><div class="t">Каждое дифференцирование сдвигает на четверть оборота. Для косинуса так же.</div></div>
+    <div class="r"><div class="m">\((e^{kx})^{(n)}=k^ne^{kx},\quad\left(\frac1x\right)^{(n)}=\dfrac{(-1)^n\,n!}{x^{n+1}}\)</div><div class="t">Готовые формулы.</div></div>
+    <div class="r"><div class="m">\((uv)^{(n)}=\sum\limits_{k=0}^{n}C_n^k\,u^{(k)}v^{(n-k)}\)</div><div class="t">Формула Лейбница — как бином Ньютона. Выгодна, когда один множитель — многочлен: его производные быстро обнуляются.</div></div>
+    <div class="r"><div class="m">\(y''_{xx}=\dfrac{(y'_x)'_t}{x'_t}\)</div><div class="t">Вторая производная параметрической функции — снова делим на \(x'_t\). Ошибка: взять \(\frac{y''_t}{x''_t}\).</div></div>
+  </div>
+  <details class="self"><summary>Проверь себя: \((x^2e^x)^{(10)}\)</summary><div class="body">По Лейбницу выживают три слагаемых: \(x^2e^x+10\cdot2x\,e^x+45\cdot2\,e^x=e^x(x^2+20x+90)\).</div></details>
+
+  <h3>Теоремы о среднем</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Ферма</div><div class="t">Во внутренней точке экстремума дифференцируемой функции \(f'=0\).</div></div>
+    <div class="r"><div class="m">Ролль: \(f(a)=f(b)\Rightarrow\exists c:\ f'(c)=0\)</div><div class="t">Начали и закончили на одной высоте — где-то была горизонтальная касательная.</div></div>
+    <div class="r"><div class="m">Лагранж: \(f(b)-f(a)=f'(c)(b-a)\)</div><div class="t">Есть точка, где касательная параллельна хорде. Средняя скорость на участке где-то была мгновенной.</div></div>
+    <div class="r"><div class="m">Коши: \(\dfrac{f(b)-f(a)}{g(b)-g(a)}=\dfrac{f'(c)}{g'(c)}\)</div><div class="t">Из неё выводится правило Лопиталя.</div></div>
+    <div class="r"><div class="m">Пример</div><div class="t">\(f=x^2\) на \([0;2]\): \(\frac{4-0}{2}=2c\Rightarrow c=1\).</div></div>
+  </div>
+
+  <h3>Формула Тейлора с остатком</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\[f(x)=\sum_{k=0}^{n}\frac{f^{(k)}(a)}{k!}(x-a)^k+R_n(x)\]</div><div class="t">Разложение в любой точке \(a\), а не только в нуле.</div></div>
+    <div class="r"><div class="m">\(R_n=\dfrac{f^{(n+1)}(\xi)}{(n+1)!}(x-a)^{n+1}\)</div><div class="t">Остаток в форме Лагранжа — для оценки погрешности. В форме Пеано \(R_n=o\big((x-a)^n\big)\) — для пределов.</div></div>
+    <div class="r"><div class="m">\(e\approx1+1+\frac12+\frac16\approx2{,}667\)</div><div class="t">Погрешность меньше \(\frac{e}{4!}\lt\frac{3}{24}=0{,}125\). На деле \(e=2{,}718\), ошибка 0,05.</div></div>
+  </div>
+
+  <h3>Асимптоты и полное исследование <span class="beyond">вне списка</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Вертикальная \(x=a\)</div><div class="t">\(\lim\limits_{x\to a}f=\pm\infty\) хотя бы с одной стороны. Ищут в точках разрыва и на границах области определения.</div></div>
+    <div class="r"><div class="m">Наклонная \(y=kx+b\)</div><div class="t">\(k=\lim\frac{f(x)}{x}\), \(b=\lim\big(f(x)-kx\big)\) — отдельно при \(+\infty\) и \(-\infty\). При \(k=0\) — горизонтальная.</div></div>
+    <div class="r"><div class="m">\(y=\dfrac{x^2+1}{x}\)</div><div class="t">\(k=1\), \(b=\lim\frac1x=0\): асимптота \(y=x\); вертикальная \(x=0\).</div></div>
+    <div class="r"><div class="m">Схема исследования</div><div class="t">Область определения → чётность и период → нули и знаки → асимптоты → \(f'\): монотонность и экстремумы → \(f''\): выпуклость и перегибы → график.</div></div>
+  </div>
+  <details class="self"><summary>Проверь себя: асимптоты \(y=\frac{|x|}{x-1}\) (№ 154)</summary><div class="body">Вертикальная \(x=1\). При \(x\to+\infty\): \(y\to1\); при \(x\to-\infty\): \(y\to-1\) — две разные горизонтальные.</div></details>
+</section>
+
+<section id="eq">
+  <h2><span class="ix">05</span>Касательные и нормали</h2>
+  <p class="sec-sub">Главная трудность — перевести слова условия в формулы. Ниже словарь: слева то, что написано в задаче, справа то, что нужно записать.</p>
+
+  <div class="tw spot"><table>
+    <thead><tr><th>В условии написано</th><th>Записываем</th></tr></thead>
+    <tbody>
+      <tr><td>касательная параллельна прямой с наклоном k</td><td>\(f'(x_0)=k\)</td></tr>
+      <tr><td>касательная перпендикулярна прямой</td><td>\(f'(x_0)=-\dfrac1k\)</td></tr>
+      <tr><td>нормаль перпендикулярна прямой</td><td>\(f'(x_0)=k\) — нормаль ⊥ прямой ⇔ касательная ∥ прямой</td></tr>
+      <tr><td>нормаль параллельна прямой</td><td>\(f'(x_0)=-\dfrac1k\)</td></tr>
+      <tr><td>касательная параллельна оси Ox</td><td>\(f'(x_0)=0\)</td></tr>
+      <tr><td>в точке пересечения с осью Oy</td><td>\(x_0=0\)</td></tr>
+      <tr><td>в точке пересечения с осью Ox</td><td>решить \(f(x_0)=0\)</td></tr>
+      <tr><td>точка лежит на кривой</td><td>координаты подставляются в уравнение кривой</td></tr>
+      <tr><td>касательная проходит через точку (a; b) вне кривой</td><td>\(b=f(x_0)+f'(x_0)(a-x_0)\) — уравнение на \(x_0\)</td></tr>
+      <tr><td>под каким углом кривая пересекает ось Ox</td><td>\(\tg\alpha=f'(x_0)\)</td></tr>
+      <tr><td>угол между кривыми</td><td>\(\tg\varphi=\left|\dfrac{k_2-k_1}{1+k_1k_2}\right|\); если \(k_1k_2=-1\), угол 90°</td></tr>
+      <tr><td>плоскость параллельна плоскости \(Ax+By+Cz+D=0\)</td><td>градиент поверхности пропорционален \((A,B,C)\)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Формулы-кирпичики</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(Ax+By+C=0\ \Rightarrow\ k=-\dfrac{A}{B}\)</div><div class="t">Наклон прямой из общего уравнения. \(4x-3y+2=0\): \(k=\frac43\).<span class="flag">№ 165</span></div></div>
+    <div class="r"><div class="m">\(y-y_0=k(x-x_0)\)</div><div class="t">Прямая через точку с наклоном k. Из неё получаются все остальные.</div></div>
+    <div class="r"><div class="m">\(y=f(x_0)+f'(x_0)(x-x_0)\)</div><div class="t"><b>Касательная</b>: то же, где \(k=f'(x_0)\).</div></div>
+    <div class="r"><div class="m">\(y=f(x_0)-\dfrac{1}{f'(x_0)}(x-x_0)\)</div><div class="t"><b>Нормаль</b>: перпендикуляр к касательной, \(k_1k_2=-1\).</div></div>
+    <div class="r"><div class="m">\(y^2=2x^3\ \Rightarrow\ 2y\,y'=6x^2\)</div><div class="t"><b>Неявная производная</b>: дифференцируем обе части, помня, что \(y\) — функция от \(x\): \((y^2)'=2y\cdot y'\).</div></div>
+    <div class="r"><div class="m">\(F'_x(x-x_0)+F'_y(y-y_0)+F'_z(z-z_0)=0\)</div><div class="t"><b>Касательная плоскость</b> к \(F(x,y,z)=0\). Если поверхность \(z=f(x,y)\), берём \(F=f-z\).</div></div>
+    <div class="r"><div class="m">\(\dfrac{x-x_0}{F'_x}=\dfrac{y-y_0}{F'_y}=\dfrac{z-z_0}{F'_z}\)</div><div class="t"><b>Нормаль к поверхности</b>. Ноль в знаменателе допустим: он означает, что соответствующая координата постоянна.</div></div>
+  </div>
+
+  <h3>Алгоритм «в какой точке касательная…»</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Число \(k_{кас}\) из условия</div><div class="t">По словарю выше. Для № 165: прямая \(k=\frac43\), касательная ⊥, значит \(k_{кас}=-\frac34\).</div></div>
+    <div class="r"><div class="m">2. Производная \(y'\)</div><div class="t">Явно или неявно: \(y'=\dfrac{3x^2}{y}\).</div></div>
+    <div class="r"><div class="m">3. Первое уравнение</div><div class="t">\(y'=k_{кас}\): \(\dfrac{3x^2}{y}=-\dfrac34\), откуда \(y=-4x^2\).</div></div>
+    <div class="r"><div class="m">4. Второе уравнение — кривая</div><div class="t">\(y^2=2x^3\Rightarrow16x^4=2x^3\).</div></div>
+    <div class="r"><div class="m">5. Решить и проверить корни</div><div class="t">\(x=0\) даёт в \(y'\) деление 0/0 — отбросить. Остаётся \(x=\frac18\), \(y=-\frac1{16}\).</div></div>
+  </div>
+
+  <h3>№ 170 — досчитано</h3>
+  <p class="sec-sub">В чате её начали, но не закончили. Полное решение по тому же словарю.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">Вершина \(y=x^2-6x+6\)</div><div class="t">\(x_в=-\frac{b}{2a}=3\), \(y_в=9-18+6=-3\). Вершина \((3;-3)\).</div></div>
+    <div class="r"><div class="m">Прямая через O и вершину</div><div class="t">Наклон \(\frac{-3}{3}=-1\).</div></div>
+    <div class="r"><div class="m">Нормаль ⊥ этой прямой</div><div class="t">Наклон нормали \(=1\). Нормаль имеет наклон \(-\frac{1}{f'(x_0)}\), значит \(f'(x_0)=-1\).</div></div>
+    <div class="r"><div class="m">\(2x_0-6=-1\)</div><div class="t">\(x_0=\frac52\), \(y_0=\frac{25}{4}-15+6=-\frac{11}{4}\).</div></div>
+    <div class="r"><div class="m">\(y+\frac{11}{4}=x-\frac52\)</div><div class="t"><b>Ответ: \(y=x-\frac{21}{4}\)</b>, или \(4x-4y-21=0\).</div></div>
+  </div>
+</section>
+
+<section id="int">
+  <h2><span class="ix">06</span>Интегралы</h2>
+
+  <h3>Таблица</h3>
+  <div class="tw spot"><table>
+    <tbody>
+      <tr><td>\(\int x^n dx=\dfrac{x^{n+1}}{n+1}\)</td><td>\(\int\dfrac{dx}{x}=\ln|x|\)</td><td>\(\int e^xdx=e^x\)</td></tr>
+      <tr><td>\(\int\sin x\,dx=-\cos x\)</td><td>\(\int\cos x\,dx=\sin x\)</td><td>\(\int a^xdx=\dfrac{a^x}{\ln a}\)</td></tr>
+      <tr><td>\(\int\dfrac{dx}{\cos^2x}=\tg x\)</td><td>\(\int\dfrac{dx}{\sin^2x}=-\ctg x\)</td><td>\(\int\dfrac{f'(x)}{f(x)}dx=\ln|f(x)|\)</td></tr>
+      <tr><td>\(\int\dfrac{dx}{x^2+a^2}=\dfrac1a\arctg\dfrac xa\)</td><td>\(\int\dfrac{dx}{x^2-a^2}=\dfrac1{2a}\ln\left|\dfrac{x-a}{x+a}\right|\)</td><td>\(\int\dfrac{dx}{\sqrt{a^2-x^2}}=\arcsin\dfrac xa\)</td></tr>
+      <tr><td>\(\int\dfrac{dx}{\sqrt{x^2\pm a^2}}=\ln\left|x+\sqrt{x^2\pm a^2}\right|\)</td><td>\(\int f(kx+b)dx=\dfrac1kF(kx+b)\)</td><td>ко всем «+ C»</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Близнецы, которые путаются <span class="flag">№ 175</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\int\dfrac{2t\,dt}{t^2+3}=\ln(t^2+3)\)</div><div class="t">В числителе <b>производная знаменателя</b> → логарифм.</div></div>
+    <div class="r"><div class="m">\(\int\dfrac{2\,dt}{t^2+3}=\dfrac{2}{\sqrt3}\arctg\dfrac{t}{\sqrt3}\)</div><div class="t">В числителе <b>константа</b>, в знаменателе сумма квадратов → арктангенс.</div></div>
+    <div class="r"><div class="m">\(\int\dfrac{dt}{t^2-3}\)</div><div class="t">Константа, но разность квадратов → логарифм дроби \(\frac{1}{2\sqrt3}\ln\left|\frac{t-\sqrt3}{t+\sqrt3}\right|\).</div></div>
+    <div class="r"><div class="m">\(\int\dfrac{2x+1}{x^2+1}dx\)</div><div class="t">Смешанный случай: разбить на \(\frac{2x}{x^2+1}+\frac{1}{x^2+1}\) = логарифм + арктангенс (№ 177).</div></div>
+  </div>
+
+  <h3>Как выбрать метод — проверки по порядку</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Табличный?</div><div class="t">Или табличный после линейной замены: множитель \(\frac1k\). \(\int\cos(2x-3)dx=\frac12\sin(2x-3)\).</div></div>
+    <div class="r"><div class="m">2. Есть производная внутренней функции?</div><div class="t">Замена. \(\int\frac{x\,dx}{\sqrt{2x^2+1}}\): \(t=2x^2+1\), \(dt=4x\,dx\). Для \(x^n\cdot f(x^k)\) замена \(t=x^k\) проходит при \(n\ge k-1\) (№ 173).</div></div>
+    <div class="r"><div class="m">3. Многочлен × (eˣ, sin, cos, ln, arctg)?</div><div class="t">По частям. За \(u\) берут то, что <b>упрощается</b> при дифференцировании: ln, arctg, arcsin, многочлен (если рядом eˣ или sin).</div></div>
+    <div class="r"><div class="m">4. Рациональная дробь?</div><div class="t">Неправильную — сначала поделить (№ 99), правильную — на простейшие.</div></div>
+    <div class="r"><div class="m">5. Тригонометрия?</div><div class="t">По таблице случаев ниже.</div></div>
+    <div class="r"><div class="m">6. Корень из \(a^2\pm x^2\)?</div><div class="t">Тригонометрическая подстановка или вынос \(x\) из-под корня.</div></div>
+  </div>
+
+  <h3>По частям</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\int u\,dv=uv-\int v\,du\)</div><div class="t">Минус стоит в самой формуле. Дополнительный минус появляется только если \(du\) или \(v\) сами с минусом.</div></div>
+    <div class="r"><div class="m">\(\int x\ln x\,dx=\dfrac{x^2}{2}\ln x-\dfrac{x^2}{4}\)</div><div class="t">\(u=\ln x\), \(dv=x\,dx\).</div></div>
+    <div class="r"><div class="m">Циклический: \(\int e^x\cos x\,dx\)</div><div class="t">Части применяются дважды <b>с тем же выбором</b> \(u\) (тригонометрия), получается уравнение \(I=\ldots-I\). Ответ \(\frac{e^x(\sin x+\cos x)}{2}\).</div></div>
+    <div class="r"><div class="m">\(\int e^x\sin x\,dx=\dfrac{e^x(\sin x-\cos x)}{2}\)</div><div class="t">Парный результат. Знаки у sin и cos меняются местами.<span class="flag">отработка 178</span></div></div>
+  </div>
+
+  <h3>Рациональные дроби</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Множитель знаменателя</th><th>Слагаемые разложения</th><th>После интегрирования</th></tr></thead>
+    <tbody>
+      <tr><td>\(x-a\)</td><td>\(\dfrac{A}{x-a}\)</td><td>\(A\ln|x-a|\)</td></tr>
+      <tr><td>\((x-a)^2\)</td><td>\(\dfrac{A}{x-a}+\dfrac{B}{(x-a)^2}\)</td><td>\(A\ln|x-a|-\dfrac{B}{x-a}\) — <b>не логарифм</b></td></tr>
+      <tr><td>\(x^2+px+q\), \(D\lt0\)</td><td>\(\dfrac{Bx+C}{x^2+px+q}\)</td><td>логарифм + арктангенс</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Как искать коэффициенты.</b> Приравнять числители. Подставить корни знаменателя — каждый обнуляет лишние слагаемые. Недостающее — из коэффициента при старшей степени или свободного члена. Если коэффициент вышел нулём (№ 174, отработка: \(A=0\)) — это нормально.</div>
+
+  <h3>Тригонометрические интегралы</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Вид</th><th>Замена</th><th>Почему работает</th></tr></thead>
+    <tbody>
+      <tr><td>\(\sin^mx\cos^nx\), \(m\) нечётная</td><td>\(t=\cos x\)</td><td>один \(\sin x\) уходит в \(dt\), остальные через \(1-t^2\)</td></tr>
+      <tr><td>\(n\) нечётная</td><td>\(t=\sin x\)</td><td>то же зеркально</td></tr>
+      <tr><td>обе степени чётные</td><td>понижение степени</td><td>\(\sin^2=\frac{1-\cos2x}{2}\)</td></tr>
+      <tr><td>\(\dfrac{1}{\cos^{2k}x}\)</td><td>\(t=\tg x\)</td><td>\(dt=\frac{dx}{\cos^2x}\), остальное \(1+t^2\) (№ 176)</td></tr>
+      <tr><td>\(\dfrac{1}{\sin^{2k}x}\)</td><td>\(t=\ctg x\)</td><td>\(dt=-\frac{dx}{\sin^2x}\) — минус! (№ 182)</td></tr>
+      <tr><td>\(\sin x,\cos x\) в первой степени в дроби</td><td>\(t=\tg\frac x2\)</td><td>универсальная: всё рационально (№ 175)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="blk spot" style="margin-top:12px">
+    <div class="r"><div class="m">\[\sin x=\frac{2t}{1+t^2},\quad\cos x=\frac{1-t^2}{1+t^2},\quad dx=\frac{2\,dt}{1+t^2}\]</div><div class="t"><b>Универсальная подстановка</b> \(t=\tg\frac x2\). Эти три формулы — наизусть. Признак правильной подстановки: множители \(1+t^2\) сокращаются.</div></div>
+  </div>
+
+  <h3>Тригонометрическая подстановка</h3>
+  <p>Правило запоминания: под корнем должно оказаться то, что даёт тождество.</p>
+  <div class="tw spot"><table>
+    <thead><tr><th>Под корнем</th><th>Замена</th><th>Тождество</th><th>Корень превращается в</th></tr></thead>
+    <tbody>
+      <tr><td>\(a^2-x^2\)</td><td>\(x=a\sin t\)</td><td>\(1-\sin^2t=\cos^2t\)</td><td>\(a\cos t\)</td></tr>
+      <tr><td>\(a^2+x^2\)</td><td>\(x=a\tg t\)</td><td>\(1+\tg^2t=\dfrac1{\cos^2t}\)</td><td>\(\dfrac{a}{\cos t}\)</td></tr>
+      <tr><td>\(x^2-a^2\)</td><td>\(x=\dfrac{a}{\cos t}\)</td><td>\(\dfrac1{\cos^2t}-1=\tg^2t\)</td><td>\(a\tg t\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="trig spot" style="margin-top:12px; grid-template-columns:minmax(0,260px) minmax(0,1fr)">
+    <svg class="tri" viewBox="0 0 260 180" role="img" aria-label="Прямоугольный треугольник для возврата к x">
+      <polygon points="30,150 220,150 220,40" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent)"/>
+      <polyline points="206,150 206,136 220,136" fill="none" stroke="currentColor" stroke-width="1" style="color:var(--dim)"/>
+      <path d="M62,150 A32,32 0 0 0 58,135" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--dim)"/>
+      <text x="70" y="143" style="fill:var(--dim); font:13px Onest,sans-serif">t</text>
+      <text x="228" y="100" style="fill:var(--ink); font:14px Onest,sans-serif">x</text>
+      <text x="120" y="170" style="fill:var(--ink); font:14px Onest,sans-serif">a</text>
+      <text x="62" y="84" style="fill:var(--ink); font:14px Onest,sans-serif">√(x²+a²)</text>
+    </svg>
+    <div class="t" style="font-size:14.5px">
+      <p><b>Возврат к x</b> — самое неочевидное место. Из \(\tg t=\frac xa\) рисуем треугольник: противолежащий катет \(x\), прилежащий \(a\), гипотенуза \(\sqrt{x^2+a^2}\).</p>
+      <p style="margin:0">Отсюда читается всё: \(\sin t=\frac{x}{\sqrt{x^2+a^2}}\), \(\cos t=\frac{a}{\sqrt{x^2+a^2}}\). Для \(x=a\sin t\) — тот же приём: \(x\) напротив угла, гипотенуза \(a\).</p>
+    </div>
+  </div>
+
+  <h3>Альтернатива: вынести x из-под корня</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\sqrt{(x^2+9)^3}=x^3\left(1+\dfrac{9}{x^2}\right)^{3/2}\)</div><div class="t">Выносим \(x^2\) внутри скобки, затем степень \(\frac32\) делится между множителями: \((x^2)^{3/2}=x^3\) (при \(x>0\)).</div></div>
+    <div class="r"><div class="m">Рядом с \(dx\) стоит \(x^{-3}\)</div><div class="t">А это производная скобки с точностью до числа: \((9x^{-2})'=-18x^{-3}\). Делаем замену \(u=1+9x^{-2}\).</div></div>
+    <div class="r"><div class="m">Когда работает</div><div class="t">\(\int\frac{dx}{(x^2\pm a^2)^{3/2}}\), \(\int\frac{dx}{x^2\sqrt{x^2\pm a^2}}\) — когда после выноса снаружи набирается ровно \(x^{-3}\).</div></div>
+  </div>
+
+  <h3>Определённый интеграл</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\int_a^bf\,dx=F(b)-F(a)\)</div><div class="t">Ньютон–Лейбниц.</div></div>
+    <div class="r"><div class="m">\(\int_a^b=-\int_b^a\)</div><div class="t">Перестановка пределов меняет знак. Поэтому \(-\int_1^0=+\int_0^1\) (№ 182).</div></div>
+    <div class="r"><div class="m">Замена переменной</div><div class="t">Пределы пересчитываются сразу, к \(x\) не возвращаемся.</div></div>
+    <div class="r"><div class="m">\(\int_{-a}^{a}\) нечётной \(=0\)</div><div class="t">Сверх списка, но экономит время: у чётной функции \(=2\int_0^a\).</div></div>
+    <div class="r"><div class="m"><span class="hl">Проверка знака</span></div><div class="t">До вычислений: знак функции на отрезке и порядок пределов. Отбрасывает половину неверных вариантов.</div></div>
+    <div class="r"><div class="m">\(\int_{-\infty}^0\dfrac{dx}{(1-2x)^3}=\dfrac14\)</div><div class="t">Несобственный (№ 123): предел первообразной на бесконечности.</div></div>
+  </div>
+
+  <h3>Приложения</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(S=\int_a^by\,dx\)</div><div class="t">Площадь под кривой.</div></div>
+    <div class="r"><div class="m">\(S=\dfrac12\int_{\varphi_1}^{\varphi_2}r^2d\varphi\)</div><div class="t">В полярных координатах.</div></div>
+    <div class="r"><div class="m">\(L=\int_a^b\sqrt{1+y'^2}\,dx\)</div><div class="t">Длина дуги; для параметрической \(\int\sqrt{x_t'^2+y_t'^2}\,dt\).</div></div>
+    <div class="r"><div class="m">\(V=\pi\int_a^by^2dx\)</div><div class="t">Объём вращения вокруг Ox.</div></div>
+  </div>
+
+  <h3>Определённый интеграл: что это <span class="beyond">вне списка</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\int_a^bf\,dx=\lim\limits_{\max\Delta x_i\to0}\sum f(\xi_i)\Delta x_i\)</div><div class="t">Предел интегральных сумм Римана: площадь из тонких прямоугольников (№ 67).</div></div>
+    <div class="r"><div class="m">\(m(b-a)\le\int_a^bf\,dx\le M(b-a)\)</div><div class="t">Оценка через наименьшее и наибольшее значения — быстрый отсев вариантов.</div></div>
+    <div class="r"><div class="m">\(\int_a^bf\,dx=f(c)\,(b-a)\)</div><div class="t">Теорема о среднем: \(f(c)\) — среднее значение функции на отрезке.</div></div>
+    <div class="r"><div class="m">\(\dfrac{d}{dx}\int_a^xf(t)\,dt=f(x)\)</div><div class="t">Интеграл и производная — взаимно обратные операции. Из этого и следует формула Ньютона–Лейбница.</div></div>
+  </div>
+
+  <h3>Несобственные интегралы: сходимость</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">I рода: \(\int_a^{\infty}f=\lim\limits_{B\to\infty}\int_a^Bf\)</div><div class="t">Бесконечный промежуток. Сходится, если предел конечен.</div></div>
+    <div class="r"><div class="m">II рода: функция неограниченна у точки</div><div class="t">\(\int_0^1\frac{dx}{\sqrt x}=\lim\limits_{\varepsilon\to0}\int_\varepsilon^1\frac{dx}{\sqrt x}=2\).</div></div>
+    <div class="r"><div class="m">\(\int_1^{\infty}\dfrac{dx}{x^p}\) сходится \(\iff p>1\)</div><div class="t">Эталон на бесконечности.</div></div>
+    <div class="r"><div class="m">\(\int_0^{1}\dfrac{dx}{x^p}\) сходится \(\iff p\lt1\)</div><div class="t">Эталон у нуля — неравенство в другую сторону. При \(p=1\) расходятся оба.</div></div>
+    <div class="r"><div class="m">Признак сравнения</div><div class="t">\(f\sim g\) ⇒ сходятся или расходятся вместе. \(\int_1^\infty\frac{dx}{x^2+x}\sim\frac1{x^2}\) — сходится; \(\int_1^\infty\frac{dx}{\sqrt{x+1}}\sim\frac1{x^{1/2}}\) — расходится.</div></div>
+    <div class="r"><div class="m">Абсолютная сходимость</div><div class="t">\(\int|f|\) сходится ⇒ \(\int f\) сходится. \(\left|\frac{\sin x}{x^2}\right|\le\frac1{x^2}\), значит \(\int_1^\infty\frac{\sin x}{x^2}dx\) сходится.</div></div>
+  </div>
+  <div class="note"><b>Ловушка глубокого уровня.</b> \(\int_{-1}^{1}\frac{dx}{x^2}\) «по Ньютону–Лейбницу» даёт \(-2\) — отрицательный интеграл от положительной функции. На самом деле он расходится: в нуле разрыв, и формула неприменима. Прежде чем подставлять пределы, проверьте, нет ли разрыва внутри отрезка.</div>
+
+  <h3>Интегралы, которые не берутся</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\int e^{-x^2}dx,\ \int\dfrac{\sin x}{x}dx,\ \int\dfrac{dx}{\ln x},\ \int\sin x^2\,dx\)</div><div class="t">Первообразные существуют, но через элементарные функции не выражаются. Если в решении вышло такое — ошибка раньше или нужен другой путь.</div></div>
+    <div class="r"><div class="m">\(\int_{-\infty}^{\infty}e^{-x^2}dx=\sqrt\pi\)</div><div class="t">Интеграл Пуассона: неопределённый не берётся, а несобственный считается точно — через двойной интеграл в полярных координатах (раздел «Кратные интегралы»).</div></div>
+  </div>
+</section>
+
+<section id="ser">
+  <h2><span class="ix">07</span>Ряды <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">Ряд — бесконечная сумма, и главный вопрос всегда один: конечна ли она. В вашем списке этой темы нет, но в тестах на остаточные знания она встречается почти всегда.</p>
+
+  <h3>Числовые ряды: основа</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\sum a_n\) сходится, если \(S_n=a_1+\ldots+a_n\to S\)</div><div class="t">Ряд — это предел последовательности частичных сумм.</div></div>
+    <div class="r"><div class="m">\(\sum\limits_{n=0}^{\infty}q^n=\dfrac1{1-q},\ |q|\lt1\)</div><div class="t">Геометрический ряд — главный эталон. \(\sum\limits_{n=1}^\infty\frac1{2^n}=1\).</div></div>
+    <div class="r"><div class="m">\(\sum\dfrac1{n(n+1)}=\sum\left(\dfrac1n-\dfrac1{n+1}\right)=1\)</div><div class="t">Телескопический ряд: слагаемые сокращаются цепочкой, остаётся первое.</div></div>
+    <div class="r"><div class="m">Необходимый признак: сходится ⇒ \(a_n\to0\)</div><div class="t">Если \(a_n\not\to0\), ряд расходится сразу: \(\sum\frac{n}{n+1}\). Обратное <b>неверно</b>.</div></div>
+    <div class="r"><div class="m">\(\sum\dfrac1{n^p}\) сходится \(\iff p>1\)</div><div class="t">Второй эталон. При \(p=1\) — гармонический ряд: \(\frac1n\to0\), а сумма бесконечна.</div></div>
+  </div>
+
+  <div class="lab spot" id="lab-ser">
+    <div class="lab-t">МОДЕЛЬ · ЧАСТИЧНЫЕ СУММЫ \(\sum 1/n^p\)</div>
+    <svg id="ser-svg" viewBox="0 0 700 260" role="img" aria-label="График частичных сумм ряда"></svg>
+    <div class="ctl">
+      <label for="ser-p">p <input type="range" id="ser-p" min="0.3" max="3" step="0.05" value="1"><output id="ser-pv">1,00</output></label>
+      <label for="ser-alt"><input type="checkbox" id="ser-alt"> знакочередующийся \((-1)^{n+1}\)</label>
+    </div>
+    <div class="verdict" id="ser-v"></div>
+  </div>
+
+  <h3>Признаки сходимости</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Сравнение: \(a_n\sim b_n\)</div><div class="t">Ведут себя одинаково. \(\sum\frac1{n^2+3n}\sim\frac1{n^2}\) — сх.; \(\sum\sin\frac1n\sim\frac1n\) — расх.; \(\sum\left(1-\cos\frac1n\right)\sim\frac1{2n^2}\) — сх.</div></div>
+    <div class="r"><div class="m">Даламбер: \(\lim\dfrac{a_{n+1}}{a_n}=q\)</div><div class="t">\(q\lt1\) — сх., \(q>1\) — расх., \(q=1\) — признак молчит. Для факториалов и показательных: \(\sum\frac{n}{2^n}\), \(q=\frac12\).</div></div>
+    <div class="r"><div class="m">Коши радикальный: \(\lim\sqrt[n]{a_n}=q\)</div><div class="t">Когда всё в степени \(n\): \(\sum\left(\frac{n}{2n+1}\right)^n\), \(q=\frac12\) — сх.</div></div>
+    <div class="r"><div class="m">Интегральный</div><div class="t">\(a_n=f(n)\), \(f\) убывает ⇒ ряд и \(\int_1^\infty f\) ведут себя одинаково. \(\sum\frac1{n\ln n}\): \(\int\frac{dx}{x\ln x}=\ln\ln x\to\infty\) — расх.</div></div>
+  </div>
+  <div class="tw spot"><table>
+    <thead><tr><th>В \(a_n\) есть</th><th>Признак</th></tr></thead>
+    <tbody>
+      <tr><td>многочлены, корни</td><td>сравнение с \(\frac1{n^p}\) по старшим степеням</td></tr>
+      <tr><td>\(n!\), \(a^n\)</td><td>Даламбер: \(\sum\frac{n!}{n^n}\), \(\frac{a_{n+1}}{a_n}=\left(\frac{n}{n+1}\right)^n\to\frac1e\lt1\) — сх.</td></tr>
+      <tr><td>всё выражение в степени \(n\)</td><td>радикальный Коши</td></tr>
+      <tr><td>\(\ln n\)</td><td>интегральный или сравнение</td></tr>
+      <tr><td>\(\sin,\ \cos,\ \ln(1+\cdot)\) малого аргумента</td><td>эквивалентности, затем эталон</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Знакочередующиеся ряды</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Лейбниц: \(|a_n|\downarrow0\ \Rightarrow\ \sum(-1)^na_n\) сходится</div><div class="t">Нужны оба условия: монотонное убывание и стремление к нулю.</div></div>
+    <div class="r"><div class="m">\(|S-S_n|\le|a_{n+1}|\)</div><div class="t">Погрешность не больше первого отброшенного слагаемого.</div></div>
+    <div class="r"><div class="m">Абсолютная сходимость</div><div class="t">Сходится ряд из модулей: \(\sum\frac{(-1)^n}{n^2}\).</div></div>
+    <div class="r"><div class="m">Условная сходимость</div><div class="t">Сам ряд сходится, из модулей — нет: \(\sum\frac{(-1)^{n+1}}{n}=\ln2\).</div></div>
+  </div>
+  <div class="note"><b>Теорема Римана.</b> Условно сходящийся ряд перестановкой слагаемых можно заставить сходиться к любому числу — или расходиться. У абсолютно сходящихся сумма от порядка не зависит. Поэтому различие абсолютной и условной сходимости — не формальность.</div>
+
+  <h3>Степенные ряды</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\sum c_n(x-a)^n\)</div><div class="t">Сходится на интервале \((a-R;\,a+R)\), вне его расходится.</div></div>
+    <div class="r"><div class="m">\(R=\lim\left|\dfrac{c_n}{c_{n+1}}\right|=\dfrac1{\lim\sqrt[n]{|c_n|}}\)</div><div class="t">Радиус — через Даламбера или Коши. Концы интервала проверяются отдельно, подстановкой.</div></div>
+    <div class="r"><div class="m">\(\sum\dfrac{x^n}{n\cdot3^n}\)</div><div class="t">\(R=3\). При \(x=3\): \(\sum\frac1n\) — расх. При \(x=-3\): \(\sum\frac{(-1)^n}{n}\) — сх. по Лейбницу. Область: \([-3;\,3)\).</div></div>
+    <div class="r"><div class="m">Почленно \(\frac{d}{dx}\) и \(\int\)</div><div class="t">Радиус не меняется. \(\sum x^n=\frac1{1-x}\Rightarrow\sum nx^n=\frac{x}{(1-x)^2}\Rightarrow\sum\frac{n}{2^n}=2\).</div></div>
+  </div>
+
+  <h3>Ряды Маклорена с областями сходимости</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Функция</th><th>Ряд</th><th>Где верно</th></tr></thead>
+    <tbody>
+      <tr><td>\(e^x\)</td><td>\(\sum\frac{x^n}{n!}\)</td><td>\(\mathbb R\)</td></tr>
+      <tr><td>\(\sin x\)</td><td>\(\sum\frac{(-1)^nx^{2n+1}}{(2n+1)!}\)</td><td>\(\mathbb R\)</td></tr>
+      <tr><td>\(\cos x\)</td><td>\(\sum\frac{(-1)^nx^{2n}}{(2n)!}\)</td><td>\(\mathbb R\)</td></tr>
+      <tr><td>\(\frac1{1-x}\)</td><td>\(\sum x^n\)</td><td>\((-1;1)\)</td></tr>
+      <tr><td>\(\ln(1+x)\)</td><td>\(\sum\frac{(-1)^{n+1}x^n}{n}\)</td><td>\((-1;1]\)</td></tr>
+      <tr><td>\(\arctg x\)</td><td>\(\sum\frac{(-1)^nx^{2n+1}}{2n+1}\)</td><td>\([-1;1]\)</td></tr>
+      <tr><td>\((1+x)^\alpha\)</td><td>\(1+\alpha x+\frac{\alpha(\alpha-1)}{2!}x^2+\ldots\)</td><td>\((-1;1)\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="ok"><b>Красивое следствие.</b> На концах интервалов получаются знаменитые суммы: \(\ln2=1-\frac12+\frac13-\ldots\) и \(\frac\pi4=1-\frac13+\frac15-\ldots\)</div>
+
+  <h3>Ряды Фурье</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(f(x)=\dfrac{a_0}{2}+\sum\limits_{n=1}^{\infty}(a_n\cos nx+b_n\sin nx)\)</div><div class="t">Функция на \([-\pi;\pi]\) раскладывается на гармоники — как звук на ноты.</div></div>
+    <div class="r"><div class="m">\(a_n=\dfrac1\pi\int_{-\pi}^{\pi}f\cos nx\,dx,\quad b_n=\dfrac1\pi\int_{-\pi}^{\pi}f\sin nx\,dx\)</div><div class="t">Коэффициенты — «проекции» на синусы и косинусы: они попарно ортогональны, как базис в линале.</div></div>
+    <div class="r"><div class="m">Чётная ⇒ только косинусы</div><div class="t">Нечётная ⇒ только синусы. Сразу половина коэффициентов равна нулю.</div></div>
+    <div class="r"><div class="m">Теорема Дирихле</div><div class="t">В точке разрыва ряд сходится к среднему \(\frac{f(x-0)+f(x+0)}{2}\).</div></div>
+    <div class="r"><div class="m">\(f=\operatorname{sign}x\)</div><div class="t">\(b_n=\frac{4}{\pi n}\) для нечётных \(n\): \(f=\frac4\pi\left(\sin x+\frac{\sin3x}{3}+\frac{\sin5x}{5}+\ldots\right)\). При \(x=\frac\pi2\) снова выходит \(\frac\pi4=1-\frac13+\frac15-\ldots\)</div></div>
+  </div>
+
+  <div class="lab spot" id="lab-four">
+    <div class="lab-t">МОДЕЛЬ · СУММА ГАРМОНИК ДЛЯ \(\operatorname{sign}x\)</div>
+    <svg id="four-svg" viewBox="0 0 700 250" role="img" aria-label="Приближение ступеньки суммой синусов"></svg>
+    <div class="ctl">
+      <label for="four-n">гармоник <input type="range" id="four-n" min="1" max="40" step="1" value="3"><output id="four-nv">3</output></label>
+    </div>
+    <div class="verdict" id="four-v"></div>
+  </div>
+</section>
+
+<section id="fnp">
+  <h2><span class="ix">08</span>Функции нескольких переменных</h2>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\dfrac{\partial z}{\partial x}\)</div><div class="t">Все остальные переменные — константы.</div></div>
+    <div class="r"><div class="m">\(dz=z'_xdx+z'_ydy,\quad\Delta z\approx dz\)</div><div class="t">Полный дифференциал = линейная часть приращения (№ 128).</div></div>
+    <div class="r"><div class="m">\(\nabla u=(u'_x,u'_y,u'_z)\)</div><div class="t">Градиент. Производная по направлению максимальна вдоль него и равна \(|\nabla u|\).</div></div>
+    <div class="r"><div class="m">Ортогональность градиентов</div><div class="t">\((\nabla u,\nabla v)=0\). Точку подставлять как можно раньше (№ 185). Если уравнение на параметр без корней — ответ «ни при каких».</div></div>
+    <div class="r"><div class="m">Экстремум: \(z'_x=z'_y=0\)</div><div class="t">Затем \(A=z''_{xx}\), \(B=z''_{xy}\), \(C=z''_{yy}\), \(\Delta=AC-B^2\). \(\Delta>0\): экстремум (\(A>0\) — min). \(\Delta\lt0\): седло.</div></div>
+  </div>
+
+  <h3>«Показать, что функция удовлетворяет уравнению»</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Левая часть</div><div class="t">Там производные — их <b>вычисляем</b>. Функцию \(\varphi\) оставляем буквой и дифференцируем по цепному правилу.</div></div>
+    <div class="r"><div class="m">2. Правая часть</div><div class="t">Там нет производных — просто <b>подставляем</b> формулу \(z\) из условия и сокращаем.</div></div>
+    <div class="r"><div class="m">3. Сравнить 1 и 2</div><div class="t">Совпали — доказано. Сравнивать с правой частью, а не с самой \(z\).<span class="flag">№ 183</span></div></div>
+    <div class="r"><div class="m">Подсказка по устройству</div><div class="t">Смотрите, от какой комбинации зависит \(\varphi\): \(x-y\) «убивается» суммой производных, \(x^2-y^2\) — суммой с множителями \(\frac1x,\frac1y\).</div></div>
+  </div>
+
+  <h3>Область определения</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\ln u\): \(u>0\); \(\sqrt u\): \(u\ge0\)</div><div class="t">Базовые ограничения.</div></div>
+    <div class="r"><div class="m">\(\arccos u,\ \arcsin u\): \(-1\le u\le1\)</div><div class="t">Плюс знаменатель ≠ 0.</div></div>
+    <div class="r"><div class="m">Неравенство с дробью</div><div class="t">Умножать на знаменатель можно только разобрав <b>два случая его знака</b>, иначе теряется половина области (№ 186). Удобно сначала разделить почленно: \(\frac{x+y}{x}=1+\frac yx\).</div></div>
+  </div>
+
+  <h3>Предел и дифференцируемость <span class="beyond">вне списка</span></h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Предел не должен зависеть от пути</div><div class="t">На плоскости к точке подходят по бесконечному числу направлений, а не по двум, как на прямой.</div></div>
+    <div class="r"><div class="m">\(f=\dfrac{xy}{x^2+y^2}\) в \((0;0)\)</div><div class="t">По прямой \(y=kx\): \(\frac{k}{1+k^2}\) — зависит от \(k\), предела нет.</div></div>
+    <div class="r"><div class="m">Частные производные ≠ дифференцируемость</div><div class="t">У той же функции \(f'_x(0,0)=f'_y(0,0)=0\), а она даже не непрерывна. Достаточное условие дифференцируемости — <b>непрерывность</b> частных производных.</div></div>
+  </div>
+
+  <h3>Производная по направлению, неявные функции</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\dfrac{\partial u}{\partial l}=(\nabla u,\vec l^{\,0})=u'_x\cos\alpha+u'_y\cos\beta+u'_z\cos\gamma\)</div><div class="t">\(\vec l^{\,0}\) — <b>единичный</b> вектор направления. Главная ошибка — забыть нормировать.</div></div>
+    <div class="r"><div class="m">\(u=x^2+y^2\) в \((1;1)\) по \(\vec l=(3;4)\)</div><div class="t">\(\nabla u=(2;2)\), \(\vec l^{\,0}=\left(\frac35;\frac45\right)\), ответ \(\frac{14}{5}\).</div></div>
+    <div class="r"><div class="m">\(F(x,y)=0\Rightarrow y'=-\dfrac{F'_x}{F'_y}\)</div><div class="t">Готовая формула неявной производной. № 165: \(F=y^2-2x^3\), \(y'=\frac{6x^2}{2y}=\frac{3x^2}{y}\).</div></div>
+    <div class="r"><div class="m">\(F(x,y,z)=0\Rightarrow z'_x=-\dfrac{F'_x}{F'_z},\ z'_y=-\dfrac{F'_y}{F'_z}\)</div><div class="t">То же для поверхности.</div></div>
+  </div>
+
+  <h3>Условный экстремум: метод Лагранжа</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(L=f+\lambda\varphi\)</div><div class="t">Экстремум \(f\) при условии \(\varphi=0\).</div></div>
+    <div class="r"><div class="m">\(L'_x=0,\ L'_y=0,\ \varphi=0\)</div><div class="t">Три уравнения на \(x,y,\lambda\).</div></div>
+    <div class="r"><div class="m">Геометрия</div><div class="t">В точке условного экстремума \(\nabla f\parallel\nabla\varphi\): линия уровня \(f\) касается кривой-ограничения.</div></div>
+    <div class="r"><div class="m">\(f=xy\) при \(x+y=2\)</div><div class="t">\(y+\lambda=0,\ x+\lambda=0\Rightarrow x=y=1\), \(f_{\max}=1\). Проверка: \(x(2-x)\) — парабола с вершиной в 1.</div></div>
+  </div>
+
+  <h3>Наибольшее и наименьшее в замкнутой области</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Алгоритм</div><div class="t">Критические точки внутри → экстремумы на каждом участке границы (сводим к функции одной переменной) → угловые точки → выбрать max и min из всех найденных значений.</div></div>
+    <div class="r"><div class="m">Связь с линалом</div><div class="t">\(\Delta=AC-B^2>0\) — это критерий Сильвестра для квадратичной формы \(d^2z=A\,dx^2+2B\,dx\,dy+C\,dy^2\). Второй дифференциал положительно определён — минимум.</div></div>
+  </div>
+</section>
+
+<section id="mult">
+  <h2><span class="ix">09</span>Кратные интегралы <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">Двойной интеграл — объём под поверхностью, как обычный — площадь под кривой. Считается двумя обычными интегралами подряд.</p>
+
+  <h3>Двойной интеграл</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\iint_Df\,dx\,dy=\int_a^bdx\int_{y_1(x)}^{y_2(x)}f\,dy\)</div><div class="t">Повторный интеграл: сначала внутренний по \(y\) (\(x\) — константа), затем внешний. Пределы внутреннего зависят от \(x\), внешнего — числа.</div></div>
+    <div class="r"><div class="m">\(\iint_D1\,dx\,dy=S_D\)</div><div class="t">При \(f=1\) — площадь области.</div></div>
+    <div class="r"><div class="m">\(D:\ x\ge0,\ y\ge0,\ x+y\le1\)</div><div class="t">\(\iint_Dx\,dx\,dy=\int_0^1x\,dx\int_0^{1-x}dy=\int_0^1x(1-x)\,dx=\frac16\).</div></div>
+  </div>
+
+  <h3>Смена порядка интегрирования</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Первый шаг — рисунок</div><div class="t">Без картинки области порядок не поменять: границы восстанавливаются из пределов.</div></div>
+    <div class="r"><div class="m">\(\int_0^1dx\int_{x^2}^{x}f\,dy=\int_0^1dy\int_{y}^{\sqrt y}f\,dx\)</div><div class="t">Область между параболой \(y=x^2\) и прямой \(y=x\). По \(y\) от 0 до 1, по \(x\) — от прямой \(x=y\) до параболы \(x=\sqrt y\).</div></div>
+    <div class="r"><div class="m">Зачем это нужно</div><div class="t">В одном порядке интеграл может не браться, а в другом — браться: \(\int_0^1dx\int_x^1e^{y^2}dy=\int_0^1y\,e^{y^2}dy=\frac{e-1}{2}\).</div></div>
+  </div>
+
+  <h3>Замена переменных и полярные координаты</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(x=r\cos\varphi,\ y=r\sin\varphi,\ dx\,dy=r\,dr\,d\varphi\)</div><div class="t">Множитель \(r\) — якобиан. Забыть его — главная ошибка темы.</div></div>
+    <div class="r"><div class="m">\(dx\,dy=|J|\,du\,dv,\ J=\begin{vmatrix}x'_u&amp;x'_v\\y'_u&amp;y'_v\end{vmatrix}\)</div><div class="t">Якобиан показывает, во сколько раз растягивается площадь при замене. Для полярных \(J=r\).</div></div>
+    <div class="r"><div class="m">Когда переходить</div><div class="t">Область — круг, кольцо, сектор; под интегралом есть \(x^2+y^2\).</div></div>
+    <div class="r"><div class="m">\(\iint_{x^2+y^2\le1}e^{-(x^2+y^2)}dx\,dy\)</div><div class="t">\(=\int_0^{2\pi}d\varphi\int_0^1e^{-r^2}r\,dr=\pi\left(1-\frac1e\right)\).</div></div>
+    <div class="r"><div class="m">Интеграл Пуассона</div><div class="t">По всей плоскости: \(\left(\int e^{-x^2}dx\right)^2=\iint e^{-(x^2+y^2)}=\int_0^{2\pi}\!\!\int_0^\infty e^{-r^2}r\,dr\,d\varphi=\pi\), значит \(\int_{-\infty}^{\infty}e^{-x^2}dx=\sqrt\pi\). Неберущийся интеграл посчитан через двойной.</div></div>
+  </div>
+
+  <h3>Тройной интеграл</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\iiint_V1\,dV=\) объём</div><div class="t">Считается тремя интегралами подряд.</div></div>
+    <div class="r"><div class="m">Цилиндрические: \(dV=r\,dr\,d\varphi\,dz\)</div><div class="t">Для тел вращения вокруг \(Oz\): цилиндры, конусы, параболоиды.</div></div>
+    <div class="r"><div class="m">Сферические: \(dV=\rho^2\sin\theta\,d\rho\,d\theta\,d\varphi\)</div><div class="t">Для шаров: \(\theta\in[0;\pi]\), \(\varphi\in[0;2\pi]\).</div></div>
+    <div class="r"><div class="m">Объём шара</div><div class="t">\(\int_0^{2\pi}d\varphi\int_0^\pi\sin\theta\,d\theta\int_0^R\rho^2d\rho=2\pi\cdot2\cdot\frac{R^3}{3}=\frac43\pi R^3\).</div></div>
+    <div class="r"><div class="m">Приложения</div><div class="t">Масса \(m=\iint\rho\,dS\), центр масс \(x_c=\frac1m\iint x\rho\,dS\).</div></div>
+  </div>
+</section>
+
+<section id="vec">
+  <h2><span class="ix">10</span>Поле и потоки <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">Интегралы по кривым и поверхностям — язык физики: работа силы, поток жидкости, циркуляция. Логичное продолжение ФНП и кратных интегралов.</p>
+
+  <h3>Криволинейные интегралы</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">I рода: \(\int_Lf\,dl,\ dl=\sqrt{x_t'^2+y_t'^2}\,dt\)</div><div class="t">Масса проволоки. От направления обхода не зависит.</div></div>
+    <div class="r"><div class="m">II рода: \(\int_LP\,dx+Q\,dy\)</div><div class="t">Работа силы \(\vec F=(P;Q)\) вдоль пути. При смене направления меняет знак.</div></div>
+    <div class="r"><div class="m">\(\oint y\,dx-x\,dy\) по окружности</div><div class="t">\(x=\cos t,\ y=\sin t\): \(\int_0^{2\pi}(-\sin^2t-\cos^2t)\,dt=-2\pi\).</div></div>
+  </div>
+
+  <h3>Формула Грина</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\oint_LP\,dx+Q\,dy=\iint_D(Q'_x-P'_y)\,dx\,dy\)</div><div class="t">Интеграл по замкнутому контуру (против часовой стрелки) равен двойному интегралу по области внутри.</div></div>
+    <div class="r"><div class="m">Проверка на примере</div><div class="t">\(P=y,\ Q=-x\): \(Q'_x-P'_y=-2\), по единичному кругу \(-2\cdot\pi=-2\pi\). Совпало.</div></div>
+    <div class="r"><div class="m">\(S=\frac12\oint x\,dy-y\,dx\)</div><div class="t">Площадь через контур. Эллипс \(x=a\cos t,\ y=b\sin t\): \(S=\pi ab\).</div></div>
+  </div>
+
+  <h3>Независимость от пути, потенциал</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(P'_y=Q'_x\)</div><div class="t">В односвязной области равносильно: интеграл не зависит от пути ⇔ по любому замкнутому контуру равен 0 ⇔ \(P\,dx+Q\,dy=dU\).</div></div>
+    <div class="r"><div class="m">\(\int_A^BP\,dx+Q\,dy=U(B)-U(A)\)</div><div class="t">Аналог Ньютона–Лейбница. \(\int_{(0,0)}^{(1,2)}2xy\,dx+x^2dy\): \(U=x^2y\), ответ 2.</div></div>
+    <div class="r"><div class="m">Как найти \(U\)</div><div class="t">\(U=\int P\,dx+C(y)\), затем \(C(y)\) из условия \(U'_y=Q\).</div></div>
+  </div>
+
+  <h3>Векторный анализ</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\operatorname{div}\vec F=P'_x+Q'_y+R'_z\)</div><div class="t">Дивергенция: сколько «вытекает» из точки. Источник или сток.</div></div>
+    <div class="r"><div class="m">\(\operatorname{rot}\vec F=\nabla\times\vec F\)</div><div class="t">Ротор — завихрённость. \(\operatorname{rot}\vec F=0\) — поле потенциально.</div></div>
+    <div class="r"><div class="m">Остроградский–Гаусс: \(\oint_S\vec F\cdot\vec n\,dS=\iiint_V\operatorname{div}\vec F\,dV\)</div><div class="t">Поток через замкнутую поверхность. \(\vec F=(x,y,z)\) через сферу радиуса \(R\): \(\operatorname{div}=3\), поток \(4\pi R^3\).</div></div>
+    <div class="r"><div class="m">Стокс: \(\oint_L\vec F\cdot d\vec r=\iint_S\operatorname{rot}\vec F\cdot\vec n\,dS\)</div><div class="t">Циркуляция по контуру равна потоку ротора через натянутую на него поверхность.</div></div>
+  </div>
+  <div class="note"><b>Одна идея в четырёх видах.</b> Ньютон–Лейбниц, Грин, Стокс и Гаусс утверждают одно и то же: интеграл от «производной» по области равен интегралу от самой функции по её границе. Отрезок и два конца, область и контур, тело и поверхность.</div>
+</section>
+
+<section id="ode">
+  <h2><span class="ix">11</span>Дифференциальные уравнения <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">Неизвестное здесь — функция, а в уравнении есть её производные. Ответ — семейство функций с константами; конкретную выбирают начальные условия.</p>
+
+  <h3>Первого порядка: как распознать тип</h3>
+  <div class="tw spot"><table>
+    <thead><tr><th>Вид</th><th>Тип</th><th>Приём</th></tr></thead>
+    <tbody>
+      <tr><td>\(y'=f(x)\,g(y)\)</td><td>с разделяющимися переменными</td><td>\(\frac{dy}{g(y)}=f(x)\,dx\), интегрировать обе части</td></tr>
+      <tr><td>\(y'=\varphi\!\left(\frac yx\right)\)</td><td>однородное</td><td>\(y=ux,\ y'=u+xu'\)</td></tr>
+      <tr><td>\(y'+p(x)y=q(x)\)</td><td>линейное</td><td>\(y=uv\) или множитель \(e^{\int p\,dx}\)</td></tr>
+      <tr><td>\(y'+py=qy^n\)</td><td>Бернулли</td><td>\(z=y^{1-n}\) сводит к линейному</td></tr>
+      <tr><td>\(P\,dx+Q\,dy=0,\ P'_y=Q'_x\)</td><td>в полных дифференциалах</td><td>найти \(U\), ответ \(U=C\)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(y'=xy\)</div><div class="t">\(\frac{dy}{y}=x\,dx\Rightarrow\ln|y|=\frac{x^2}{2}+C\Rightarrow y=Ce^{x^2/2}\). Решение \(y=0\) не потеряно: оно получается при \(C=0\).</div></div>
+    <div class="r"><div class="m">\(y'=\frac yx+1\)</div><div class="t">\(u+xu'=u+1\Rightarrow u'=\frac1x\Rightarrow u=\ln|x|+C\), \(y=x(\ln|x|+C)\).</div></div>
+    <div class="r"><div class="m">\(y'+\frac yx=x\)</div><div class="t">Множитель \(e^{\int dx/x}=x\): \((xy)'=x^2\Rightarrow xy=\frac{x^3}{3}+C\), \(y=\frac{x^2}{3}+\frac Cx\).</div></div>
+    <div class="r"><div class="m">\(2xy\,dx+x^2dy=0\)</div><div class="t">\(P'_y=2x=Q'_x\), \(U=x^2y\), ответ \(x^2y=C\).</div></div>
+  </div>
+
+  <h3>Второго порядка с постоянными коэффициентами</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(y''+py'+qy=0\ \longrightarrow\ \lambda^2+p\lambda+q=0\)</div><div class="t">Ищем решение в виде \(e^{\lambda x}\) — получается характеристическое уравнение. Его корни целиком определяют ответ.</div></div>
+  </div>
+  <div class="tw spot"><table>
+    <thead><tr><th>Корни</th><th>Общее решение</th><th>Пример</th></tr></thead>
+    <tbody>
+      <tr><td>\(\lambda_1\ne\lambda_2\), действительные</td><td>\(C_1e^{\lambda_1x}+C_2e^{\lambda_2x}\)</td><td>\(y''-5y'+6y=0\): \(C_1e^{2x}+C_2e^{3x}\)</td></tr>
+      <tr><td>\(\lambda_1=\lambda_2=\lambda\)</td><td>\((C_1+C_2x)\,e^{\lambda x}\)</td><td>\(y''-4y'+4y=0\): \((C_1+C_2x)e^{2x}\)</td></tr>
+      <tr><td>\(\alpha\pm\beta i\)</td><td>\(e^{\alpha x}(C_1\cos\beta x+C_2\sin\beta x)\)</td><td>\(y''+2y'+5y=0\): \(e^{-x}(C_1\cos2x+C_2\sin2x)\)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="lab spot" id="lab-ode">
+    <div class="lab-t">МОДЕЛЬ · \(y''+py'+qy=0,\ y(0)=1,\ y'(0)=0\)</div>
+    <svg id="ode-svg" viewBox="0 0 700 250" role="img" aria-label="График решения дифференциального уравнения"></svg>
+    <div class="ctl">
+      <label for="ode-p">p <input type="range" id="ode-p" min="-1" max="4" step="0.1" value="0.6"><output id="ode-pv">0,60</output></label>
+      <label for="ode-q">q <input type="range" id="ode-q" min="0" max="10" step="0.1" value="4"><output id="ode-qv">4,00</output></label>
+    </div>
+    <div class="verdict" id="ode-v"></div>
+  </div>
+
+  <h3>Неоднородные: подбор частного решения</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(y=y_{оо}+y_{ч}\)</div><div class="t">Общее решение = общее решение однородного + любое частное. Та же структура, что у неоднородной СЛАУ в линале.</div></div>
+    <div class="r"><div class="m">Правая часть \(P_n(x)\,e^{\alpha x}\)</div><div class="t">\(y_ч=x^sQ_n(x)e^{\alpha x}\), где \(s\) — сколько раз \(\alpha\) является корнем характеристического уравнения (0, 1 или 2).</div></div>
+    <div class="r"><div class="m">Правая часть \(e^{\alpha x}(P\cos\beta x+Q\sin\beta x)\)</div><div class="t">\(y_ч=x^se^{\alpha x}(A\cos\beta x+B\sin\beta x)\), \(s=1\), если \(\alpha+\beta i\) — корень.</div></div>
+    <div class="r"><div class="m">\(y''+y=x\)</div><div class="t">\(y_ч=Ax+B\Rightarrow Ax+B=x\). Ответ: \(y=C_1\cos x+C_2\sin x+x\).</div></div>
+    <div class="r"><div class="m">\(y''-3y'+2y=e^x\) — резонанс</div><div class="t">Корни 1 и 2, \(\alpha=1\) совпал с корнем, поэтому \(y_ч=Axe^x\). Подстановка даёт \(-A=1\): \(y_ч=-xe^x\). Без множителя \(x\) подбор приводит к \(0=1\).</div></div>
+    <div class="r"><div class="m">Задача Коши</div><div class="t">Константы — из \(y(x_0)\) и \(y'(x_0)\). \(y''+y=0,\ y(0)=1,\ y'(0)=0\Rightarrow y=\cos x\).</div></div>
+  </div>
+
+  <h3>Понижение порядка</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(y''=f(x)\)</div><div class="t">Интегрировать дважды, две константы.</div></div>
+    <div class="r"><div class="m">Нет \(y\): \(F(x,y',y'')=0\)</div><div class="t">\(y'=p(x)\), \(y''=p'\).</div></div>
+    <div class="r"><div class="m">Нет \(x\): \(F(y,y',y'')=0\)</div><div class="t">\(y'=p(y)\), \(y''=p\,\frac{dp}{dy}\).</div></div>
+  </div>
+  <details class="self"><summary>Проверь себя: \(y''+9y=0\) и \(y''-y'=0\)</summary><div class="body">\(\lambda=\pm3i\): \(C_1\cos3x+C_2\sin3x\). \(\lambda=0;1\): \(C_1+C_2e^x\).</div></details>
+</section>
+
+<section id="hard">
+  <h2><span class="ix">12</span>Номера 156–187</h2>
+  <p class="sec-sub">Каждый номер: условие, ключевой ход, ответ. Под плюсом — ваша отработочная задача с ответом для самопроверки.</p>
+  <input class="search" id="q" type="search" placeholder="Поиск по номеру или слову: 175, Тейлор, касательная…" aria-label="Поиск по номерам">
+  <div id="hard-list">
+
+    <div class="task idx spot" data-k="156 предел 1^∞ e второй замечательный">
+      <div class="task-h"><span class="no">№ 156</span><span class="ty">Предел \(1^\infty\)</span></div>
+      <div class="cond">\(\lim\limits_{x\to\infty}\left(\frac{x+2}{x-1}\right)^{3x-1}\)</div>
+      <p class="how">\(u-1=\frac{3}{x-1}\), \(v(u-1)=\frac{3(3x-1)}{x-1}\to9\).</p>
+      <div class="ans"><b>Ответ:</b> \(e^9\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\lim\limits_{x\to\infty}\left(\frac{2x+3}{2x-1}\right)^{x+4}=e^2\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="157 корень комплексный четверть">
+      <div class="task-h"><span class="no">№ 157</span><span class="ty">Корень из комплексного числа</span></div>
+      <div class="cond">\(\sqrt[3]{27}\) во II четверти</div>
+      <p class="how">Модуль 3, аргументы \(0,\ \frac{2\pi}{3},\ \frac{4\pi}{3}\); вторая четверть — \(\frac{2\pi}{3}\).</p>
+      <div class="ans"><b>Ответ:</b> \(-\frac32+\frac{3\sqrt3}{2}i\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\sqrt[3]{8}\) в III четверти: \(-1-\sqrt3\,i\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="158 корень комплексный 8i">
+      <div class="task-h"><span class="no">№ 158</span><span class="ty">Корень из комплексного числа</span></div>
+      <div class="cond">\(\sqrt[3]{8i}\)</div>
+      <p class="how">\(\arg(8i)=\frac\pi2\), поэтому аргументы корней \(\frac\pi6,\ \frac{5\pi}6,\ \frac{3\pi}2\).</p>
+      <div class="ans"><b>Ответ:</b> \(\sqrt3+i,\ -\sqrt3+i,\ -2i\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\sqrt[3]{-27}\): \(-3,\ \frac32\pm\frac{3\sqrt3}{2}i\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="159 предел корни односторонний разбить дробь сопряжённое">
+      <div class="task-h"><span class="no">№ 159</span><span class="ty">Предел с корнями</span></div>
+      <div class="cond">\(\lim\limits_{x\to1+0}\frac{\sqrt x+\sqrt{x-1}-1}{\sqrt{x^2-1}}\)</div>
+      <p class="how">\(\sqrt{x^2-1}=\sqrt{x-1}\sqrt{x+1}\); разбить дробь на два слагаемых. Часть с \(\sqrt{x-1}\) даёт \(\frac1{\sqrt2}\), часть с \(\sqrt x-1\) после сопряжённого → 0.</p>
+      <div class="ans"><b>Ответ:</b> \(\frac{\sqrt2}{2}\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\lim\limits_{x\to4+0}\frac{\sqrt x+\sqrt{x-4}-2}{\sqrt{x^2-16}}=\frac{1}{\sqrt8}=\frac{\sqrt2}{4}\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="160 161 162 нет в файле">
+      <div class="task-h"><span class="no">№ 160–162</span></div>
+      <p class="miss">В файле этих номеров нет.</p>
+    </div>
+
+    <div class="task idx spot" data-k="163 предел 1^∞ tg ctg e">
+      <div class="task-h"><span class="no">№ 163</span><span class="ty">Предел \(1^\infty\)</span></div>
+      <div class="cond">\(\lim\limits_{x\to\pi/2}(1+\ctg x)^{-\tg x}\)</div>
+      <p class="how">\(v(u-1)=-\tg x\cdot\ctg x=-1\) тождественно.</p>
+      <div class="ans"><b>Ответ:</b> \(\frac1e\)</div>
+      <div class="err">В отработке ответили 6 вместо \(e^6\).</div>
+      <details><summary>Отработка</summary><div class="body">\(\lim\limits_{x\to\pi/2}(1+2\ctg x)^{3\tg x}=e^6\). В общем виде ответ — \(e\) в степени произведения коэффициентов.</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="164 логарифмическое дифференцирование производная степень">
+      <div class="task-h"><span class="no">№ 164</span><span class="ty">Логарифмическое дифференцирование</span></div>
+      <div class="cond">\(y=x^{2x}\)</div>
+      <p class="how">\(\ln y=2x\ln x\), \(\frac{y'}{y}=2\ln x+2\).</p>
+      <div class="ans"><b>Ответ:</b> \(y'=2x^{2x}(\ln x+1)\)</div>
+      <details><summary>Отработка</summary><div class="body">\(y=x^{\ln x}\): \(y'=x^{\ln x}\cdot\frac{2\ln x}{x}\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="165 касательная перпендикулярна неявная производная система">
+      <div class="task-h"><span class="no">№ 165</span><span class="ty">Касательная, неявная функция</span></div>
+      <div class="cond">В какой точке \(y^2=2x^3\) касательная ⊥ прямой \(4x-3y+2=0\)?</div>
+      <p class="how">\(k_{пр}=\frac43\Rightarrow k_{кас}=-\frac34\); \(y'=\frac{3x^2}{y}\Rightarrow y=-4x^2\); с уравнением кривой \(16x^4=2x^3\); \(x=0\) — посторонний.</p>
+      <div class="ans"><b>Ответ:</b> \(\left(\frac18;-\frac1{16}\right)\)</div>
+      <div class="err">Здесь было четыре сбоя: наклон прямой, квадрат \((-4x^2)^2\), прямая в системе, коэффициент вместо координаты.</div>
+      <details><summary>Отработка</summary><div class="body">\(y^2=4x^3\), касательная ∥ \(6x-y-5=0\): точка \((4;16)\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="166 логарифмическое дифференцирование дробь корни">
+      <div class="task-h"><span class="no">№ 166</span><span class="ty">Логарифмическое дифференцирование</span></div>
+      <div class="cond">\(y=\frac{\sqrt{x+2}}{\sqrt[3]{(x-1)^2(2x+1)}}\)</div>
+      <p class="how">\(\ln y=\frac12\ln(x+2)-\frac23\ln(x-1)-\frac13\ln(2x+1)\).</p>
+      <div class="ans"><b>Ответ:</b> \(y'=y\left[\frac{1}{2(x+2)}-\frac{2}{3(x-1)}-\frac{2}{3(2x+1)}\right]\)</div>
+      <details><summary>Отработка</summary><div class="body">\(y=\frac{(x+1)^3\sqrt{x-2}}{(x+3)^4}\): \(y'=y\left[\frac{3}{x+1}+\frac{1}{2(x-2)}-\frac{4}{x+3}\right]\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="167 угол между кривыми касательные sin cos">
+      <div class="task-h"><span class="no">№ 167</span><span class="ty">Угол между кривыми</span></div>
+      <div class="cond">Углы пересечения \(y=\sin x\) и \(y=\cos x\) на \([0;2\pi]\)</div>
+      <p class="how">Точки \(\frac\pi4,\ \frac{5\pi}4\); \(k_1=\frac{\sqrt2}2\), \(k_2=-\frac{\sqrt2}2\); \(\tg\varphi=\left|\frac{-\sqrt2}{1/2}\right|=2\sqrt2\).</p>
+      <div class="ans"><b>Ответ:</b> \(\arctg2\sqrt2\approx70{,}5^\circ\) в обеих точках</div>
+      <details><summary>Отработка</summary><div class="body">\(y=x^2\) и \(y=\sqrt x\) в \((1;1)\): \(\arctg\frac34\approx36{,}9^\circ\) (египетский треугольник 3–4–5)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="168 логарифмическое дифференцирование sin arcsin">
+      <div class="task-h"><span class="no">№ 168</span><span class="ty">Логарифмическое дифференцирование</span></div>
+      <div class="cond">\(y=(\sin x)^{\arcsin x}\)</div>
+      <p class="how">Шаблон \((u^v)'=u^v(v'\ln u+v\frac{u'}{u})\).</p>
+      <div class="ans"><b>Ответ:</b> \(y'=(\sin x)^{\arcsin x}\left[\frac{\ln\sin x}{\sqrt{1-x^2}}+\arcsin x\ctg x\right]\)</div>
+      <details><summary>Отработка</summary><div class="body">\(y=(\tg x)^x\): \(y'=(\tg x)^x\left[\ln\tg x+\frac{2x}{\sin2x}\right]\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="169 дифференциал приближённое вычисление">
+      <div class="task-h"><span class="no">№ 169</span><span class="ty">Приближение дифференциалом</span></div>
+      <div class="cond">\(f=e^{x^2-x}\), найти \(f(1{,}2)\)</div>
+      <p class="how">\(x_0=1\): \(f(1)=1\), \(f'(1)=1\), \(\Delta x=0{,}2\).</p>
+      <div class="ans"><b>Ответ:</b> \(\approx1{,}2\) (точно \(\approx1{,}271\))</div>
+    </div>
+
+    <div class="task idx spot" data-k="170 нормаль парабола вершина перпендикулярна">
+      <div class="task-h"><span class="no">№ 170</span><span class="ty">Нормаль к параболе</span></div>
+      <div class="cond">Нормаль к \(y=x^2-6x+6\), ⊥ прямой от O к вершине</div>
+      <p class="how">Вершина \((3;-3)\), наклон прямой \(-1\), наклон нормали 1, значит \(f'(x_0)=-1\), \(x_0=\frac52\). Полное решение — в разделе «Касательные и нормали».</p>
+      <div class="ans"><b>Ответ:</b> \(y=x-\frac{21}{4}\)</div>
+    </div>
+
+    <div class="task idx spot" data-k="171 непрерывность производная по определению sin(1/x) односторонние">
+      <div class="task-h"><span class="no">№ 171</span><span class="ty">Непрерывность и производная в точке</span></div>
+      <div class="cond">\(f=x\sin\frac1x\) при \(x>0\), \(x^2\) при \(x\le0\)</div>
+      <p class="how">Непрерывна: \(x\sin\frac1x\to0\). Правая производная: \(\frac{\Delta x\sin(1/\Delta x)}{\Delta x}=\sin\frac1{\Delta x}\) — предела нет.</p>
+      <div class="ans"><b>Ответ:</b> непрерывна на \(\mathbb R\), \(f'(0)\) не существует</div>
+      <details><summary>Отработка</summary><div class="body">\(g=x^2\sin\frac1x\), \(g(0)=0\): \(g'(0)=0\) — после сокращения остаётся \(\Delta x\sin\frac1{\Delta x}\to0\).</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="172 предел тейлор бесконечность минус бесконечность">
+      <div class="task-h"><span class="no">№ 172</span><span class="ty">Предел \(\infty-\infty\), Тейлор</span></div>
+      <div class="cond">\(\lim\limits_{x\to0}\left(\frac1{\sin^2x}-\frac1{x^2}\right)\)</div>
+      <p class="how">Общий знаменатель ~ \(x^4\); числитель \((x-\sin x)(x+\sin x)\sim\frac{x^3}{6}\cdot2x\).</p>
+      <div class="ans"><b>Ответ:</b> \(\frac13\)</div>
+      <details><summary>Проверка понимания</summary><div class="body">\(\lim\limits_{x\to0}\frac{x-\sin x}{x^3}=\frac16\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="173 102 интеграл замена по частям экспонента">
+      <div class="task-h"><span class="no">№ 173 = 102</span><span class="ty">Замена + по частям</span></div>
+      <div class="cond">\(\int x^3e^{-x^2}dx\)</div>
+      <p class="how">\(t=x^2\): \(\frac12\int te^{-t}dt\), дальше по частям.</p>
+      <div class="ans"><b>Ответ:</b> \(-\frac12e^{-x^2}(x^2+1)+C\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\int x^5e^{x^3}dx=\frac13e^{x^3}(x^3-1)+C\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="174 103 интеграл рациональная дробь кратный корень простейшие">
+      <div class="task-h"><span class="no">№ 174 = 103</span><span class="ty">Дробь с кратным корнем</span></div>
+      <div class="cond">\(\int\frac{3x^2+2x-1}{(x-1)^2(x+2)}dx\)</div>
+      <p class="how">\(\frac{A}{x-1}+\frac{B}{(x-1)^2}+\frac{C}{x+2}\): \(B=\frac43\), \(C=\frac79\), \(A=\frac{20}9\).</p>
+      <div class="ans"><b>Ответ:</b> \(\frac{20}9\ln|x-1|-\frac{4}{3(x-1)}+\frac79\ln|x+2|+C\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\int\frac{x^2+3x+3}{(x+1)^2(x+2)}dx=-\frac1{x+1}+\ln|x+2|+C\) (здесь \(A=0\))</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="175 104 интеграл универсальная подстановка tg(x/2) арктангенс логарифм">
+      <div class="task-h"><span class="no">№ 175 = 104</span><span class="ty">Универсальная подстановка</span></div>
+      <div class="cond">\(\int\frac{dx}{2-\sin x}\)</div>
+      <p class="how">\(t=\tg\frac x2\): \(\int\frac{dt}{t^2-t+1}\), выделить полный квадрат.</p>
+      <div class="ans"><b>Ответ:</b> \(\frac2{\sqrt3}\arctg\frac{2\tg\frac x2-1}{\sqrt3}+C\)</div>
+      <div class="err">В отработке получили логарифм вместо арктангенса.</div>
+      <details><summary>Отработка</summary><div class="body">\(\int\frac{dx}{2+\cos x}=\frac2{\sqrt3}\arctg\frac{\tg\frac x2}{\sqrt3}+C\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="176 105 интеграл косинус четвёртой степени tg замена">
+      <div class="task-h"><span class="no">№ 176 = 105</span><span class="ty">Замена \(t=\tg x\)</span></div>
+      <div class="cond">\(\int\frac{dx}{\cos^4x}\)</div>
+      <p class="how">\(\frac1{\cos^2x}\cdot\frac{dx}{\cos^2x}=(1+t^2)dt\).</p>
+      <div class="ans"><b>Ответ:</b> \(\tg x+\frac{\tg^3x}{3}+C\)</div>
+    </div>
+
+    <div class="task idx spot" data-k="177 106 определённый интеграл рациональная дробь арктангенс логарифм">
+      <div class="task-h"><span class="no">№ 177 = 106</span><span class="ty">Дробь с квадратичным множителем</span></div>
+      <div class="cond">\(\int_0^1\frac{x^2+3x}{(x+1)(x^2+1)}dx\)</div>
+      <p class="how">\(A=-1,\ B=2,\ C=1\); \(\frac{2x+1}{x^2+1}\) → логарифм + арктангенс; логарифмы сокращаются.</p>
+      <div class="ans"><b>Ответ:</b> \(\frac\pi4\)</div>
+      <details><summary>Отработка</summary><div class="body">\(\int_0^1\frac{x^2+x+2}{(x+1)(x^2+1)}dx=\ln2+\frac\pi4\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="178 интеграл циклический по частям экспонента косинус знак">
+      <div class="task-h"><span class="no">№ 178</span><span class="ty">Циклическое интегрирование</span></div>
+      <div class="cond">\(\int_0^{\pi/2}e^x\cos x\,dx\)</div>
+      <p class="how">Дважды по частям с \(u\) = тригонометрия: \(2I=e^x(\sin x+\cos x)\).</p>
+      <div class="ans"><b>Ответ:</b> \(\frac{e^{\pi/2}-1}{2}\)</div>
+      <div class="err">В отработке потерян знак: у \(u=\sin x\) минуса в \(du\) нет.</div>
+      <details><summary>Отработка</summary><div class="body">\(\int_0^\pi e^x\sin x\,dx=\frac{e^\pi+1}{2}\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="179 107 интеграл кратный корень простейшие">
+      <div class="task-h"><span class="no">№ 179 = 107</span><span class="ty">Дробь с кратным корнем</span></div>
+      <div class="cond">\(\int\frac{dx}{(x-2)^2(x+3)}\)</div>
+      <p class="how">\(B=\frac15\), \(C=\frac1{25}\), \(A=-\frac1{25}\).</p>
+      <div class="ans"><b>Ответ:</b> \(\frac1{25}\ln\left|\frac{x+3}{x-2}\right|-\frac1{5(x-2)}+C\)</div>
+    </div>
+
+    <div class="task idx spot" data-k="180 интеграл тригонометрическая подстановка корень вынос x">
+      <div class="task-h"><span class="no">№ 180</span><span class="ty">Тригонометрическая подстановка</span></div>
+      <div class="cond">\(\int\frac{dx}{\sqrt{(x^2+9)^3}}\)</div>
+      <p class="how">\(x=3\tg t\) даёт \(\frac19\int\cos t\,dt\); возврат через треугольник. Второй путь — вынести \(x\) из-под корня.</p>
+      <div class="ans"><b>Ответ:</b> \(\frac{x}{9\sqrt{x^2+9}}+C\)</div>
+      <details><summary>Отработки</summary><div class="body">\(\int\frac{dx}{\sqrt{(4-x^2)^3}}=\frac{x}{4\sqrt{4-x^2}}+C\)<br>\(\int\frac{dx}{x^2\sqrt{x^2+4}}=-\frac{\sqrt{x^2+4}}{4x}+C\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="181 производная интеграла переменный предел барроу">
+      <div class="task-h"><span class="no">№ 181</span><span class="ty">Интеграл с переменным пределом</span></div>
+      <div class="cond">\(f(4)=8\), \(\varphi=\int_0^{\sqrt x}f(t^2)dt\), найти \(\varphi'(4)\)</div>
+      <p class="how">\(\varphi'=f\big((\sqrt x)^2\big)\cdot\frac1{2\sqrt x}=\frac{f(x)}{2\sqrt x}\).</p>
+      <div class="ans"><b>Ответ:</b> 2</div>
+      <details><summary>Отработка</summary><div class="body">\(\varphi=\int_x^{x^2}f(t)dt\), \(f(2)=5\), \(f(4)=3\): \(\varphi'(2)=f(4)\cdot4-f(2)=7\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="182 определённый интеграл синус четвёртой степени ctg знак пределы">
+      <div class="task-h"><span class="no">№ 182</span><span class="ty">Замена \(t=\ctg x\)</span></div>
+      <div class="cond">\(\int_{\pi/4}^{\pi/2}\frac{dx}{\sin^4x}\)</div>
+      <p class="how">Пределы \(1\to0\), минус от \((\ctg x)'\): \(-\int_1^0(1+t^2)dt=\int_0^1(1+t^2)dt\).</p>
+      <div class="ans"><b>Ответ:</b> \(\frac43\)</div>
+      <div class="err">Ответили \(-\frac43\): знак подынтегральной функции и порядок пределов требуют плюса.</div>
+    </div>
+
+    <div class="task idx spot" data-k="183 доказать уравнение частные производные произвольная функция">
+      <div class="task-h"><span class="no">№ 183</span><span class="ty">Функция удовлетворяет уравнению</span></div>
+      <div class="cond">\(z=y\,\varphi(\cos(x-y))\): \(z'_x+z'_y=\frac zy\)</div>
+      <p class="how">\(u=\cos(x-y)\): \(u'_x=-\sin(x-y)\), \(u'_y=+\sin(x-y)\). Слагаемые с \(\varphi'\) сокращаются, слева остаётся \(\varphi\); справа \(\frac{y\varphi}{y}=\varphi\).</p>
+      <div class="ans"><b>Ответ:</b> доказано</div>
+      <details><summary>Отработка</summary><div class="body">\(z=y\,\varphi(x^2-y^2)\): \(\frac1xz'_x+\frac1yz'_y=\frac{\varphi}{y}=\frac{z}{y^2}\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="184 нет в файле">
+      <div class="task-h"><span class="no">№ 184</span></div>
+      <p class="miss">В файле этого номера нет.</p>
+    </div>
+
+    <div class="task idx spot" data-k="185 градиент ортогональность параметр">
+      <div class="task-h"><span class="no">№ 185</span><span class="ty">Ортогональность градиентов</span></div>
+      <div class="cond">\(u=\frac{x+1}{\sqrt{1-a(y+z)}}\), \(v=\frac{y+1}{\sqrt{1-a(x+z)}}\), точка \((0,0,0)\)</div>
+      <p class="how">\(\nabla u=(1,\frac a2,\frac a2)\), \(\nabla v=(\frac a2,1,\frac a2)\); \(a+\frac{a^2}4=0\).</p>
+      <div class="ans"><b>Ответ:</b> \(a=0\) или \(a=-4\)</div>
+      <details><summary>Отработка</summary><div class="body">\(u=x^2+ay^2+z\), \(v=axy+z^2\), точка \((1,1,1)\): \(a^2+a+1=0\), \(D\lt0\) — ни при каких \(a\).</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="186 область определения арккосинус неравенство знак знаменателя">
+      <div class="task-h"><span class="no">№ 186</span><span class="ty">Область определения</span></div>
+      <div class="cond">\(z=\arccos\frac{x}{x+y}\)</div>
+      <p class="how">Два случая по знаку \(x+y\): \(y\ge0,\ y\ge-2x\) либо \(y\le0,\ y\le-2x\).</p>
+      <div class="ans"><b>Ответ:</b> пара вертикальных углов между \(y=0\) и \(y=-2x\), без начала координат</div>
+      <details><summary>Отработка</summary><div class="body">\(\arccos\frac{x+y}{x}\): \(-2\le\frac yx\le0\) — при \(x>0\): \(-2x\le y\le0\); при \(x\lt0\): \(0\le y\le-2x\). Другая пара углов.</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="187 касательная плоскость параллельна градиент">
+      <div class="task-h"><span class="no">№ 187</span><span class="ty">Касательная плоскость</span></div>
+      <div class="cond">\(z=4x-xy+y^2\), плоскость ∥ \(4x+y+2z+9=0\)</div>
+      <p class="how">\(\nabla F=(4-y,\ 2y-x,\ -1)\parallel(4,1,2)\): \(y=6\), \(x=\frac{25}2\), \(z=11\).</p>
+      <div class="ans"><b>Ответ:</b> \(4x+y+2z-78=0\)</div>
+      <details><summary>Отработка</summary><div class="body">\(z=x^2-2y^2\) ∥ \(2x+4y-z=0\): точка \((1;-1;-1)\), плоскость \(2x+4y-z+1=0\)</div></details>
+    </div>
+
+    <div class="task idx spot" data-k="повтор знак интеграл по частям x sin x">
+      <div class="task-h"><span class="no">Повтор</span><span class="ty">Знак в определённом интеграле</span></div>
+      <div class="cond">\(\int_{\pi/2}^{\pi}x\sin x\,dx\)</div>
+      <p class="how">Первообразная \(-x\cos x+\sin x\); знак ответа прикинут заранее — плюс.</p>
+      <div class="ans"><b>Ответ:</b> \(\pi-1\)</div>
+    </div>
+  </div>
+</section>
+
+<section id="idx">
+  <h2><span class="ix">13</span>Номера 1–155</h2>
+  <p class="sec-sub">Коротко: приём и ответ. Поиск сверху работает и по этой таблице. Номера через «/» — дубли в файле.</p>
+  <div class="tw spot"><table id="idx-table">
+    <thead><tr><th>№</th><th>Приём</th><th>Ответ</th></tr></thead>
+    <tbody>
+      <tr class="idx"><td class="n">1</td><td>точка на плоскости</td><td class="a">(−3; 2), II четверть</td></tr>
+      <tr class="idx"><td class="n">2</td><td>деление: домножить на 1 − 3i</td><td class="a">1/10 + 7/10·i</td></tr>
+      <tr class="idx"><td class="n">3</td><td>то же, взять Re</td><td class="a">1/10</td></tr>
+      <tr class="idx"><td class="n">4</td><td>деление на −i; Im без i <span class="flag">ошибка</span></td><td class="a">−2</td></tr>
+      <tr class="idx"><td class="n">5</td><td>модуль √(a² + b²)</td><td class="a">√5</td></tr>
+      <tr class="idx"><td class="n">6</td><td>отрицательное число → π</td><td class="a">π</td></tr>
+      <tr class="idx"><td class="n">7</td><td>r = 4, cos φ = √3/2, sin φ = −1/2</td><td class="a">4(cos(−π/6) + i sin(−π/6))</td></tr>
+      <tr class="idx"><td class="n">8</td><td>значения на круге × 2</td><td class="a">−√3 + i</td></tr>
+      <tr class="idx"><td class="n">9</td><td>r = 3√2, II четверть</td><td class="a">3√2·e^(i·3π/4)</td></tr>
+      <tr class="idx"><td class="n">10</td><td>3^(−|x|) убывает от нуля → дальний конец</td><td class="a">1/9</td></tr>
+      <tr class="idx"><td class="n">11</td><td class="miss">в файле нет</td><td></td></tr>
+      <tr class="idx"><td class="n">12</td><td>sin(7π/6) < 0 в III четверти <span class="flag">ошибка</span></td><td class="a">−1</td></tr>
+      <tr class="idx"><td class="n">13</td><td>на сопряжённое 2 − i</td><td class="a">1/5 − 3/5·i</td></tr>
+      <tr class="idx"><td class="n">14</td><td>arctg(→ +∞)</td><td class="a">π/2</td></tr>
+      <tr class="idx"><td class="n">15</td><td>1 − 2 sin x максимальна при наименьшем sin</td><td class="a">3 (при x = −π/2)</td></tr>
+      <tr class="idx"><td class="n">16</td><td>чётная: две параболы</td><td class="a">«W», min −1/4 при x = ±1/2</td></tr>
+      <tr class="idx"><td class="n">17</td><td>IV четверть</td><td class="a">−π/3</td></tr>
+      <tr class="idx"><td class="n">18</td><td>старшая степень √n</td><td class="a">−2</td></tr>
+      <tr class="idx"><td class="n">19</td><td>разложить, сократить (x + 2)</td><td class="a">6</td></tr>
+      <tr class="idx"><td class="n">20</td><td>старшие коэффициенты</td><td class="a">−1/2</td></tr>
+      <tr class="idx"><td class="n">21</td><td>n^(3/2) против n²</td><td class="a">0</td></tr>
+      <tr class="idx"><td class="n">22</td><td>n² против n^(3/2)</td><td class="a">∞</td></tr>
+      <tr class="idx"><td class="n">23</td><td>сократить (x + 2)</td><td class="a">−4/3</td></tr>
+      <tr class="idx"><td class="n">24</td><td>(π/2)/0</td><td class="a">∞ (конечного нет)</td></tr>
+      <tr class="idx"><td class="n">25</td><td>сократить (x − 1): (x+1)/(x−1)</td><td class="a">∞</td></tr>
+      <tr class="idx"><td class="n">26</td><td>sin 3x ~ 3x</td><td class="a">3</td></tr>
+      <tr class="idx"><td class="n">27</td><td>ctg 2x ~ 1/(2x)</td><td class="a">1/2</td></tr>
+      <tr class="idx"><td class="n">28</td><td>старшие коэффициенты</td><td class="a">−3/2</td></tr>
+      <tr class="idx"><td class="n">29</td><td>α/x → 0</td><td class="a">да, верно</td></tr>
+      <tr class="idx"><td class="n">30</td><td>Δy = f(x + Δx) − f(x)</td><td class="a">1/4</td></tr>
+      <tr class="idx"><td class="n">31</td><td>предел = g′(1) по определению</td><td class="a">0</td></tr>
+      <tr class="idx"><td class="n">32</td><td>производная произведения</td><td class="a">4x·e^(2x)</td></tr>
+      <tr class="idx"><td class="n">33</td><td>произведение, 4x² − 1 = (2x−1)(2x+1)</td><td class="a">8x·ln(2x + 1)</td></tr>
+      <tr class="idx"><td class="n">34</td><td>параметрическая</td><td class="a">(cos t − t sin t)/(sin t + t cos t)</td></tr>
+      <tr class="idx"><td class="n">35</td><td>параметрическая</td><td class="a">2t²</td></tr>
+      <tr class="idx"><td class="n">36</td><td>tg α = y′(0) = √3</td><td class="a">60°</td></tr>
+      <tr class="idx"><td class="n">37</td><td>наклон касательной = f′(9)</td><td class="a">1/2</td></tr>
+      <tr class="idx"><td class="n">38</td><td>v = 3(t − 2)² = 0</td><td class="a">x = 8</td></tr>
+      <tr class="idx"><td class="n">39</td><td>ω = φ′(1)</td><td class="a">2</td></tr>
+      <tr class="idx"><td class="n">40</td><td>x₀ = 0, k = 6</td><td class="a">y = 6x + 1</td></tr>
+      <tr class="idx"><td class="n">41</td><td>x₀ = 2, k = 1/3, нормаль −3</td><td class="a">y = −3x + 6</td></tr>
+      <tr class="idx"><td class="n">42</td><td>dy = f′(1)·0,1</td><td class="a">0,04</td></tr>
+      <tr class="idx"><td class="n">43</td><td>излом модуля</td><td class="a">да, x = −1</td></tr>
+      <tr class="idx"><td class="n">44</td><td>sin 2x = 0 на (−2; 1)</td><td class="a">2 (x = −π/2, 0)</td></tr>
+      <tr class="idx"><td class="n">45</td><td>основание показательной</td><td class="a">0 < a < 1</td></tr>
+      <tr class="idx"><td class="n">46</td><td>знак x·ln(x + 2) при x > −2</td><td class="a">(−2; −1) ∪ (0; +∞)</td></tr>
+      <tr class="idx"><td class="n">47</td><td>f′(1) = 0, знак + → −</td><td class="a">максимум</td></tr>
+      <tr class="idx"><td class="n">48</td><td>y′ = 12x²(x + 2)</td><td class="a">min при x = −2</td></tr>
+      <tr class="idx"><td class="n">49</td><td>y′ = 2x·e^(2x)(x + 1)</td><td class="a">max x = −1, min x = 0</td></tr>
+      <tr class="idx"><td class="n">50</td><td>критическая x = 1 + концы</td><td class="a">4</td></tr>
+      <tr class="idx"><td class="n">51</td><td>полное исследование функции</td><td class="a">—</td></tr>
+      <tr class="idx"><td class="n">52</td><td>1/(1 + x²)</td><td class="a">1/5</td></tr>
+      <tr class="idx"><td class="n">53</td><td>цепное: g′ = −f′(1/x)/x²</td><td class="a">−2</td></tr>
+      <tr class="idx"><td class="n">54</td><td>f′ = 0, f″ > 0</td><td class="a">минимум, выпукл. вниз</td></tr>
+      <tr class="idx"><td class="n">55</td><td>y″ = −4 sin 2x меняет знак</td><td class="a">3 точки</td></tr>
+      <tr class="idx"><td class="n">48–55 (стр. 3)</td><td>производные: частное, сложная, параметрическая — второй блок</td><td class="a">—</td></tr>
+      <tr class="idx"><td class="n">56</td><td>y′(0) = 2</td><td class="a">y = 2x</td></tr>
+      <tr class="idx"><td class="n">57</td><td>x₀ = 2, k = 1/2, нормаль −2</td><td class="a">y = −2x + 5</td></tr>
+      <tr class="idx"><td class="n">58–61</td><td>производные сложных функций</td><td class="a">—</td></tr>
+      <tr class="idx"><td class="n">62</td><td>x₀ = 0, k = −1</td><td class="a">y = −x + 1</td></tr>
+      <tr class="idx"><td class="n">63</td><td>критическая x = 0 + концы</td><td class="a">1</td></tr>
+      <tr class="idx"><td class="n">64</td><td>y″ = 30x(x³ − 1) > 0</td><td class="a">(−∞; 0) ∪ (1; +∞)</td></tr>
+      <tr class="idx"><td class="n">65, 66</td><td>построение графиков</td><td class="a">—</td></tr>
+      <tr class="idx"><td class="n">67</td><td>интегральная сумма Σf(ξ)Δx</td><td class="a">f(x) = √x</td></tr>
+      <tr class="idx"><td class="n">68</td><td>множитель 1/k</td><td class="a">½·sin(2x − 3)</td></tr>
+      <tr class="idx"><td class="n">69</td><td>разность — константа</td><td class="a">да (разность −4)</td></tr>
+      <tr class="idx"><td class="n">70</td><td>продифференцировать правую часть</td><td class="a">доказано</td></tr>
+      <tr class="idx"><td class="n">71</td><td>переставить пределы</td><td class="a">0</td></tr>
+      <tr class="idx"><td class="n">72</td><td>на [2; 3] cos x < 0 < sin x</td><td class="a">первый больше</td></tr>
+      <tr class="idx"><td class="n">73</td><td>Ньютон–Лейбниц</td><td class="a">1</td></tr>
+      <tr class="idx"><td class="n">74</td><td>x = t², пределы 2 и 3</td><td class="a">2∫₂³ f(t²) dt</td></tr>
+      <tr class="idx"><td class="n">75 / 80</td><td>∫f′(u) du</td><td class="a">f(sin x) + C</td></tr>
+      <tr class="idx"><td class="n">76 / 81</td><td>1/k при k = −½</td><td class="a">−2·e^((1−x)/2)</td></tr>
+      <tr class="idx"><td class="n">77 / 82</td><td>1/k</td><td class="a">−⅓·ctg 3x</td></tr>
+      <tr class="idx"><td class="n">78 / 83</td><td>x² − 4x + 3 = (x − 1)(x − 3)</td><td class="a">A/(x+1) + B/(x−1) + C/(x−3)</td></tr>
+      <tr class="idx"><td class="n">79 / 84</td><td>t = 2x² + 1</td><td class="a">½·√(2x² + 1)</td></tr>
+      <tr class="idx"><td class="n">85</td><td>по частям, u = ln x</td><td class="a">x²/2·ln x − x²/4</td></tr>
+      <tr class="idx"><td class="n">86</td><td>cos³x·tg x = cos²x·sin x</td><td class="a">−cos³x/3</td></tr>
+      <tr class="idx"><td class="n">87</td><td>модуль → два куска</td><td class="a">1</td></tr>
+      <tr class="idx"><td class="n">88</td><td>понижение степени</td><td class="a">π</td></tr>
+      <tr class="idx"><td class="n">89</td><td>t = √x</td><td class="a">2 ln 3</td></tr>
+      <tr class="idx"><td class="n">90 / 91</td><td>t = √(5 − 4x)</td><td class="a">1/6</td></tr>
+      <tr class="idx"><td class="n">92</td><td>по частям</td><td class="a">x⁴/4·ln x − x⁴/16</td></tr>
+      <tr class="idx"><td class="n">93</td><td>t = cos x</td><td class="a">1/(7cos⁷x) − 1/(5cos⁵x)</td></tr>
+      <tr class="idx"><td class="n">94</td><td>t = √x</td><td class="a">−2cos √x</td></tr>
+      <tr class="idx"><td class="n">95</td><td>простейшие</td><td class="a">(1/7)·ln|(x−3)/(x+4)|</td></tr>
+      <tr class="idx"><td class="n">96</td><td>по частям</td><td class="a">x·arccos x − √(1 − x²)</td></tr>
+      <tr class="idx"><td class="n">97</td><td>t = sin x</td><td class="a">2/3</td></tr>
+      <tr class="idx"><td class="n">98 / 108</td><td>t = x²</td><td class="a">½·ln(x² + √(x⁴ + 1))</td></tr>
+      <tr class="idx"><td class="n">99 / 109</td><td>выделить целую часть</td><td class="a">11/2 + 7 ln 2</td></tr>
+      <tr class="idx"><td class="n">100 / 110</td><td>по частям</td><td class="a">1</td></tr>
+      <tr class="idx"><td class="n">101 / 111</td><td>sin²x·cos²x = sin²2x/4</td><td class="a">x/8 − sin 4x/32</td></tr>
+      <tr class="idx"><td class="n">102–107</td><td>совпадают с 173–179</td><td class="a">см. выше</td></tr>
+      <tr class="idx"><td class="n">112</td><td>1/k</td><td class="a">2</td></tr>
+      <tr class="idx"><td class="n">113 / 118</td><td>∫dx/sin²(x/3) = −3ctg(x/3)</td><td class="a">3√3</td></tr>
+      <tr class="idx"><td class="n">114 / 119</td><td>½∫r² dφ</td><td class="a">21/16</td></tr>
+      <tr class="idx"><td class="n">115 / 120</td><td>√(1 + y′²) = √(1 + x)</td><td class="a">14/3</td></tr>
+      <tr class="idx"><td class="n">116 / 121</td><td>√(x′² + y′²) = √(4t + 1)</td><td class="a">7/6</td></tr>
+      <tr class="idx"><td class="n">117 / 122</td><td>π∫y² dx</td><td class="a">π ln 2</td></tr>
+      <tr class="idx"><td class="n">123</td><td>несобственный</td><td class="a">1/4</td></tr>
+      <tr class="idx"><td class="n">124</td><td>линейная часть по Δy</td><td class="a">2x</td></tr>
+      <tr class="idx"><td class="n">125</td><td>цепное правило</td><td class="a">1/(2√((2y − x)³))</td></tr>
+      <tr class="idx"><td class="n">126</td><td>цепное правило</td><td class="a">2x²/(1 + (x + 2y)²)</td></tr>
+      <tr class="idx"><td class="n">127</td><td>Δz = z(новая) − z(старая)</td><td class="a">−3/4</td></tr>
+      <tr class="idx"><td class="n">128</td><td>линейная часть приращения</td><td class="a">dz = −2dx + dy</td></tr>
+      <tr class="idx"><td class="n">129</td><td>dz в точке</td><td class="a">−0,02</td></tr>
+      <tr class="idx"><td class="n">130</td><td>F = x² − z² − y</td><td class="a">y + 4z − 4 = 0</td></tr>
+      <tr class="idx"><td class="n">131</td><td>нормаль к поверхности</td><td class="a">(x−2)/0 = (y−1)/3 = (z+1)/(−5)</td></tr>
+      <tr class="idx"><td class="n">132 / 136</td><td>градиент</td><td class="a">(0; 4; −3)</td></tr>
+      <tr class="idx"><td class="n">133 / 137</td><td>|grad u|</td><td class="a">10</td></tr>
+      <tr class="idx"><td class="n">134</td><td>смешанная производная</td><td class="a">−2y/x²</td></tr>
+      <tr class="idx"><td class="n">135</td><td>модули ≥ 0</td><td class="a">(0; −2)</td></tr>
+      <tr class="idx"><td class="n">138</td><td>необходимое условие экстремума</td><td class="a">0</td></tr>
+      <tr class="idx"><td class="n">139</td><td>Δ = 16 > 0, A > 0</td><td class="a">min −13 в (−2; 1)</td></tr>
+      <tr class="idx"><td class="n">140</td><td>Δ = −40 < 0</td><td class="a">экстремума нет</td></tr>
+      <tr class="idx"><td class="n">141</td><td>вершина конуса</td><td class="a">x² + y² − z² = 0 в (0,0,0)</td></tr>
+      <tr class="idx"><td class="n">142</td><td>z = √(4 − x² − y²)</td><td class="a">верхняя полусфера R = 2</td></tr>
+      <tr class="idx"><td class="n">143</td><td>grad = (1; −1; 1)</td><td class="a">√3</td></tr>
+      <tr class="idx"><td class="n">144</td><td>касательная плоскость</td><td class="a">x − 2y + 3 = 0</td></tr>
+      <tr class="idx"><td class="n">145</td><td>сечение конуса плоскостью</td><td class="a">окружность R = 2 в плоскости z = 2</td></tr>
+      <tr class="idx"><td class="n">146</td><td>x + y > 0</td><td class="a">полуплоскость над y = −x</td></tr>
+      <tr class="idx"><td class="n">147</td><td>цепное, w = x/y − z</td><td class="a">(1/y; −x/y²; −1)/(1 + w²)</td></tr>
+      <tr class="idx"><td class="n">148</td><td>dz в точке</td><td class="a">0,18</td></tr>
+      <tr class="idx"><td class="n">149</td><td>нормаль</td><td class="a">(x−1)/0 = (y+1)/3 = (z−1)/(−1)</td></tr>
+      <tr class="idx"><td class="n">150</td><td>z = x²</td><td class="a">параболический цилиндр</td></tr>
+      <tr class="idx"><td class="n">151</td><td>grad = (0; −1; 1)</td><td class="a">√2</td></tr>
+      <tr class="idx"><td class="n">152</td><td>F = x + √(xy) + z² − 3</td><td class="a">3x + y − 4z − 8 = 0</td></tr>
+      <tr class="idx"><td class="n">153</td><td>(x² + y²)² ≤ 1</td><td class="a">круг x² + y² ≤ 1</td></tr>
+      <tr class="idx"><td class="n">154</td><td>раскрыть модуль по знаку x</td><td class="a">асимптоты x = 1, y = ±1</td></tr>
+      <tr class="idx"><td class="n">155</td><td>три участка</td><td class="a">−2x − 1; 3; 2x + 1</td></tr>
+    </tbody>
+  </table></div>
+  <p class="empty hidden" id="none">Ничего не найдено. Попробуйте номер или другое слово.</p>
+</section>
+
+<p class="foot">Сводка к аккредитации 01.03.03 · математический анализ, полный курс. Ответы к номерам 1–155, которые не разбирались в чате, досчитаны отдельно — если какой-то не сойдётся с вашим, пишите, разберём.</p>
+</div>
+
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* прожектор под курсором */
+  document.addEventListener('pointermove',function(e){
+    var el=e.target.closest&&e.target.closest('.spot'); if(!el) return;
+    var r=el.getBoundingClientRect();
+    el.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    el.style.setProperty('--my',(e.clientY-r.top)+'px');
+  },{passive:true});
+
+  /* полоса прогресса и активный раздел */
+  var prog=document.getElementById('prog');
+  var links=[].slice.call(document.querySelectorAll('.chips a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function onScroll(){
+    var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+    if(prog) prog.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+    var cur=-1;
+    secs.forEach(function(sct,i){ if(sct && sct.getBoundingClientRect().top<140) cur=i; });
+    links.forEach(function(a,i){
+      var on=i===cur; if(a.classList.contains('on')!==on){ a.classList.toggle('on',on); if(on&&a.scrollIntoView) a.parentNode.scrollTo({left:a.offsetLeft-40,behavior:reduce?'auto':'smooth'}); }
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  /* волна в шапке */
+  var ws=document.getElementById('ws'), wc=document.getElementById('wc'), wd=document.getElementById('wd');
+  function wave(t){
+    var ds='',dc='';
+    for(var x=0;x<=800;x+=5){
+      var a=x/800*4*Math.PI+t;
+      ds+=(x?'L':'M')+x+' '+(65-44*Math.sin(a)).toFixed(1);
+      dc+=(x?'L':'M')+x+' '+(65-44*Math.cos(a)).toFixed(1);
+    }
+    ws.setAttribute('d',ds); wc.setAttribute('d',dc);
+    var px=(t*60)%800, pa=px/800*4*Math.PI+t;
+    wd.setAttribute('cx',px); wd.setAttribute('cy',(65-44*Math.sin(pa)).toFixed(1));
+  }
+  if(ws){ if(reduce){wave(0.6)} else { (function loop(ts){wave(ts/1400); requestAnimationFrame(loop)})(0); } }
+
+  /* плывущие символы на фоне */
+  var cv=document.getElementById('bg'); if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext('2d'), W=0, H=0, dpr=Math.min(window.devicePixelRatio||1,2);
+  var glyphs=['∫','∑','π','√','∞','e','∂','Δ','lim','sin','dx','φ','∇','ε','λ','x²','ln','i'];
+  var parts=[], mx=0, my=0;
+  function resize(){
+    W=innerWidth; H=innerHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.round(Math.min(46,W*H/26000)); parts=[];
+    for(var i=0;i<n;i++) parts.push({x:Math.random()*W,y:Math.random()*H,z:.3+Math.random()*.9,g:glyphs[i%glyphs.length],v:.08+Math.random()*.22,r:(Math.random()-.5)*.6,rs:(Math.random()-.5)*.002});
+  }
+  window.addEventListener('resize',resize); resize();
+  window.addEventListener('pointermove',function(e){mx=(e.clientX/W-.5); my=(e.clientY/H-.5)},{passive:true});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      if(!reduce){ p.y-=p.v*p.z; p.r+=p.rs; if(p.y<-40){p.y=H+40; p.x=Math.random()*W;} }
+      var ox=-mx*28*p.z, oy=-my*28*p.z;
+      ctx.save(); ctx.translate(p.x+ox,p.y+oy); ctx.rotate(p.r);
+      ctx.font=(14+p.z*22)+'px "JetBrains Mono", monospace';
+      ctx.fillStyle='rgba(255,'+(110+Math.round(p.z*40))+',26,'+(0.05+p.z*0.09).toFixed(3)+')';
+      ctx.fillText(p.g,0,0); ctx.restore();
+    }
+    if(!reduce) requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function E(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function fmt(v,d){ if(d===undefined)d=2; var s=Math.abs(v).toFixed(d).replace('.',','); return (v<0&&Math.abs(v)>=Math.pow(10,-d)/2?'−':'')+s; }
+  function frame(svg,W,H,m,xr,yr){
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var X=function(x){return m.l+(x-xr[0])/(xr[1]-xr[0])*(W-m.l-m.r)};
+    var Y=function(y){return H-m.b-(y-yr[0])/(yr[1]-yr[0])*(H-m.t-m.b)};
+    return {X:X,Y:Y};
+  }
+  function path(pts){var d='',on=false;for(var i=0;i<pts.length;i++){var p=pts[i];if(p===null){on=false;continue}d+=(on?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1);on=true}return d}
+
+  /* ---------- ряд ---------- */
+  var sp=document.getElementById('ser-p'), sa=document.getElementById('ser-alt'), ssvg=document.getElementById('ser-svg');
+  function ser(){
+    var p=+sp.value, alt=sa.checked, N=60, S=[], s=0;
+    for(var n=1;n<=N;n++){ s+=(alt&&n%2===0?-1:1)/Math.pow(n,p); S.push(s); }
+    var lim=null, msg='';
+    if(alt){
+      var M=20000, t=0, prev=0;
+      for(var k=1;k<=M+1;k++){ prev=t; t+=(k%2===0?-1:1)/Math.pow(k,p); }
+      lim=(t+prev)/2;
+      msg='<b>Сходится по Лейбницу</b>, сумма ≈ '+fmt(lim,4)+(p>1?'. Ряд из модулей тоже сходится — сходимость абсолютная.':'. Ряд из модулей при p ≤ 1 расходится — сходимость условная.')+(Math.abs(p-1)<0.001?' При p = 1 сумма равна ln 2.':'');
+    } else if(p>1.0001){
+      var z=0, K=3000; for(var j=1;j<=K;j++) z+=1/Math.pow(j,p);
+      lim=z+Math.pow(K,1-p)/(p-1)-0.5*Math.pow(K,-p);
+      msg='<b>Сходится</b>: p > 1, сумма ≈ '+fmt(lim,4)+(Math.abs(p-2)<0.001?' = π²/6.':'.')+' Частичные суммы упираются в пунктир.';
+    } else if(Math.abs(p-1)<0.001){
+      msg='<b>Расходится</b>: гармонический ряд. Слагаемые стремятся к нулю, а сумма растёт как ln n — медленно, но бесконечно.';
+    } else {
+      msg='<b>Расходится</b>: p < 1, слагаемые убывают слишком медленно.';
+    }
+    var W=700,H=260,m={l:44,r:14,t:16,b:28};
+    var ymax=Math.max.apply(null,S.concat(lim!==null?[lim]:[])), ymin=Math.min(0,Math.min.apply(null,S));
+    ymax=ymax*1.12+0.05;
+    var f=frame(ssvg,W,H,m,[0,N+1],[ymin,ymax]);
+    ssvg.appendChild(E('line',{x1:m.l,y1:f.Y(0),x2:W-m.r,y2:f.Y(0),stroke:'var(--line2)','stroke-width':1}));
+    if(lim!==null){
+      ssvg.appendChild(E('line',{x1:m.l,y1:f.Y(lim),x2:W-m.r,y2:f.Y(lim),stroke:'var(--accent2)','stroke-width':1.2,'stroke-dasharray':'6 5'}));
+      var tl=E('text',{x:W-m.r-4,y:f.Y(lim)-7,'text-anchor':'end'}); tl.textContent='S ≈ '+fmt(lim,3); tl.style.fill='var(--accent2)'; ssvg.appendChild(tl);
+    }
+    var pts=S.map(function(v,i){return [f.X(i+1),f.Y(v)]});
+    ssvg.appendChild(E('path',{d:path(pts),fill:'none',stroke:'var(--accent)','stroke-width':1.6,style:'filter:drop-shadow(0 0 5px rgba(255,122,26,.55))'}));
+    pts.forEach(function(q,i){ if(i<25||i%3===0) ssvg.appendChild(E('circle',{cx:q[0],cy:q[1],r:2.4,fill:'var(--accent)'})); });
+    var a=E('text',{x:m.l,y:H-8}); a.textContent='n = 1'; ssvg.appendChild(a);
+    var b=E('text',{x:W-m.r,y:H-8,'text-anchor':'end'}); b.textContent='n = '+N; ssvg.appendChild(b);
+    var c=E('text',{x:4,y:m.t+8}); c.textContent='Sₙ'; ssvg.appendChild(c);
+    var ls=E('text',{x:f.X(N)-4,y:f.Y(S[N-1])+16,'text-anchor':'end'}); ls.textContent='S₆₀ = '+fmt(S[N-1],3); ssvg.appendChild(ls);
+    document.getElementById('ser-pv').textContent=fmt(p,2);
+    document.getElementById('ser-v').innerHTML=msg;
+  }
+  if(sp){ sp.addEventListener('input',ser); sa.addEventListener('change',ser); ser(); }
+
+  /* ---------- Фурье ---------- */
+  var fn=document.getElementById('four-n'), fsvg=document.getElementById('four-svg');
+  function four(){
+    var K=+fn.value, W=700,H=250,m={l:30,r:14,t:14,b:26};
+    var f=frame(fsvg,W,H,m,[-Math.PI,Math.PI],[-1.45,1.45]);
+    fsvg.appendChild(E('line',{x1:m.l,y1:f.Y(0),x2:W-m.r,y2:f.Y(0),stroke:'var(--line2)','stroke-width':1}));
+    fsvg.appendChild(E('line',{x1:f.X(0),y1:m.t,x2:f.X(0),y2:H-m.b,stroke:'var(--line2)','stroke-width':1}));
+    var sq=[[f.X(-Math.PI),f.Y(-1)],[f.X(0),f.Y(-1)],null,[f.X(0),f.Y(1)],[f.X(Math.PI),f.Y(1)]];
+    fsvg.appendChild(E('path',{d:path(sq),fill:'none',stroke:'var(--dim)','stroke-width':1.5,'stroke-dasharray':'5 4'}));
+    var pts=[], mx=0;
+    for(var i=0;i<=700;i++){
+      var x=-Math.PI+2*Math.PI*i/700, s=0;
+      for(var k=1;k<=K;k++){ var n=2*k-1; s+=Math.sin(n*x)/n; }
+      s*=4/Math.PI; if(x>0&&s>mx) mx=s;
+      pts.push([f.X(x),f.Y(s)]);
+    }
+    fsvg.appendChild(E('path',{d:path(pts),fill:'none',stroke:'var(--accent)','stroke-width':2,style:'filter:drop-shadow(0 0 6px rgba(255,122,26,.6))'}));
+    var t1=E('text',{x:m.l,y:H-8}); t1.textContent='−π'; fsvg.appendChild(t1);
+    var t2=E('text',{x:W-m.r,y:H-8,'text-anchor':'end'}); t2.textContent='π'; fsvg.appendChild(t2);
+    document.getElementById('four-nv').textContent=K;
+    var last=2*K-1;
+    document.getElementById('four-v').innerHTML='Сумма \u2248 (4/π)(sin x + sin 3x/3 + … + sin '+last+'x/'+last+'). Наибольший выброс у разрыва: <b>'+fmt(mx,3)+'</b>. Он не уходит к 1 при росте числа гармоник, а только сужается — это <b>эффект Гиббса</b> (≈ 9% от скачка). В самой точке разрыва сумма равна 0 — среднему, как говорит теорема Дирихле.';
+  }
+  if(fn){ fn.addEventListener('input',four); four(); }
+
+  /* ---------- ДУ ---------- */
+  var op=document.getElementById('ode-p'), oq=document.getElementById('ode-q'), osvg=document.getElementById('ode-svg');
+  function ode(){
+    var p=+op.value, q=+oq.value, D=p*p-4*q, W=700,H=250,m={l:30,r:14,t:14,b:26};
+    var y, env=null, kind, form, roots;
+    if(D>1e-9){
+      var l1=(-p-Math.sqrt(D))/2, l2=(-p+Math.sqrt(D))/2, C1=l2/(l2-l1), C2=-l1/(l2-l1);
+      y=function(x){return C1*Math.exp(l1*x)+C2*Math.exp(l2*x)};
+      roots='λ₁ = '+fmt(l1)+', λ₂ = '+fmt(l2);
+      form='C₁e^(λ₁x) + C₂e^(λ₂x)';
+      kind=(l2<-1e-9)?'апериодическое затухание — без колебаний':(Math.abs(l2)<1e-9?'стремится к постоянной':'решение растёт');
+    } else if(Math.abs(D)<=1e-9){
+      var l=-p/2, B=-l;
+      y=function(x){return (1+B*x)*Math.exp(l*x)};
+      roots='λ₁ = λ₂ = '+fmt(l);
+      form='(C₁ + C₂x)e^(λx)';
+      kind='критический случай: кратный корень';
+    } else {
+      var al=-p/2, be=Math.sqrt(-D)/2, C=-al/be, A=Math.sqrt(1+C*C);
+      y=function(x){return Math.exp(al*x)*(Math.cos(be*x)+C*Math.sin(be*x))};
+      env=function(x){return A*Math.exp(al*x)};
+      roots='λ = '+fmt(al)+' ± '+fmt(be)+'i';
+      form='e^(αx)(C₁cos βx + C₂sin βx)';
+      kind=al<-1e-9?'затухающие колебания':(Math.abs(al)<=1e-9?'незатухающие колебания':'нарастающие колебания');
+    }
+    var f=frame(osvg,W,H,m,[0,10],[-2.2,2.2]);
+    osvg.appendChild(E('line',{x1:m.l,y1:f.Y(0),x2:W-m.r,y2:f.Y(0),stroke:'var(--line2)','stroke-width':1}));
+    function curve(g){var pts=[];for(var i=0;i<=600;i++){var x=10*i/600,v=g(x);pts.push(Math.abs(v)>2.3||!isFinite(v)?null:[f.X(x),f.Y(v)])}return pts}
+    if(env){
+      osvg.appendChild(E('path',{d:path(curve(env)),fill:'none',stroke:'var(--dim)','stroke-width':1,'stroke-dasharray':'4 4'}));
+      osvg.appendChild(E('path',{d:path(curve(function(x){return -env(x)})),fill:'none',stroke:'var(--dim)','stroke-width':1,'stroke-dasharray':'4 4'}));
+    }
+    osvg.appendChild(E('path',{d:path(curve(y)),fill:'none',stroke:'var(--accent)','stroke-width':2,style:'filter:drop-shadow(0 0 6px rgba(255,122,26,.6))'}));
+    var t1=E('text',{x:m.l,y:H-8}); t1.textContent='x = 0'; osvg.appendChild(t1);
+    var t2=E('text',{x:W-m.r,y:H-8,'text-anchor':'end'}); t2.textContent='x = 10'; osvg.appendChild(t2);
+    document.getElementById('ode-pv').textContent=fmt(p);
+    document.getElementById('ode-qv').textContent=fmt(q);
+    document.getElementById('ode-v').innerHTML='λ² + '+fmt(p)+'λ + '+fmt(q)+' = 0, D = '+fmt(D)+'; '+roots+'. Вид решения: '+form+'. Поведение: <b>'+kind+'</b>.';
+  }
+  if(op){ op.addEventListener('input',ode); oq.addEventListener('input',ode); ode(); }
+})();
+</script>
+<script>
+window.MathJax={
+  tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
+    macros:{tg:'\\operatorname{tg}',ctg:'\\operatorname{ctg}',arctg:'\\operatorname{arctg}',arcctg:'\\operatorname{arcctg}'}},
+  svg:{fontCache:'global'},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code','svg']}
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
+<script>
+(function(){
+  /* ---------- Тригонометрический круг ---------- */
+  var svg=document.getElementById('circle'); if(!svg) return;
+  var NS='http://www.w3.org/2000/svg', C=170, R=112;
+  var angles=[0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330];
+  var rad={0:'0',30:'π/6',45:'π/4',60:'π/3',90:'π/2',120:'2π/3',135:'3π/4',150:'5π/6',180:'π',210:'7π/6',225:'5π/4',240:'4π/3',270:'3π/2',300:'5π/3',315:'7π/4',330:'11π/6'};
+  var SV={0:'0',30:'1/2',45:'√2/2',60:'√3/2',90:'1'};
+  var TV={0:'0',30:'√3/3',45:'1',60:'√3',90:'—'};
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function ref(d){var r=d%180; if(r>90) r=180-r; return r;}
+  function sgn(v){return Math.abs(v)<1e-9?0:(v>0?1:-1);}
+  function val(map,r,s){ if(map[r]==='—') return '—'; if(map[r]==='0') return '0'; return (s<0?'−':'')+map[r]; }
+
+  svg.appendChild(el('line',{x1:C-150,y1:C,x2:C+150,y2:C,stroke:'var(--line)','stroke-width':1}));
+  svg.appendChild(el('line',{x1:C,y1:C-150,x2:C,y2:C+150,stroke:'var(--line)','stroke-width':1}));
+  svg.appendChild(el('circle',{cx:C,cy:C,r:R,fill:'none',stroke:'var(--dim)','stroke-width':1.2}));
+  var ray=el('line',{x1:C,y1:C,stroke:'var(--accent)','stroke-width':2.5,'class':'ray'});
+  var px=el('line',{stroke:'var(--accent)','stroke-width':1,'stroke-dasharray':'4 3'});
+  var py=el('line',{stroke:'var(--accent)','stroke-width':1,'stroke-dasharray':'4 3'});
+  svg.appendChild(px); svg.appendChild(py); svg.appendChild(ray);
+  [['I',C+60,C-60],['II',C-68,C-60],['III',C-72,C+68],['IV',C+60,C+68]].forEach(function(q){
+    var t=el('text',{x:q[1],y:q[2],'text-anchor':'middle'}); t.textContent=q[0]; t.style.opacity='.55'; svg.appendChild(t);
+  });
+
+  var pts={};
+  angles.forEach(function(d){
+    var a=d*Math.PI/180, x=C+R*Math.cos(a), y=C-R*Math.sin(a);
+    var g=el('g',{'class':'pt',tabindex:'0',role:'button','aria-label':rad[d]+' — '+d+' градусов'});
+    g.appendChild(el('circle',{cx:x,cy:y,r:6}));
+    var lx=C+(R+24)*Math.cos(a), ly=C-(R+24)*Math.sin(a)+4;
+    var t=el('text',{x:lx,y:ly,'text-anchor':Math.abs(Math.cos(a))<.2?'middle':(Math.cos(a)>0?'start':'end')});
+    t.textContent=rad[d]; g.appendChild(t);
+    g.addEventListener('click',function(){pick(d)});
+    g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(d)}});
+    svg.appendChild(g); pts[d]=g;
+  });
+
+  var qtext={1:'I четверть: всё положительно.',2:'II четверть: положителен только синус.',3:'III четверть: синус и косинус отрицательны, тангенс положителен.',4:'IV четверть: положителен только косинус.'};
+  function pick(d){
+    Object.keys(pts).forEach(function(k){pts[k].classList.toggle('on',+k===d)});
+    var a=d*Math.PI/180, c=Math.cos(a), s=Math.sin(a), x=C+R*c, y=C-R*s, r=ref(d);
+    ray.setAttribute('x2',x); ray.setAttribute('y2',y);
+    px.setAttribute('x1',x); px.setAttribute('y1',y); px.setAttribute('x2',x); px.setAttribute('y2',C);
+    py.setAttribute('x1',x); py.setAttribute('y1',y); py.setAttribute('x2',C); py.setAttribute('y2',y);
+    var cs=val(SV,90-r,sgn(c)), ss=val(SV,r,sgn(s));
+    var ts = (Math.abs(c)<1e-9) ? 'не существует' : val(TV,r,sgn(s)*sgn(c));
+    var ra=document.getElementById('ro-rad'); ra.textContent=rad[d]; ra.classList.remove('pop'); void ra.offsetWidth; ra.classList.add('pop');
+    document.getElementById('ro-deg').textContent=d+'°';
+    var ec=document.getElementById('ro-cos'), es=document.getElementById('ro-sin'), et=document.getElementById('ro-tg');
+    ec.textContent=cs; es.textContent=ss; et.textContent=ts;
+    ec.className=cs.charAt(0)==='−'?'neg':''; es.className=ss.charAt(0)==='−'?'neg':''; et.className=ts.charAt(0)==='−'?'neg':'';
+    var q = (d%90===0) ? 'Угол на оси — не принадлежит ни одной четверти.' : qtext[Math.floor(d/90)+1];
+    document.getElementById('ro-q').textContent=q;
+  }
+  pick(210);
+})();
+
+(function(){
+  /* ---------- Поиск по номерам ---------- */
+  var q=document.getElementById('q'); if(!q) return;
+  var items=[].slice.call(document.querySelectorAll('.idx'));
+  var none=document.getElementById('none');
+  q.addEventListener('input',function(){
+    var s=q.value.trim().toLowerCase(), shown=0;
+    items.forEach(function(it){
+      var hay=((it.getAttribute('data-k')||'')+' '+it.textContent).toLowerCase();
+      var hit=!s || hay.indexOf(s)>-1;
+      it.classList.toggle('hidden',!hit); if(hit) shown++;
+    });
+    none.classList.toggle('hidden',shown>0);
+  });
+})();
+</script>

@@ -1,0 +1,575 @@
+<title>Линал по полочкам</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#080A12; --panel:#10141F; --panel2:#171D2C; --ink:#E7ECF8; --dim:#8C96AE;
+  --line:#222A3E; --line2:#33405C; --accent:#4A85FF; --accent2:#8CC6FF; --accent-soft:rgba(74,133,255,.12);
+  --red:#FF7B6B; --ok:#4FD6A8; --ok-soft:rgba(79,214,168,.09); --code:#131824;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg); scroll-behavior:smooth}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Onest',system-ui,-apple-system,sans-serif; font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+::selection{background:var(--accent); color:#080A12}
+
+#bg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
+.aura{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+.aura::before,.aura::after{content:""; position:absolute; width:62vmax; height:62vmax; border-radius:50%; filter:blur(95px); opacity:.20}
+.aura::before{background:#2F6BFF; top:-30vmax; right:-18vmax; animation:drift1 24s ease-in-out infinite alternate}
+.aura::after{background:#0E3C8C; bottom:-32vmax; left:-22vmax; opacity:.22; animation:drift2 30s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-14vmax,10vmax) scale(1.12)}}
+@keyframes drift2{to{transform:translate(12vmax,-8vmax) scale(.9)}}
+.gridbg{position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(74,133,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(74,133,255,.05) 1px,transparent 1px);
+  background-size:34px 34px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 32%,transparent 80%); mask-image:radial-gradient(ellipse at 50% 0%,#000 32%,transparent 80%)}
+.progress{position:fixed; left:0; top:env(safe-area-inset-top,0px); height:2px; width:0; z-index:40; background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 12px var(--accent)}
+
+.wrap{position:relative; z-index:1; max-width:900px; margin:0 auto; padding:0 18px 100px}
+.hero{padding-top:54px}
+.kicker{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--accent); letter-spacing:1.5px; margin-bottom:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.kicker::before{content:""; width:28px; height:1px; background:var(--accent)}
+h1{font-family:'Unbounded','Onest',sans-serif; font-weight:600; font-size:clamp(34px,7.4vw,66px); line-height:1.02; letter-spacing:-1.5px; margin:0 0 18px; text-wrap:balance;
+  background:linear-gradient(100deg,var(--ink) 0%,var(--ink) 30%,var(--accent) 48%,var(--accent2) 57%,var(--ink) 75%,var(--ink) 100%); background-size:250% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 7s ease-in-out infinite}
+@keyframes shine{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+.lede{color:var(--dim); max-width:60ch; font-size:17px}
+.lede b{color:var(--accent); font-weight:600}
+.cross{display:inline-flex; align-items:center; gap:8px; margin-top:18px; text-decoration:none; color:var(--accent2); font-size:14.5px; border:1px solid var(--line2); border-radius:10px; padding:9px 15px; transition:border-color .2s,box-shadow .2s}
+.cross:hover,.cross:focus-visible{border-color:var(--accent); box-shadow:0 0 18px rgba(74,133,255,.3); outline:none}
+.stats{display:flex; flex-wrap:wrap; gap:26px; margin-top:22px}
+.stat b{display:block; font-family:'Unbounded',sans-serif; font-weight:500; font-size:30px; line-height:1; font-variant-numeric:tabular-nums}
+.stat span{font-size:13px; color:var(--dim)}
+.stat.hot b{color:var(--accent); text-shadow:0 0 18px rgba(74,133,255,.5)}
+.map{margin-top:28px; display:grid; gap:10px}
+.map-l{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim); letter-spacing:1px}
+.track{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px}
+.track a{color:var(--ink); text-decoration:none; font-size:14px; padding:6px 12px; border:1px solid var(--line2); border-radius:10px; background:rgba(255,255,255,.02); transition:border-color .2s,color .2s,box-shadow .2s}
+.track a:hover,.track a:focus-visible{border-color:var(--accent); color:var(--accent2); box-shadow:0 0 16px rgba(74,133,255,.25); outline:none}
+.track a.new{border-style:dashed}
+.track i{font-style:normal; color:var(--accent); font-family:'JetBrains Mono',monospace}
+
+nav.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:30; margin:30px -18px 0; padding:12px 18px; background:rgba(8,10,18,.75); backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--line)}
+.chips{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips a{flex:0 0 auto; text-decoration:none; color:var(--dim); font-size:13.5px; padding:7px 14px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.02); transition:color .2s,border-color .2s,background .2s,box-shadow .2s}
+.chips a:hover,.chips a:focus-visible{color:var(--ink); border-color:var(--line2); outline:none}
+.chips a.on{color:#080A12; background:var(--accent); border-color:var(--accent); box-shadow:0 0 18px rgba(74,133,255,.5); font-weight:500}
+
+section{padding-top:64px; scroll-margin-top:64px}
+h2{font-family:'Unbounded','Onest',sans-serif; font-weight:500; font-size:clamp(22px,3.6vw,30px); line-height:1.15; letter-spacing:-.4px; margin:0 0 8px; text-wrap:balance; display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
+h2 .ix{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); letter-spacing:1px; font-weight:400}
+h3{font-size:17px; font-weight:600; margin:30px 0 10px}
+h3::before{content:"// "; font-family:'JetBrains Mono',monospace; color:var(--accent); font-weight:400}
+p{margin:0 0 12px}
+.sec-sub{color:var(--dim); font-size:15px; margin-bottom:20px; max-width:64ch}
+.beyond{font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:1px; color:var(--accent2); border:1px solid rgba(140,198,255,.4); border-radius:6px; padding:2px 7px; vertical-align:middle; white-space:nowrap; text-transform:uppercase}
+
+.spot{position:relative}
+.spot::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; opacity:0; transition:opacity .35s;
+  background:radial-gradient(260px circle at var(--mx,-200px) var(--my,-200px),rgba(120,170,255,.95),transparent 55%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude}
+.spot::after{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0; transition:opacity .35s;
+  background:radial-gradient(360px circle at var(--mx,-200px) var(--my,-200px),rgba(74,133,255,.08),transparent 60%)}
+.spot:hover::before,.spot:hover::after{opacity:1}
+
+.blk{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:6px 20px}
+.r{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:20px; padding:15px 0; border-top:1px solid var(--line); align-items:start; position:relative; z-index:1}
+.r:first-of-type{border-top:none}
+.r .m{overflow-x:auto; overflow-y:hidden}
+.r .t{font-size:14.5px; color:var(--dim)}
+.r .t b{color:var(--ink); font-weight:600}
+@media (max-width:640px){.r{grid-template-columns:1fr; gap:6px}}
+
+.tw{overflow-x:auto; margin:12px 0 4px; border:1px solid var(--line); border-radius:14px; background:var(--panel)}
+table{width:100%; border-collapse:collapse; font-size:14.5px}
+th{text-align:left; font-weight:500; font-size:12px; color:var(--accent); padding:11px 14px; border-bottom:1px solid var(--line2); background:var(--panel2); letter-spacing:.6px; font-family:'JetBrains Mono',monospace}
+td{padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--accent-soft)}
+tr:last-child td{border-bottom:none}
+td.n{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); white-space:nowrap; font-variant-numeric:tabular-nums}
+td.a{color:var(--ink)}
+
+.note{background:var(--accent-soft); border:1px solid rgba(74,133,255,.25); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.note b{color:var(--accent2)}
+.ok{background:var(--ok-soft); border:1px solid rgba(79,214,168,.22); border-radius:12px; padding:13px 16px; margin:16px 0; font-size:14.5px}
+.ok b{color:var(--ok)}
+
+.lab{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px; margin:18px 0}
+.lab > *{position:relative; z-index:1}
+.lab-t{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); letter-spacing:1.2px; margin-bottom:10px}
+.lab svg{width:100%; height:auto; display:block}
+.lab svg text{font-family:'JetBrains Mono',monospace; font-size:11px; fill:var(--dim)}
+.ctl{display:flex; flex-wrap:wrap; gap:14px 24px; align-items:center; margin-top:12px; font-size:14px; color:var(--dim)}
+.ctl label{display:flex; align-items:center; gap:10px}
+.ctl output{font-family:'JetBrains Mono',monospace; color:var(--accent); min-width:3.2em}
+.lab .verdict{margin-top:12px; font-size:14.5px; border-top:1px solid var(--line); padding-top:12px}
+.lab .verdict b{color:var(--accent2); font-weight:600}
+input[type=range]{-webkit-appearance:none; appearance:none; width:150px; max-width:44vw; height:4px; background:var(--line2); border-radius:4px; outline:none; margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px; height:16px; border:none; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+input[type=range]:focus-visible{outline:2px solid var(--accent); outline-offset:6px}
+
+details{margin:10px 0; font-size:14.5px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 16px}
+summary{cursor:pointer; color:var(--accent); font-size:14px; list-style:none; display:inline-flex; align-items:center; gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+"; display:inline-grid; place-items:center; width:18px; height:18px; border:1px solid var(--accent); border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:12px; transition:transform .25s}
+details[open] summary::before{transform:rotate(45deg)}
+summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:4px}
+details .body{margin-top:10px; padding:12px 15px; background:var(--code); border:1px solid var(--line); border-radius:10px; overflow-x:auto}
+
+.search{width:100%; font:inherit; font-size:15px; padding:13px 16px; border:1px solid var(--line2); border-radius:12px; background:var(--panel); color:var(--ink); margin-bottom:16px}
+.search::placeholder{color:var(--dim)}
+.search:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 4px rgba(74,133,255,.15)}
+.hidden{display:none!important}
+.empty{color:var(--dim); text-align:center; padding:20px}
+.foot{color:var(--dim); font-size:13px; margin-top:60px; border-top:1px solid var(--line); padding-top:18px}
+mjx-container{max-width:100%}
+mjx-container[display="true"]{overflow-x:auto; overflow-y:hidden; margin:.6em 0!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important; transition:none!important} html{scroll-behavior:auto}}
+</style>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="aura" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="progress" id="prog" aria-hidden="true"></div>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">АККРЕДИТАЦИЯ 01.03.03 · ЛИНЕЙНАЯ АЛГЕБРА</div>
+  <h1>Линал по полочкам</h1>
+  <p class="lede">Все 23 задания из списка с ответами плюс теория, которой в списке нет: линейные пространства, операторы, диагонализация и аналитическая геометрия. Такой материал помечен меткой <span class="beyond">вне списка</span>.</p>
+  <a class="cross" href="matan.html">← Матанализ</a>
+  <a class="cross" href="diskretka.html">Дискретная математика →</a>
+  <div class="stats">
+    <div class="stat hot"><b>9</b><span>тем</span></div>
+    <div class="stat"><b>3</b><span>живые модели</span></div>
+    <div class="stat"><b>23</b><span>задания с ответами</span></div>
+  </div>
+  <div class="map" aria-label="Как связаны темы">
+    <div class="map-l">КАК СВЯЗАНЫ ТЕМЫ</div>
+    <div class="track"><a href="#det">Определитель</a><i>→</i><a href="#inv">Обратная матрица</a><i>→</i><a href="#slau">СЛАУ</a></div>
+    <div class="track"><a href="#det">Определитель</a><i>→</i><a href="#basis">Зависимость и базис</a><i>→</i><a href="#orth">Ортогональность</a><i>→</i><a href="#geom" class="new">Геометрия</a></div>
+    <div class="track"><a href="#eig">Собственные векторы</a><i>→</i><a href="#quad">Квадратичные формы</a><i>+</i><a href="#space" class="new">Пространства и операторы</a></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Разделы">
+  <div class="chips">
+    <a href="#det">Определители</a>
+    <a href="#inv">Обратная матрица</a>
+    <a href="#slau">Ранг и СЛАУ</a>
+    <a href="#basis">Зависимость и базис</a>
+    <a href="#orth">Ортогональность</a>
+    <a href="#eig">Собственные векторы</a>
+    <a href="#quad">Квадратичные формы</a>
+    <a href="#space">Пространства</a>
+    <a href="#geom">Геометрия</a>
+    <a href="#idx">Задания 1–23</a>
+  </div>
+</nav>
+
+<!-- 01 -->
+<section id="det">
+  <h2><span class="ix">01</span>Определители</h2>
+  <p class="sec-sub">Определитель — это число, которое отвечает на один вопрос: вырождена матрица или нет. Геометрически — во сколько раз преобразование меняет площадь (объём).</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\det\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}=ad-bc\)</div><div class="t">Для 3×3 — правило треугольника или разложение по строке с нулями.</div></div>
+    <div class="r"><div class="m">\(\det(AB)=\det A\cdot\det B\)</div><div class="t">Перемножать матрицы не нужно. <b>Задание 1</b>: \((-2)\cdot(-8)=16\).</div></div>
+    <div class="r"><div class="m">\(\det(kA)=k^n\det A\)</div><div class="t">Множитель выносится из <b>каждой</b> строки, поэтому в степени стоит порядок матрицы.</div></div>
+    <div class="r"><div class="m">\(\det(A^{T})=\det A,\quad \det(A^{-1})=\dfrac1{\det A}\)</div><div class="t">Транспонирование не меняет, обращение переворачивает.</div></div>
+    <div class="r"><div class="m">\(\det=0\iff\) строки линейно зависимы</div><div class="t">Главный смысл. Матрица «схлопывает» пространство в плоскость или прямую.</div></div>
+    <div class="r"><div class="m">Преобразования</div><div class="t">Прибавление к строке другой строки — не меняет; перестановка строк — меняет знак; умножение строки на \(k\) — умножает на \(k\).</div></div>
+  </div>
+  <h3>Приём для матриц с параметром</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\[\det=\big(a+(n-1)b\big)(a-b)^{\,n-1}\]</div><div class="t">Если на диагонали всюду \(a\), а вне её всюду \(b\). <b>Задание 19</b>: \(a=t-2\), \(b=3\), \(n=3\) даёт \((t+4)(t-5)^2\).</div></div>
+    <div class="r"><div class="m">Откуда берётся</div><div class="t">Складываем все строки в первую — там получается одинаковое число \(a+(n-1)b\), выносим его, затем обнуляем столбец и получаем треугольный вид.</div></div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section id="inv">
+  <h2><span class="ix">02</span>Обратная матрица</h2>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(A^{-1}\) существует \(\iff\det A\ne0\)</div><div class="t">В задачах с параметром: находим \(\det A(t)\) и решаем неравенство. <b>Задание 2</b>: \(1-4t^2\ne0\).</div></div>
+    <div class="r"><div class="m">\(A^{-1}=\dfrac{1}{\det A}\tilde A^{T}\)</div><div class="t">\(\tilde A\) — матрица алгебраических дополнений: вычёркиваем строку и столбец, считаем минор, ставим знак \((-1)^{i+j}\). Не забыть транспонировать.</div></div>
+    <div class="r"><div class="m">Для 2×2: \(\dfrac1{ad-bc}\begin{pmatrix}d&amp;-b\\-c&amp;a\end{pmatrix}\)</div><div class="t">Диагональные меняются местами, побочные меняют знак.</div></div>
+    <div class="r"><div class="m">\(AX=B\Rightarrow X=A^{-1}B\)</div><div class="t">Умножаем <b>слева</b>, потому что \(A\) стоит слева от \(X\).</div></div>
+    <div class="r"><div class="m">\(XA=B\Rightarrow X=BA^{-1}\)</div><div class="t">Умножаем <b>справа</b>. <b>Задание 10</b>. Матрицы не коммутируют, сторона принципиальна.</div></div>
+    <div class="r"><div class="m">\(AB=0\) и \(BA=E\) вместе невозможны</div><div class="t"><b>Задание 5</b>: из \(BA=E\) следует \(\det A\ne0\); умножив \(AB=0\) на \(A^{-1}\), получаем \(B=0\) — противоречие.</div></div>
+  </div>
+  <div class="note"><b>Проверка ответа.</b> Умножьте найденную \(A^{-1}\) на \(A\) — должна получиться единичная матрица. Это быстрее, чем перепроверять все алгебраические дополнения.</div>
+</section>
+
+<!-- 03 -->
+<section id="slau">
+  <h2><span class="ix">03</span>Ранг и системы</h2>
+  <p class="sec-sub">Ранг — сколько в матрице реально независимых строк. Он решает всё: и совместность системы, и число решений.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\operatorname{rang}A\) = число ненулевых строк ступенчатого вида</div><div class="t">Элементарные преобразования ранг не меняют. <b>Задание 12</b>.</div></div>
+    <div class="r"><div class="m">Кронекер–Капелли: совместна \(\iff\operatorname{rang}A=\operatorname{rang}\bar A\)</div><div class="t">Если в ступенчатом виде появилась строка \((0\ 0\ 0\,|\,c)\) с \(c\ne0\) — система несовместна.</div></div>
+    <div class="r"><div class="m">\(\operatorname{rang}=n\) — решение единственно</div><div class="t">\(\operatorname{rang}\lt n\) — бесконечно много решений со свободными переменными.</div></div>
+    <div class="r"><div class="m">Однородная система совместна всегда</div><div class="t">Нулевое решение подходит любой. Ненулевое существует \(\iff\operatorname{rang}\lt n\), для квадратной \(\iff\det A=0\). <b>Задания 6, 7</b>.</div></div>
+    <div class="r"><div class="m">Число векторов ФСР \(=n-\operatorname{rang}\)</div><div class="t">Столько же, сколько свободных переменных.</div></div>
+    <div class="r"><div class="m">\(X=X_{\text{част}}+c_1\vec e_1+\ldots+c_k\vec e_k\)</div><div class="t">Структура решения неоднородной системы: одно частное решение плюс вся ФСР однородной. <b>Задания 13, 14</b>.</div></div>
+  </div>
+  <h3>Алгоритм ФСР</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">1. Ступенчатый вид</div><div class="t">Гауссом, с удобной первой строкой (где коэффициент 1).</div></div>
+    <div class="r"><div class="m">2. Базисные и свободные</div><div class="t">Базисные — в столбцах с ведущими элементами, остальные свободны.</div></div>
+    <div class="r"><div class="m">3. Выразить базисные</div><div class="t">Снизу вверх через свободные.</div></div>
+    <div class="r"><div class="m">4. Единицы по очереди</div><div class="t">Каждой свободной переменной даём 1, остальным 0 — получаем очередной вектор ФСР.</div></div>
+  </div>
+  <div class="ok"><b>Смысл.</b> Решения однородной системы образуют подпространство — плоскость через начало координат. ФСР — это её базис. Решения неоднородной системы — та же плоскость, сдвинутая на частное решение, поэтому нулевой вектор в неё уже не входит.</div>
+</section>
+
+<!-- 04 -->
+<section id="basis">
+  <h2><span class="ix">04</span>Зависимость и базис</h2>
+  <p class="sec-sub">Ключевая тема раздела: через неё формулируются задания 8, 9, 17 и 18, и она же стоит за рангом, ФСР и собственными векторами.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">Линейная комбинация \(c_1\vec a_1+\ldots+c_k\vec a_k\)</div><div class="t">«Маршрут»: пройти \(c_1\) шагов в первом направлении, \(c_2\) во втором и так далее.</div></div>
+    <div class="r"><div class="m">Зависимы: комбинация даёт \(\vec0\) при не всех нулевых \(c_i\)</div><div class="t">Значит, один вектор выражается через остальные — он <b>лишний</b>, нового направления не даёт.</div></div>
+    <div class="r"><div class="m">Независимы: только тривиальная комбинация</div><div class="t">Равенство \(\sum c_i\vec a_i=\vec0\) возможно лишь при всех \(c_i=0\).</div></div>
+    <div class="r"><div class="m">Геометрия</div><div class="t">Два вектора зависимы \(\iff\) коллинеарны. Три в пространстве зависимы \(\iff\) компланарны — лежат в одной плоскости.</div></div>
+    <div class="r"><div class="m">\(n\) векторов в \(\mathbb R^n\) зависимы \(\iff\det=0\)</div><div class="t">Определитель равен объёму параллелепипеда: векторы в одной плоскости — объём нулевой. <b>Задание 8</b>.</div></div>
+    <div class="r"><div class="m">Базис \(\mathbb R^n\) — ровно \(n\) независимых векторов</div><div class="t">Меньше не хватит, чтобы собрать всё пространство; больше — лишние. Критерий тот же: \(\det\ne0\). <b>Задание 17</b>.</div></div>
+    <div class="r"><div class="m">Выражается ли \(\vec b\) через векторы</div><div class="t">Это вопрос о совместности системы, где векторы — столбцы, а \(\vec b\) — правая часть: Кронекер–Капелли. <b>Задание 9</b>.</div></div>
+  </div>
+  <div class="note"><b>Одна задача в трёх формулировках.</b> «Векторы зависимы», «однородная система имеет ненулевое решение» и «матрица вырождена» — это одно и то же условие \(\det=0\). Разница лишь в словах, а вот вопрос про базис требует противоположного: \(\det\ne0\).</div>
+
+  <div class="lab spot" id="lab-dep">
+    <div class="lab-t">МОДЕЛЬ · ПЛОЩАДЬ = ОПРЕДЕЛИТЕЛЬ</div>
+    <svg id="dep-svg" viewBox="0 0 700 300" role="img" aria-label="Два вектора и параллелограмм на них"></svg>
+    <div class="ctl">
+      <label for="dep-x">bₓ <input type="range" id="dep-x" min="-5" max="5" step="0.1" value="1"><output id="dep-xv">1,0</output></label>
+      <label for="dep-y">b_y <input type="range" id="dep-y" min="-5" max="5" step="0.1" value="3"><output id="dep-yv">3,0</output></label>
+    </div>
+    <div class="verdict" id="dep-v"></div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section id="orth">
+  <h2><span class="ix">05</span>Ортогональность</h2>
+  <div class="blk spot">
+    <div class="r"><div class="m">\((\vec a,\vec b)=a_1b_1+a_2b_2+a_3b_3=|\vec a||\vec b|\cos\varphi\)</div><div class="t">Две формулы одного и того же. Вторая даёт угол: \(\cos\varphi=\frac{(\vec a,\vec b)}{|\vec a||\vec b|}\).</div></div>
+    <div class="r"><div class="m">\(\vec a\perp\vec b\iff(\vec a,\vec b)=0\)</div><div class="t"><b>Задание 16</b>: \(t^2-2t=0\).</div></div>
+    <div class="r"><div class="m">Ортогональный базис</div><div class="t">Все три попарных произведения равны нулю — три условия, ответы пересекаются. <b>Задание 18</b>: только \(t=2\).</div></div>
+    <div class="r"><div class="m">Ортогональные ненулевые векторы независимы</div><div class="t">Умножьте \(\sum c_i\vec a_i=\vec0\) скалярно на \(\vec a_1\): всё, кроме \(c_1|\vec a_1|^2\), исчезнет, значит \(c_1=0\). Определитель считать не нужно.</div></div>
+    <div class="r"><div class="m">\(c_i=\dfrac{(\vec b,\vec a_i)}{|\vec a_i|^2}\)</div><div class="t">В ортогональном базисе координаты считаются по формуле, без системы. Та же формула даёт коэффициенты ряда Фурье в матанализе.</div></div>
+    <div class="r"><div class="m">Проекция: \(\operatorname{pr}_{\vec b}\vec a=\dfrac{(\vec a,\vec b)}{|\vec b|^2}\vec b\) <span class="beyond">вне списка</span></div><div class="t">Тень вектора \(\vec a\) на направление \(\vec b\).</div></div>
+    <div class="r"><div class="m">Грам–Шмидт <span class="beyond">вне списка</span></div><div class="t">Из любого базиса делаем ортогональный: \(\vec b_1=\vec a_1\), затем из каждого следующего вычитаем его проекции на все предыдущие.</div></div>
+  </div>
+</section>
+
+<!-- 06 -->
+<section id="eig">
+  <h2><span class="ix">06</span>Собственные значения и векторы</h2>
+  <p class="sec-sub">Матрица обычно поворачивает векторы. Но есть особые направления, которые она только растягивает — это и есть собственные векторы.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(A\vec x=\lambda\vec x,\ \vec x\ne\vec0\)</div><div class="t">Определение: направление сохраняется, меняется только длина, в \(\lambda\) раз.</div></div>
+    <div class="r"><div class="m">\(\det(A-\lambda E)=0\)</div><div class="t">Характеристическое уравнение. Получается из требования, чтобы у однородной системы \((A-\lambda E)\vec x=\vec0\) было ненулевое решение.</div></div>
+    <div class="r"><div class="m">Собственные векторы</div><div class="t">Для каждого \(\lambda\) решаем \((A-\lambda E)\vec x=\vec0\) и берём ФСР — та же техника, что в задании 13.</div></div>
+    <div class="r"><div class="m">У треугольной матрицы \(\lambda\) на диагонали</div><div class="t">Считать ничего не надо — частый подарок в тестах.</div></div>
+    <div class="r"><div class="m">\(\sum\lambda_i=\operatorname{tr}A,\quad\prod\lambda_i=\det A\)</div><div class="t">Две мгновенные проверки: сумма корней равна сумме диагонали, произведение — определителю. <b>Задание 20</b>.</div></div>
+    <div class="r"><div class="m">Проверка готового вектора</div><div class="t">Если вектор уже дан, характеристическое уравнение не нужно: подставьте в \(A\vec v=\lambda\vec v\) и решите на параметр. <b>Задание 21</b>: \(a=4\).</div></div>
+    <div class="r"><div class="m">Диагонализация <span class="beyond">вне списка</span></div><div class="t">\(A=S\Lambda S^{-1}\), где столбцы \(S\) — собственные векторы, \(\Lambda\) — диагональ из \(\lambda\). Возможна, если собственных векторов хватает на базис. Тогда \(A^k=S\Lambda^kS^{-1}\) — степени считаются мгновенно.</div></div>
+    <div class="r"><div class="m">Симметричные матрицы <span class="beyond">вне списка</span></div><div class="t">У них все \(\lambda\) действительны, а собственные векторы попарно ортогональны. Именно поэтому квадратичные формы всегда приводятся к главным осям.</div></div>
+  </div>
+
+  <div class="lab spot" id="lab-eig">
+    <div class="lab-t">МОДЕЛЬ · КАК МАТРИЦА ДЕЙСТВУЕТ НА ПЛОСКОСТЬ</div>
+    <svg id="eig-svg" viewBox="0 0 700 320" role="img" aria-label="Образ единичной окружности под действием матрицы"></svg>
+    <div class="ctl">
+      <label for="e-a">a <input type="range" id="e-a" min="-3" max="3" step="0.1" value="2"><output id="e-av">2,0</output></label>
+      <label for="e-b">b <input type="range" id="e-b" min="-3" max="3" step="0.1" value="1"><output id="e-bv">1,0</output></label>
+      <label for="e-c">c <input type="range" id="e-c" min="-3" max="3" step="0.1" value="1"><output id="e-cv">1,0</output></label>
+      <label for="e-d">d <input type="range" id="e-d" min="-3" max="3" step="0.1" value="2"><output id="e-dv">2,0</output></label>
+    </div>
+    <div class="verdict" id="eig-v"></div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section id="quad">
+  <h2><span class="ix">07</span>Квадратичные формы</h2>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(A(x,x)=\sum a_{ij}x_ix_j\)</div><div class="t">На диагонали матрицы — коэффициенты при квадратах, вне диагонали — <b>половины</b> смешанных коэффициентов, в обе симметричные позиции.</div></div>
+    <div class="r"><div class="m">Критерий Сильвестра</div><div class="t">Положительно определена \(\iff\) все угловые миноры \(\Delta_1,\Delta_2,\ldots,\Delta_n\) положительны. <b>Задания 22, 23</b>.</div></div>
+    <div class="r"><div class="m">Отрицательная определённость</div><div class="t">Знаки чередуются, начиная с минуса: \(\Delta_1\lt0,\ \Delta_2>0,\ \Delta_3\lt0\). Равносильно: форма \(-A\) положительно определена.</div></div>
+    <div class="r"><div class="m">Через собственные значения <span class="beyond">вне списка</span></div><div class="t">Знаки \(\lambda\) решают всё: все \(\lambda>0\) — положительно определена, разных знаков — знакопеременная. Это и есть приведение к главным осям.</div></div>
+    <div class="r"><div class="m">Где встречается в матане</div><div class="t">\(\Delta=AC-B^2>0\) в задаче об экстремуме функции двух переменных — это в точности критерий Сильвестра для второго дифференциала.</div></div>
+  </div>
+
+  <div class="lab spot" id="lab-quad">
+    <div class="lab-t">МОДЕЛЬ · ЛИНИЯ УРОВНЯ \(ax^2+2bxy+cy^2=1\)</div>
+    <svg id="q-svg" viewBox="0 0 700 300" role="img" aria-label="Линия уровня квадратичной формы"></svg>
+    <div class="ctl">
+      <label for="q-a">a <input type="range" id="q-a" min="-3" max="3" step="0.1" value="2"><output id="q-av">2,0</output></label>
+      <label for="q-b">b <input type="range" id="q-b" min="-3" max="3" step="0.1" value="0.5"><output id="q-bv">0,5</output></label>
+      <label for="q-c">c <input type="range" id="q-c" min="-3" max="3" step="0.1" value="1"><output id="q-cv">1,0</output></label>
+    </div>
+    <div class="verdict" id="q-v"></div>
+  </div>
+</section>
+
+<!-- 08 -->
+<section id="space">
+  <h2><span class="ix">08</span>Пространства и операторы <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">То, ради чего вся эта техника и придумана. В тестах встречается как теоретические вопросы.</p>
+  <div class="blk spot">
+    <div class="r"><div class="m">Линейное пространство</div><div class="t">Множество, где определены сложение и умножение на число с обычными свойствами. Векторы — не только стрелки: многочлены, матрицы, функции тоже образуют пространства.</div></div>
+    <div class="r"><div class="m">Подпространство</div><div class="t">Часть пространства, замкнутая относительно сложения и умножения на число. Обязана содержать \(\vec0\). Решения однородной СЛАУ — подпространство, неоднородной — нет.</div></div>
+    <div class="r"><div class="m">Размерность \(=\) число векторов базиса</div><div class="t">\(\dim\mathbb R^n=n\); пространство многочленов степени \(\le n\) имеет размерность \(n+1\).</div></div>
+    <div class="r"><div class="m">Координаты в базисе</div><div class="t">Разложение \(\vec x=c_1\vec e_1+\ldots+c_n\vec e_n\) единственно — это и отличает базис от произвольного набора.</div></div>
+    <div class="r"><div class="m">Матрица перехода \(T\)</div><div class="t">Столбцы — координаты нового базиса в старом. Координаты пересчитываются как \(\vec x_{нов}=T^{-1}\vec x_{стар}\).</div></div>
+    <div class="r"><div class="m">Линейный оператор</div><div class="t">Отображение с \(\mathcal A(\vec x+\vec y)=\mathcal A\vec x+\mathcal A\vec y\) и \(\mathcal A(k\vec x)=k\mathcal A\vec x\). В фиксированном базисе задаётся матрицей.</div></div>
+    <div class="r"><div class="m">Ядро и образ</div><div class="t">\(\ker\mathcal A\) — что переходит в ноль (это ФСР!), \(\operatorname{im}\mathcal A\) — что получается на выходе.</div></div>
+    <div class="r"><div class="m">\(\dim\ker+\operatorname{rang}=n\)</div><div class="t">Теорема о ранге. В привычной записи это \(n-r\) — число векторов ФСР.</div></div>
+  </div>
+</section>
+
+<!-- 09 -->
+<section id="geom">
+  <h2><span class="ix">09</span>Аналитическая геометрия <span class="beyond">вне списка</span></h2>
+  <p class="sec-sub">Раздел называется «линейная алгебра и аналитическая геометрия», но в списке заданий геометрии нет. На всякий случай — основные формулы.</p>
+  <h3>Произведения векторов</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Скалярное \((\vec a,\vec b)\) — число</div><div class="t">Даёт угол и проверку перпендикулярности.</div></div>
+    <div class="r"><div class="m">Векторное \(\vec a\times\vec b\) — вектор</div><div class="t">Перпендикулярен обоим, длина равна площади параллелограмма: \(|\vec a\times\vec b|=|\vec a||\vec b|\sin\varphi\). Коллинеарны \(\iff\vec a\times\vec b=\vec0\).</div></div>
+    <div class="r"><div class="m">Смешанное \((\vec a,\vec b,\vec c)\) — число</div><div class="t">Это определитель из координат, он же объём параллелепипеда. Компланарны \(\iff\) равно нулю — тот же критерий, что в задании 8.</div></div>
+  </div>
+  <h3>Прямая и плоскость</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">Прямая: \(Ax+By+C=0\)</div><div class="t">Нормаль \(\vec n=(A;B)\), направляющий \(\vec s=(-B;A)\), наклон \(k=-\frac AB\).</div></div>
+    <div class="r"><div class="m">Плоскость: \(Ax+By+Cz+D=0\)</div><div class="t">Нормаль \(\vec n=(A;B;C)\). Через три точки — приравнять нулю смешанное произведение.</div></div>
+    <div class="r"><div class="m">Прямая в пространстве: \(\frac{x-x_0}{l}=\frac{y-y_0}{m}=\frac{z-z_0}{n}\)</div><div class="t">\((l;m;n)\) — направляющий вектор. Как пересечение двух плоскостей: \(\vec s=\vec n_1\times\vec n_2\).</div></div>
+    <div class="r"><div class="m">Расстояние от точки до плоскости</div><div class="t">\(d=\dfrac{|Ax_0+By_0+Cz_0+D|}{\sqrt{A^2+B^2+C^2}}\). На плоскости — та же формула без \(z\).</div></div>
+    <div class="r"><div class="m">Углы</div><div class="t">Между плоскостями — через их нормали; между прямой и плоскостью — \(\sin\varphi=\frac{|(\vec n,\vec s)|}{|\vec n||\vec s|}\) (здесь синус, а не косинус).</div></div>
+  </div>
+  <h3>Кривые второго порядка</h3>
+  <div class="blk spot">
+    <div class="r"><div class="m">\(\frac{x^2}{a^2}+\frac{y^2}{b^2}=1\) — эллипс</div><div class="t">При \(a=b\) окружность.</div></div>
+    <div class="r"><div class="m">\(\frac{x^2}{a^2}-\frac{y^2}{b^2}=1\) — гипербола</div><div class="t">Асимптоты \(y=\pm\frac ba x\).</div></div>
+    <div class="r"><div class="m">\(y^2=2px\) — парабола</div><div class="t">Если уравнение содержит \(xy\), оси повёрнуты: тип кривой определяется знаком \(\Delta=ac-b^2\), а собственные векторы матрицы формы дают направления осей.</div></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section id="idx">
+  <h2><span class="ix">10</span>Задания 1–23</h2>
+  <p class="sec-sub">Приём и ответ по каждому номеру.</p>
+  <input class="search" id="q" type="search" placeholder="Поиск: 13, ФСР, базис, Сильвестр…" aria-label="Поиск по заданиям">
+  <div class="tw spot"><table id="t">
+    <thead><tr><th>№</th><th>Приём</th><th>Ответ</th></tr></thead>
+    <tbody>
+      <tr class="idx"><td class="n">1</td><td>\(\det(AB)=\det A\cdot\det B\)</td><td class="a">16</td></tr>
+      <tr class="idx"><td class="n">2</td><td>условие \(\det A\ne0\): \(1-4t^2\)</td><td class="a">\(t\ne\pm\frac12\)</td></tr>
+      <tr class="idx"><td class="n">3</td><td>формула для 2×2, \(\det=2\)</td><td class="a">\(\begin{pmatrix}2&amp;-1\\-0{,}5&amp;0{,}5\end{pmatrix}\)</td></tr>
+      <tr class="idx"><td class="n">4</td><td>алгебраические дополнения, \(\det=1\)</td><td class="a">\(\begin{pmatrix}3&amp;-2&amp;0\\-1&amp;1&amp;0\\-11&amp;6&amp;1\end{pmatrix}\)</td></tr>
+      <tr class="idx"><td class="n">5</td><td>из \(BA=E\) следует обратимость \(A\)</td><td class="a">не существуют</td></tr>
+      <tr class="idx"><td class="n">6</td><td>ненулевое решение \(\iff\det=0\): \(7t-14\)</td><td class="a">\(t=2\)</td></tr>
+      <tr class="idx"><td class="n">7</td><td>\(\det=0\), ранг 2 из 3</td><td class="a">совместна, \(X=c(4;3;5)\)</td></tr>
+      <tr class="idx"><td class="n">8</td><td>зависимость \(\iff\det=0\): \(-2(t-4)(t-6)\)</td><td class="a">\(t=4\) или \(t=6\)</td></tr>
+      <tr class="idx"><td class="n">9</td><td>Кронекер–Капелли, строка \((0\,0\,0\,|\,2t-34)\)</td><td class="a">\(t=17\)</td></tr>
+      <tr class="idx"><td class="n">10</td><td>\(XA=B\Rightarrow X=BA^{-1}\)</td><td class="a">\(\begin{pmatrix}-3&amp;-5\\0&amp;-1\\-3&amp;-4\end{pmatrix}\)</td></tr>
+      <tr class="idx"><td class="n">11а</td><td>Гаусс, ранги равны 3</td><td class="a">\((1;2;-1)\)</td></tr>
+      <tr class="idx"><td class="n">11б</td><td>ранги равны 2, неизвестных 3</td><td class="a">\((-2-3c;\,4+2c;\,c)\)</td></tr>
+      <tr class="idx"><td class="n">11в</td><td>\(\operatorname{rang}A=2\), \(\operatorname{rang}\bar A=3\)</td><td class="a">несовместна</td></tr>
+      <tr class="idx"><td class="n">11г</td><td>два уравнения, три неизвестных</td><td class="a">\((-2-3c;\,4+2c;\,c)\)</td></tr>
+      <tr class="idx"><td class="n">12</td><td>ступенчатый вид, считаем ненулевые строки</td><td class="a">а) 2, б) 3, в) 3, г) 2</td></tr>
+      <tr class="idx"><td class="n">13</td><td>ФСР: \(n-r=4-2=2\) вектора</td><td class="a">\((-3;1;0;0)\), \((-18;0;7;1)\)</td></tr>
+      <tr class="idx"><td class="n">14</td><td>частное решение + ФСР</td><td class="a">\((-37;0;15;0)+c_1(-3;1;0;0)+c_2(-18;0;7;1)\)</td></tr>
+      <tr class="idx"><td class="n">15</td><td>скалярные произведения дают систему</td><td class="a">\(\vec x=(1;-1)\)</td></tr>
+      <tr class="idx"><td class="n">16</td><td>\((\vec a_1,\vec a_2)=t^2-2t=0\)</td><td class="a">\(t=0\) или \(t=2\)</td></tr>
+      <tr class="idx"><td class="n">17</td><td>базис \(\iff\det\ne0\): \(2t+6\)</td><td class="a">\(t\ne-3\)</td></tr>
+      <tr class="idx"><td class="n">18</td><td>три скалярных произведения, пересечь ответы</td><td class="a">\(t=2\)</td></tr>
+      <tr class="idx"><td class="n">19</td><td>\(\det=(t+4)(t-5)^2\ne0\)</td><td class="a">\(t\ne-4\) и \(t\ne5\)</td></tr>
+      <tr class="idx"><td class="n">20а</td><td>\(\det(A-\lambda E)=(3-\lambda)(\lambda-2)(\lambda-3)\)</td><td class="a">\(\lambda=2\): \((1;1;0)\); \(\lambda=3\): \((2;1;0)\), \((0;0;1)\)</td></tr>
+      <tr class="idx"><td class="n">20б</td><td>\((2-\lambda)(\lambda-2)(\lambda-4)\)</td><td class="a">\(\lambda=4\): \((1;1;-1)\); \(\lambda=2\): \((1;0;0)\), \((0;1;1)\)</td></tr>
+      <tr class="idx"><td class="n">21</td><td>подстановка в \(A\vec v=2\vec v\), первая строка</td><td class="a">\(a=4\)</td></tr>
+      <tr class="idx"><td class="n">22</td><td>Сильвестр: \(13>0\), \(10>0\), \(12>0\)</td><td class="a">да, положительно определена</td></tr>
+      <tr class="idx"><td class="n">23</td><td>\(\Delta_1=t\), \(\Delta_2=t(6-t)\), \(\Delta_3=-t^2+6t-6\)</td><td class="a">\(3-\sqrt3\lt t\lt3+\sqrt3\)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="empty hidden" id="none">Ничего не найдено.</p>
+</section>
+
+<p class="foot">Сводка к аккредитации 01.03.03 · линейная алгебра и аналитическая геометрия.</p>
+</div>
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('pointermove',function(e){
+    var el=e.target.closest&&e.target.closest('.spot'); if(!el) return;
+    var r=el.getBoundingClientRect();
+    el.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    el.style.setProperty('--my',(e.clientY-r.top)+'px');
+  },{passive:true});
+
+  var prog=document.getElementById('prog');
+  var links=[].slice.call(document.querySelectorAll('.chips a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function onScroll(){
+    var h=document.documentElement,max=h.scrollHeight-h.clientHeight;
+    if(prog) prog.style.width=(max>0?(h.scrollTop/max*100):0)+'%';
+    var cur=-1;
+    secs.forEach(function(s,i){ if(s&&s.getBoundingClientRect().top<140) cur=i; });
+    links.forEach(function(a,i){ a.classList.toggle('on',i===cur); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  var q=document.getElementById('q');
+  if(q){
+    var rows=[].slice.call(document.querySelectorAll('tr.idx')), none=document.getElementById('none');
+    q.addEventListener('input',function(){
+      var s=q.value.trim().toLowerCase(), n=0;
+      rows.forEach(function(r){ var hit=!s||r.textContent.toLowerCase().indexOf(s)>-1; r.classList.toggle('hidden',!hit); if(hit)n++; });
+      none.classList.toggle('hidden',n>0);
+    });
+  }
+
+  var cv=document.getElementById('bg'); if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext('2d'),W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  var glyphs=['det','λ','rang','ker','dim','⊥','×','Σ','E','Δ','∥','ℝⁿ','A⁻¹','T','·','x⃗'];
+  var parts=[],mx=0,my=0;
+  function resize(){
+    W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.round(Math.min(44,W*H/27000));parts=[];
+    for(var i=0;i<n;i++)parts.push({x:Math.random()*W,y:Math.random()*H,z:.3+Math.random()*.9,g:glyphs[i%glyphs.length],v:.07+Math.random()*.2,r:(Math.random()-.5)*.5,rs:(Math.random()-.5)*.002});
+  }
+  window.addEventListener('resize',resize);resize();
+  window.addEventListener('pointermove',function(e){mx=(e.clientX/W-.5);my=(e.clientY/H-.5)},{passive:true});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      if(!reduce){p.y-=p.v*p.z;p.r+=p.rs;if(p.y<-40){p.y=H+40;p.x=Math.random()*W}}
+      var ox=-mx*26*p.z,oy=-my*26*p.z;
+      ctx.save();ctx.translate(p.x+ox,p.y+oy);ctx.rotate(p.r);
+      ctx.font=(13+p.z*20)+'px "JetBrains Mono", monospace';
+      ctx.fillStyle='rgba('+(90+Math.round(p.z*40))+','+(140+Math.round(p.z*40))+',255,'+(0.05+p.z*0.08).toFixed(3)+')';
+      ctx.fillText(p.g,0,0);ctx.restore();
+    }
+    if(!reduce)requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function E(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e}
+  function fmt(v,d){if(d===undefined)d=2;var s=Math.abs(v).toFixed(d).replace('.',',');return (v<0&&Math.abs(v)>=Math.pow(10,-d)/2?'−':'')+s}
+  function clear(svg){while(svg.firstChild)svg.removeChild(svg.firstChild)}
+  function axes(svg,W,H,cx,cy,sc){
+    svg.appendChild(E('line',{x1:20,y1:cy,x2:W-20,y2:cy,stroke:'var(--line2)','stroke-width':1}));
+    svg.appendChild(E('line',{x1:cx,y1:14,x2:cx,y2:H-14,stroke:'var(--line2)','stroke-width':1}));
+    for(var i=-6;i<=6;i++){ if(!i)continue;
+      svg.appendChild(E('line',{x1:cx+i*sc,y1:cy-3,x2:cx+i*sc,y2:cy+3,stroke:'var(--line2)','stroke-width':1}));
+      svg.appendChild(E('line',{x1:cx-3,y1:cy+i*sc,x2:cx+3,y2:cy+i*sc,stroke:'var(--line2)','stroke-width':1}));
+    }
+  }
+  function arrow(svg,cx,cy,sc,vx,vy,color,label){
+    var x=cx+vx*sc,y=cy-vy*sc;
+    svg.appendChild(E('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:color,'stroke-width':2.4,style:'filter:drop-shadow(0 0 5px '+color+')'}));
+    var ang=Math.atan2(cy-y,x-cx),L=9;
+    svg.appendChild(E('path',{d:'M'+x+' '+y+'L'+(x-L*Math.cos(ang-0.4))+' '+(y+L*Math.sin(ang-0.4))+'L'+(x-L*Math.cos(ang+0.4))+' '+(y+L*Math.sin(ang+0.4))+'Z',fill:color}));
+    if(label){var t=E('text',{x:x+(vx>=0?8:-8),y:y+(vy>=0?-8:16),'text-anchor':vx>=0?'start':'end'});t.textContent=label;t.style.fill=color;svg.appendChild(t)}
+  }
+
+  /* линейная зависимость */
+  var dx=document.getElementById('dep-x'),dy=document.getElementById('dep-y'),dsvg=document.getElementById('dep-svg');
+  function dep(){
+    var ax=2,ay=1,bx=+dx.value,by=+dy.value,W=700,H=300,cx=350,cy=150,sc=34;
+    clear(dsvg);axes(dsvg,W,H,cx,cy,sc);
+    var det=ax*by-ay*bx;
+    var P=[[cx,cy],[cx+ax*sc,cy-ay*sc],[cx+(ax+bx)*sc,cy-(ay+by)*sc],[cx+bx*sc,cy-by*sc]];
+    dsvg.appendChild(E('polygon',{points:P.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1)}).join(' '),fill:Math.abs(det)<0.12?'rgba(255,123,107,.18)':'rgba(74,133,255,.16)',stroke:'none'}));
+    arrow(dsvg,cx,cy,sc,ax,ay,'#8CC6FF','a (2; 1)');
+    arrow(dsvg,cx,cy,sc,bx,by,'#4A85FF','b');
+    document.getElementById('dep-xv').textContent=fmt(bx,1);
+    document.getElementById('dep-yv').textContent=fmt(by,1);
+    var v;
+    if(Math.abs(det)<0.12) v='<b>Зависимы.</b> Векторы почти коллинеарны, параллелограмм схлопнулся: площадь ≈ 0, определитель ≈ 0. Второй вектор не даёт нового направления — им вдвоём доступна только прямая.';
+    else v='<b>Независимы.</b> Определитель \\(=2\\cdot b_y-1\\cdot b_x=\\) '+fmt(det)+', это и есть площадь параллелограмма. Любую точку плоскости можно собрать из этих двух векторов — они образуют базис \\(\\mathbb R^2\\).';
+    document.getElementById('dep-v').innerHTML=v;
+    if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([document.getElementById('dep-v')]);
+  }
+  if(dx){dx.addEventListener('input',dep);dy.addEventListener('input',dep);dep()}
+
+  /* действие матрицы */
+  var ea=document.getElementById('e-a'),eb=document.getElementById('e-b'),ec=document.getElementById('e-c'),ed=document.getElementById('e-d'),esvg=document.getElementById('eig-svg');
+  function eig(){
+    var a=+ea.value,b=+eb.value,c=+ec.value,d=+ed.value,W=700,H=320,cx=350,cy=160,sc=30;
+    clear(esvg);axes(esvg,W,H,cx,cy,sc);
+    var circ='',img='';
+    for(var i=0;i<=120;i++){
+      var t=2*Math.PI*i/120,x=Math.cos(t),y=Math.sin(t),X=a*x+b*y,Y=c*x+d*y;
+      circ+=(i?'L':'M')+(cx+x*sc).toFixed(1)+' '+(cy-y*sc).toFixed(1);
+      img+=(i?'L':'M')+(cx+X*sc).toFixed(1)+' '+(cy-Y*sc).toFixed(1);
+    }
+    esvg.appendChild(E('path',{d:circ,fill:'none',stroke:'var(--dim)','stroke-width':1.2,'stroke-dasharray':'5 4'}));
+    esvg.appendChild(E('path',{d:img,fill:'rgba(74,133,255,.10)',stroke:'#4A85FF','stroke-width':2,style:'filter:drop-shadow(0 0 6px rgba(74,133,255,.6))'}));
+    var tr=a+d,dt=a*d-b*c,D=tr*tr-4*dt,msg;
+    if(D>=0){
+      var l1=(tr-Math.sqrt(D))/2,l2=(tr+Math.sqrt(D))/2;
+      [l1,l2].forEach(function(l){
+        var vx,vy;
+        if(Math.abs(b)>1e-9){vx=b;vy=l-a}else if(Math.abs(c)>1e-9){vx=l-d;vy=c}else{vx=(Math.abs(l-a)<1e-9)?1:0;vy=(Math.abs(l-a)<1e-9)?0:1}
+        var n=Math.hypot(vx,vy); if(n<1e-9)return; vx/=n;vy/=n;
+        esvg.appendChild(E('line',{x1:cx-vx*280,y1:cy+vy*280,x2:cx+vx*280,y2:cy-vy*280,stroke:'#4FD6A8','stroke-width':1,'stroke-dasharray':'7 6',opacity:.85}));
+        arrow(esvg,cx,cy,sc,vx*1.6,vy*1.6,'#4FD6A8','λ = '+fmt(l));
+      });
+      msg='Собственные значения: <b>λ₁ = '+fmt(l1)+', λ₂ = '+fmt(l2)+'</b>. Зелёные прямые — собственные направления: векторы на них матрица только растягивает, не поворачивая. Площадь меняется в |det| = '+fmt(Math.abs(dt))+' раз.';
+    } else {
+      msg='Дискриминант отрицательный — действительных собственных направлений <b>нет</b>: матрица поворачивает каждый вектор. Собственные значения комплексные: '+fmt(tr/2)+' ± '+fmt(Math.sqrt(-D)/2)+'i. Площадь меняется в |det| = '+fmt(Math.abs(dt))+' раз.';
+    }
+    if(Math.abs(dt)<0.05) msg+=' Определитель близок к нулю: окружность сплющивается в отрезок — матрица вырождена.';
+    ['a','b','c','d'].forEach(function(k,i){document.getElementById('e-'+k+'v').textContent=fmt([a,b,c,d][i],1)});
+    document.getElementById('eig-v').innerHTML=msg;
+  }
+  if(ea){[ea,eb,ec,ed].forEach(function(s){s.addEventListener('input',eig)});eig()}
+
+  /* квадратичная форма */
+  var qa=document.getElementById('q-a'),qb=document.getElementById('q-b'),qc=document.getElementById('q-c'),qsvg=document.getElementById('q-svg');
+  function quad(){
+    var a=+qa.value,b=+qb.value,c=+qc.value,W=700,H=300,cx=350,cy=150,sc=34;
+    clear(qsvg);axes(qsvg,W,H,cx,cy,sc);
+    var d='',on=false;
+    for(var i=0;i<=720;i++){
+      var t=2*Math.PI*i/720,co=Math.cos(t),si=Math.sin(t);
+      var qv=a*co*co+2*b*co*si+c*si*si;
+      if(qv<=0.02){on=false;continue}
+      var r=1/Math.sqrt(qv);
+      if(r>9){on=false;continue}
+      d+=(on?'L':'M')+(cx+r*co*sc).toFixed(1)+' '+(cy-r*si*sc).toFixed(1);on=true;
+    }
+    if(d)qsvg.appendChild(E('path',{d:d,fill:'none',stroke:'#4A85FF','stroke-width':2.2,style:'filter:drop-shadow(0 0 6px rgba(74,133,255,.6))'}));
+    var d1=a,d2=a*c-b*b,msg;
+    if(d1>0&&d2>0) msg='\\(\\Delta_1='+fmt(a)+'>0\\), \\(\\Delta_2='+fmt(d2)+'>0\\) — форма <b>положительно определена</b>. Линия уровня замкнута: это эллипс, форма положительна во всех направлениях.';
+    else if(d1<0&&d2>0) msg='\\(\\Delta_1='+fmt(a)+'\\lt0\\), \\(\\Delta_2='+fmt(d2)+'>0\\) — форма <b>отрицательно определена</b>. Уравнение \\(=1\\) решений не имеет, поэтому линия исчезла.';
+    else if(d2<0) msg='\\(\\Delta_2='+fmt(d2)+'\\lt0\\) — форма <b>знакопеременная</b>: в одних направлениях положительна, в других отрицательна. Линия уровня распалась на ветви гиперболы. В матане это седловая точка.';
+    else msg='\\(\\Delta_2='+fmt(d2)+'\\) — вырожденный случай: критерий Сильвестра ответа не даёт, нужны собственные значения.';
+    document.getElementById('q-av').textContent=fmt(a,1);
+    document.getElementById('q-bv').textContent=fmt(b,1);
+    document.getElementById('q-cv').textContent=fmt(c,1);
+    var el=document.getElementById('q-v');el.innerHTML=msg;
+    if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([el]);
+  }
+  if(qa){[qa,qb,qc].forEach(function(s){s.addEventListener('input',quad)});quad()}
+})();
+</script>
+<script>
+window.MathJax={
+  tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
+    macros:{tg:'\\operatorname{tg}',ctg:'\\operatorname{ctg}',arctg:'\\operatorname{arctg}'}},
+  svg:{fontCache:'global'},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code','svg']}
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
