@@ -198,8 +198,47 @@ details.self{background:var(--panel); border:1px solid var(--line); border-radiu
 .track a.new{border-style:dashed}
 .track i{font-style:normal; color:var(--accent); font-family:'JetBrains Mono',monospace}
 
-mjx-container{max-width:100%; vertical-align:-.08em}
-mjx-container svg{width:auto!important; height:auto!important; max-width:100%; display:inline-block!important}
+.sol .note{color:var(--dim); font-size:14px}
+.drill{margin:26px 0 8px}
+.drill-h{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:1.3px; color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:12px; text-transform:uppercase}
+.drill-h::after{content:""; flex:1; height:1px; background:var(--line)}
+.dq{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:15px 17px; margin-bottom:10px; transition:border-color .2s}
+.dq.done{border-color:var(--line2)}
+.dq-top{display:flex; align-items:center; gap:10px; margin-bottom:7px; flex-wrap:wrap}
+.dq-n{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--dim); letter-spacing:.5px}
+.dq-gen{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.8px; color:var(--accent2); border:1px solid var(--line2); border-radius:5px; padding:1px 6px; text-transform:uppercase}
+.lvl{display:inline-flex; gap:3px; align-items:center}
+.lvl i{width:5px; height:5px; border-radius:50%; background:var(--line2)}
+.lvl i.on{background:var(--accent); box-shadow:0 0 6px var(--accent)}
+.dq-q{font-size:15.5px; line-height:1.85}
+.dq-b{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}
+.dq-b button{font-family:'Onest',system-ui,sans-serif; font-size:13.5px; color:var(--dim); background:rgba(255,255,255,.02); border:1px solid var(--line2); border-radius:9px; padding:7px 14px; cursor:pointer; transition:color .18s,border-color .18s,box-shadow .18s}
+.dq-b button:hover,.dq-b button:focus-visible{color:var(--ink); border-color:var(--accent); box-shadow:0 0 14px var(--accent-soft); outline:none}
+.dq-b button[aria-expanded="true"]{color:var(--accent); border-color:var(--accent)}
+.dq-b button.again{color:var(--accent2)}
+.opts{display:grid; gap:7px; margin-top:12px}
+.opts button{display:flex; align-items:flex-start; gap:10px; text-align:left; width:100%; font-family:'Onest',system-ui,sans-serif; font-size:15px; color:var(--ink); background:rgba(255,255,255,.02); border:1px solid var(--line); border-radius:10px; padding:10px 13px; cursor:pointer; transition:border-color .18s,background .18s}
+.opts button:hover:not(:disabled){border-color:var(--line2)}
+.opts button:disabled{cursor:default}
+.opts button b{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--dim); flex:0 0 auto; padding-top:2px}
+.opts button.ok{border-color:var(--ok); background:var(--ok-soft)}
+.opts button.ok b{color:var(--ok)}
+.opts button.no{border-color:var(--red); background:var(--red-soft)}
+.opts button.no b{color:var(--red)}
+.opts button.dim{opacity:.45}
+.opts[hidden],.why[hidden],.sol[hidden]{display:none!important}
+.sol .note{background:none!important; border:none!important; padding:0!important; margin:0 0 9px!important; border-radius:0!important; color:var(--dim); font-size:14px}
+.why{font-size:14px; line-height:1.8; color:var(--dim); margin-top:10px; border-top:1px dashed var(--line2); padding-top:10px}
+.why b{color:var(--ink); font-weight:600}
+.why .vok{color:var(--ok); font-weight:600}
+.why .vno{color:var(--red); font-weight:600}
+.sol{margin-top:12px; border-top:1px solid var(--line); padding-top:12px; font-size:15px; line-height:1.95}
+.sol p{margin:0 0 9px}
+.sol p:last-child{margin-bottom:0}
+.sol .st{font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:1px; color:var(--accent); display:block; margin-bottom:3px; text-transform:uppercase}
+.sol .ans{display:inline-block; margin-top:4px; color:var(--accent2); font-weight:600; border:1px solid var(--line2); border-radius:8px; padding:5px 12px; background:var(--accent-soft)}
+mjx-container{max-width:100%}
+mjx-container svg{max-width:100%}
 mjx-container[display="true"]{overflow-x:auto; overflow-y:hidden; margin:.6em 0!important}
 mjx-container[display="true"] svg{display:block!important; margin:0 auto}
 html{scroll-behavior:smooth}
@@ -314,6 +353,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">\(\sin^2x=\dfrac{1-\cos2x}{2},\quad \cos^2x=\dfrac{1+\cos2x}{2}\)</div><div class="t">Понижение степени. № 88, 101.</div></div>
     <div class="r"><div class="m">\(\tg x\cdot\ctg x=1\)</div><div class="t">Спасает пределы вида \((1+\ctg x)^{\tg x}\) — № 163.</div></div>
   </div>
+
+
+<div data-drill="trig"></div>
 </section>
 
 <section id="cx">
@@ -327,6 +369,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">\[\sqrt[n]{z}=\sqrt[n]{r}\,e^{i\frac{\varphi+2\pi k}{n}},\ k=0,\ldots,n-1\]</div><div class="t">Корней ровно \(n\), все с одним модулем, в вершинах правильного \(n\)-угольника (шаг \(\frac{2\pi}{n}\)). Без \(2\pi k\) получится один корень.</div></div>
     <div class="r"><div class="m">Корень из действительного числа</div><div class="t">Комплексные корни идут <b>сопряжёнными парами</b>: \(\sqrt[3]{-27}\): \(-3\), \(\frac32\pm\frac{3\sqrt3}{2}i\).</div></div>
   </div>
+
+
+<div data-drill="cx"></div>
 </section>
 
 <section id="lim">
@@ -441,6 +486,9 @@ html{scroll-behavior:smooth}
   </div>
   <details class="self"><summary>Проверь себя: \(\lim\limits_{x\to0}\frac{e^{3x}-1}{\sin2x}\)</summary><div class="body">\(\frac32\): числитель эквивалентен \(3x\), знаменатель \(2x\).</div></details>
   <details class="self"><summary>Проверь себя: тип разрыва \(\frac{x^2-1}{x-1}\) в точке 1</summary><div class="body">Устранимый: предел равен 2, а в самой точке функция не определена. Доопределив \(f(1)=2\), получим непрерывную функцию.</div></details>
+
+
+<div data-drill="lim"></div>
 </section>
 
 <section id="der">
@@ -536,6 +584,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">Схема исследования</div><div class="t">Область определения → чётность и период → нули и знаки → асимптоты → \(f'\): монотонность и экстремумы → \(f''\): выпуклость и перегибы → график.</div></div>
   </div>
   <details class="self"><summary>Проверь себя: асимптоты \(y=\frac{|x|}{x-1}\) (№ 154)</summary><div class="body">Вертикальная \(x=1\). При \(x\to+\infty\): \(y\to1\); при \(x\to-\infty\): \(y\to-1\) — две разные горизонтальные.</div></details>
+
+
+<div data-drill="der"></div>
 </section>
 
 <section id="eq">
@@ -589,6 +640,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">\(2x_0-6=-1\)</div><div class="t">\(x_0=\frac52\), \(y_0=\frac{25}{4}-15+6=-\frac{11}{4}\).</div></div>
     <div class="r"><div class="m">\(y+\frac{11}{4}=x-\frac52\)</div><div class="t"><b>Ответ: \(y=x-\frac{21}{4}\)</b>, или \(4x-4y-21=0\).</div></div>
   </div>
+
+
+<div data-drill="eq"></div>
 </section>
 
 <section id="int">
@@ -726,13 +780,16 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">Признак сравнения</div><div class="t">\(f\sim g\) ⇒ сходятся или расходятся вместе. \(\int_1^\infty\frac{dx}{x^2+x}\sim\frac1{x^2}\) — сходится; \(\int_1^\infty\frac{dx}{\sqrt{x+1}}\sim\frac1{x^{1/2}}\) — расходится.</div></div>
     <div class="r"><div class="m">Абсолютная сходимость</div><div class="t">\(\int|f|\) сходится ⇒ \(\int f\) сходится. \(\left|\frac{\sin x}{x^2}\right|\le\frac1{x^2}\), значит \(\int_1^\infty\frac{\sin x}{x^2}dx\) сходится.</div></div>
   </div>
-  <div class="note"><b>Ловушка глубокого уровня.</b> \(\int_{-1}^{1}\frac{dx}{x^2}\) «по Ньютону–Лейбницу» даёт \(-2\) — отрицательный интеграл от положительной функции. На самом деле он расходится: в нуле разрыв, и формула неприменима. Прежде чем подставлять пределы, проверьте, нет ли разрыва внутри отрезка.</div>
+  <div class="note"><b>Тонкий момент.</b> \(\int_{-1}^{1}\frac{dx}{x^2}\) «по Ньютону–Лейбницу» даёт \(-2\) — отрицательный интеграл от положительной функции. На самом деле он расходится: в нуле разрыв, и формула неприменима. Прежде чем подставлять пределы, проверьте, нет ли разрыва внутри отрезка.</div>
 
   <h3>Интегралы, которые не берутся</h3>
   <div class="blk spot">
     <div class="r"><div class="m">\(\int e^{-x^2}dx,\ \int\dfrac{\sin x}{x}dx,\ \int\dfrac{dx}{\ln x},\ \int\sin x^2\,dx\)</div><div class="t">Первообразные существуют, но через элементарные функции не выражаются. Если в решении вышло такое — ошибка раньше или нужен другой путь.</div></div>
     <div class="r"><div class="m">\(\int_{-\infty}^{\infty}e^{-x^2}dx=\sqrt\pi\)</div><div class="t">Интеграл Пуассона: неопределённый не берётся, а несобственный считается точно — через двойной интеграл в полярных координатах (раздел «Кратные интегралы»).</div></div>
   </div>
+
+
+<div data-drill="int"></div>
 </section>
 
 <section id="ser">
@@ -825,6 +882,9 @@ html{scroll-behavior:smooth}
     </div>
     <div class="verdict" id="four-v"></div>
   </div>
+
+
+<div data-drill="ser"></div>
 </section>
 
 <section id="fnp">
@@ -880,6 +940,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">Алгоритм</div><div class="t">Критические точки внутри → экстремумы на каждом участке границы (сводим к функции одной переменной) → угловые точки → выбрать max и min из всех найденных значений.</div></div>
     <div class="r"><div class="m">Связь с линалом</div><div class="t">\(\Delta=AC-B^2>0\) — это критерий Сильвестра для квадратичной формы \(d^2z=A\,dx^2+2B\,dx\,dy+C\,dy^2\). Второй дифференциал положительно определён — минимум.</div></div>
   </div>
+
+
+<div data-drill="fnp"></div>
 </section>
 
 <section id="mult">
@@ -917,6 +980,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">Объём шара</div><div class="t">\(\int_0^{2\pi}d\varphi\int_0^\pi\sin\theta\,d\theta\int_0^R\rho^2d\rho=2\pi\cdot2\cdot\frac{R^3}{3}=\frac43\pi R^3\).</div></div>
     <div class="r"><div class="m">Приложения</div><div class="t">Масса \(m=\iint\rho\,dS\), центр масс \(x_c=\frac1m\iint x\rho\,dS\).</div></div>
   </div>
+
+
+<div data-drill="mult"></div>
 </section>
 
 <section id="vec">
@@ -952,6 +1018,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">Стокс: \(\oint_L\vec F\cdot d\vec r=\iint_S\operatorname{rot}\vec F\cdot\vec n\,dS\)</div><div class="t">Циркуляция по контуру равна потоку ротора через натянутую на него поверхность.</div></div>
   </div>
   <div class="note"><b>Одна идея в четырёх видах.</b> Ньютон–Лейбниц, Грин, Стокс и Гаусс утверждают одно и то же: интеграл от «производной» по области равен интегралу от самой функции по её границе. Отрезок и два конца, область и контур, тело и поверхность.</div>
+
+
+<div data-drill="vec"></div>
 </section>
 
 <section id="ode">
@@ -1016,6 +1085,9 @@ html{scroll-behavior:smooth}
     <div class="r"><div class="m">Нет \(x\): \(F(y,y',y'')=0\)</div><div class="t">\(y'=p(y)\), \(y''=p\,\frac{dp}{dy}\).</div></div>
   </div>
   <details class="self"><summary>Проверь себя: \(y''+9y=0\) и \(y''-y'=0\)</summary><div class="body">\(\lambda=\pm3i\): \(C_1\cos3x+C_2\sin3x\). \(\lambda=0;1\): \(C_1+C_2e^x\).</div></details>
+
+
+<div data-drill="ode"></div>
 </section>
 
 <section id="hard">
@@ -1066,7 +1138,7 @@ html{scroll-behavior:smooth}
       <div class="cond">\(\lim\limits_{x\to\pi/2}(1+\ctg x)^{-\tg x}\)</div>
       <p class="how">\(v(u-1)=-\tg x\cdot\ctg x=-1\) тождественно.</p>
       <div class="ans"><b>Ответ:</b> \(\frac1e\)</div>
-      <div class="err">В отработке ответили 6 вместо \(e^6\).</div>
+      <div class="err">Частая ошибка: ответ \(6\) вместо \(e^6\) — предел показателя посчитан, но экспонента забыта.</div>
       <details><summary>Отработка</summary><div class="body">\(\lim\limits_{x\to\pi/2}(1+2\ctg x)^{3\tg x}=e^6\). В общем виде ответ — \(e\) в степени произведения коэффициентов.</div></details>
     </div>
 
@@ -1083,7 +1155,7 @@ html{scroll-behavior:smooth}
       <div class="cond">В какой точке \(y^2=2x^3\) касательная ⊥ прямой \(4x-3y+2=0\)?</div>
       <p class="how">\(k_{пр}=\frac43\Rightarrow k_{кас}=-\frac34\); \(y'=\frac{3x^2}{y}\Rightarrow y=-4x^2\); с уравнением кривой \(16x^4=2x^3\); \(x=0\) — посторонний.</p>
       <div class="ans"><b>Ответ:</b> \(\left(\frac18;-\frac1{16}\right)\)</div>
-      <div class="err">Здесь было четыре сбоя: наклон прямой, квадрат \((-4x^2)^2\), прямая в системе, коэффициент вместо координаты.</div>
+      <div class="err">Четыре места, где теряют балл: наклон прямой из общего уравнения, возведение \((-4x^2)^2\), подстановка в уравнение кривой, ответ координатой, а не коэффициентом.</div>
       <details><summary>Отработка</summary><div class="body">\(y^2=4x^3\), касательная ∥ \(6x-y-5=0\): точка \((4;16)\)</div></details>
     </div>
 
@@ -1162,7 +1234,7 @@ html{scroll-behavior:smooth}
       <div class="cond">\(\int\frac{dx}{2-\sin x}\)</div>
       <p class="how">\(t=\tg\frac x2\): \(\int\frac{dt}{t^2-t+1}\), выделить полный квадрат.</p>
       <div class="ans"><b>Ответ:</b> \(\frac2{\sqrt3}\arctg\frac{2\tg\frac x2-1}{\sqrt3}+C\)</div>
-      <div class="err">В отработке получили логарифм вместо арктангенса.</div>
+      <div class="err">Частая ошибка: логарифм вместо арктангенса — в знаменателе сумма квадратов, а не производная знаменателя в числителе.</div>
       <details><summary>Отработка</summary><div class="body">\(\int\frac{dx}{2+\cos x}=\frac2{\sqrt3}\arctg\frac{\tg\frac x2}{\sqrt3}+C\)</div></details>
     </div>
 
@@ -1186,7 +1258,7 @@ html{scroll-behavior:smooth}
       <div class="cond">\(\int_0^{\pi/2}e^x\cos x\,dx\)</div>
       <p class="how">Дважды по частям с \(u\) = тригонометрия: \(2I=e^x(\sin x+\cos x)\).</p>
       <div class="ans"><b>Ответ:</b> \(\frac{e^{\pi/2}-1}{2}\)</div>
-      <div class="err">В отработке потерян знак: у \(u=\sin x\) минуса в \(du\) нет.</div>
+      <div class="err">Частая ошибка: потерян знак — при \(u=\sin x\) в \(du\) минуса нет, он появляется только при \(u=\cos x\).</div>
       <details><summary>Отработка</summary><div class="body">\(\int_0^\pi e^x\sin x\,dx=\frac{e^\pi+1}{2}\)</div></details>
     </div>
 
@@ -1218,7 +1290,7 @@ html{scroll-behavior:smooth}
       <div class="cond">\(\int_{\pi/4}^{\pi/2}\frac{dx}{\sin^4x}\)</div>
       <p class="how">Пределы \(1\to0\), минус от \((\ctg x)'\): \(-\int_1^0(1+t^2)dt=\int_0^1(1+t^2)dt\).</p>
       <div class="ans"><b>Ответ:</b> \(\frac43\)</div>
-      <div class="err">Ответили \(-\frac43\): знак подынтегральной функции и порядок пределов требуют плюса.</div>
+      <div class="err">Частая ошибка: ответ \(-\frac43\) вместо \(+\frac43\) — знак подынтегральной функции и порядок пределов дают плюс.</div>
     </div>
 
     <div class="task idx spot" data-k="183 доказать уравнение частные производные произвольная функция">
@@ -1602,6 +1674,801 @@ html{scroll-behavior:smooth}
     document.getElementById('ode-v').innerHTML='λ² + '+fmt(p)+'λ + '+fmt(q)+' = 0, D = '+fmt(D)+'; '+roots+'. Вид решения: '+form+'. Поведение: <b>'+kind+'</b>.';
   }
   if(op){ op.addEventListener('input',ode); oq.addEventListener('input',ode); ode(); }
+})();
+</script>
+<script>
+/* Генераторы задач: числа подставляются случайно при каждой загрузке. */
+(function(){
+var G = window.GEN = {};
+
+/* ---------- утилиты ---------- */
+function ri(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+function frac(a,b){                       // TeX сокращённой дроби
+  if(b<0){ a=-a; b=-b; }
+  var g=gcd(a,b)||1; a/=g; b/=g;
+  if(b===1) return String(a);
+  return (a<0? '-\\tfrac{'+(-a)+'}{'+b+'}' : '\\tfrac{'+a+'}{'+b+'}');
+}
+function fval(a,b){ return a/b; }
+function uniq(list){                      // убрать повторы, сохраняя порядок
+  var seen={}, out=[];
+  for(var i=0;i<list.length;i++){ if(!seen[list[i]]){ seen[list[i]]=1; out.push(list[i]); } }
+  return out;
+}
+function build(right, wrongs, whyRight, whyWrong){
+  // собирает 4 различных варианта: правильный + три неповторяющихся неверных
+  var o=[right], w=[whyRight];
+  for(var i=0;i<wrongs.length && o.length<4;i++){
+    if(o.indexOf(wrongs[i][0])===-1){ o.push(wrongs[i][0]); w.push(wrongs[i][1]); }
+  }
+  return {o:o, w:w, c:0};
+}
+function sgn(n){ return n<0 ? '-'+Math.abs(n) : '+'+n; }
+function poly(n){ return n===1 ? '' : String(n); }
+
+/* ================= МАТАНАЛИЗ ================= */
+
+G.lim_sin = function(){
+  var a=ri(2,9), b=ri(2,9); while(b===a) b=ri(2,9);
+  var r=frac(a,b), bad1=frac(b,a);
+  var B=build('\\('+r+'\\)',
+    [['\\(1\\)','Единица получается только у \\(\\frac{\\sin t}{t}\\) с одинаковыми аргументами.'],
+     ['\\('+bad1+'\\)','Дробь перевёрнута: коэффициент синуса идёт в числитель.'],
+     ['\\(0\\)','Это неопределённость \\(\\frac00\\), а не ноль.'],
+     ['\\('+frac(a*b,1)+'\\)','Коэффициенты делятся, а не перемножаются.']],
+    'Эквивалентность \\(\\sin '+a+'x\\sim '+a+'x\\) сразу даёт \\(\\frac{'+a+'x}{'+b+'x}\\).');
+  return {q:'Вычислить \\(\\lim\\limits_{x\\to0}\\dfrac{\\sin '+a+'x}{'+b+'x}\\).',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:a/b, p:{a:a,b:b},
+    s:'<p><span class="st">Метод</span>Первый замечательный предел \\(\\lim\\limits_{t\\to0}\\frac{\\sin t}{t}=1\\).</p>'+
+      '<p>Домножим и разделим на \\('+a+'x\\): \\(\\dfrac{\\sin '+a+'x}{'+b+'x}=\\dfrac{\\sin '+a+'x}{'+a+'x}\\cdot\\dfrac{'+a+'x}{'+b+'x}\\).</p>'+
+      '<p>Первый множитель стремится к \\(1\\), второй равен \\('+r+'\\).</p>'+
+      '<p class="note">Короче: \\(\\sin '+a+'x\\sim '+a+'x\\) при \\(x\\to0\\), поэтому сразу \\(\\frac{'+a+'x}{'+b+'x}='+r+'\\).</p>'+
+      '<p><span class="ans">\\('+r+'\\)</span></p>'};
+};
+
+G.lim_rat = function(){
+  var a=ri(2,9), b=ri(2,9), c=ri(1,9), d=ri(1,9);
+  var r=frac(a,b);
+  var B=build('\\('+r+'\\)',
+    [['\\(0\\)','Ноль был бы, если бы степень числителя была меньше степени знаменателя.'],
+     ['\\(\\infty\\)','Бесконечность была бы при большей степени числителя.'],
+     ['\\('+a+'\\)','Коэффициент знаменателя тоже участвует в ответе.'],
+     ['\\('+frac(b,a)+'\\)','Дробь перевёрнута.']],
+    'Степени одинаковы, поэтому предел равен отношению старших коэффициентов.');
+  return {q:'Вычислить \\(\\lim\\limits_{x\\to\\infty}\\dfrac{'+a+'x^2'+sgn(-c)+'x}{'+b+'x^2'+sgn(d)+'}\\).',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:a/b, p:{a:a,b:b},
+    s:'<p><span class="st">Метод</span>Неопределённость \\(\\frac{\\infty}{\\infty}\\): делим числитель и знаменатель на старшую степень \\(x^2\\).</p>'+
+      '<p>\\(\\dfrac{'+a+'x^2'+sgn(-c)+'x}{'+b+'x^2'+sgn(d)+'}=\\dfrac{'+a+'-\\frac{'+c+'}{x}}{'+b+'+\\frac{'+d+'}{x^2}}\\).</p>'+
+      '<p>При \\(x\\to\\infty\\) обе дроби стремятся к нулю, остаётся \\(\\dfrac{'+a+'}{'+b+'}='+r+'\\).</p>'+
+      '<p class="note">Правило: равные степени — отношение старших коэффициентов; сверху меньше — ноль; сверху больше — бесконечность.</p>'+
+      '<p><span class="ans">\\('+r+'\\)</span></p>'};
+};
+
+G.lim_e = function(){
+  var a=ri(2,7);
+  var B=build('\\(e^{'+a+'}\\)',
+    [['\\(e\\)','Просто \\(e\\) получилось бы у \\(\\left(1+\\frac1x\\right)^x\\).'],
+     ['\\(1\\)','Это неопределённость \\(1^\\infty\\), единица здесь неверна.'],
+     ['\\('+a+'e\\)','Коэффициент уходит в показатель, а не в множитель.'],
+     ['\\(e^{'+(a*a)+'}\\)','Показатель равен самому коэффициенту, а не его квадрату.']],
+    'Правило \\(\\left(1+\\frac{a}{x}\\right)^{x}\\to e^{a}\\) при \\(a='+a+'\\).');
+  return {q:'Вычислить \\(\\lim\\limits_{x\\to\\infty}\\left(1+\\dfrac{'+a+'}{x}\\right)^{x}\\).',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:Math.exp(a), p:{a:a},
+    s:'<p><span class="st">Метод</span>Второй замечательный предел, неопределённость \\(1^{\\infty}\\).</p>'+
+      '<p>Подгоняем показатель: \\(\\left(1+\\frac{'+a+'}{x}\\right)^{x}=\\left[\\left(1+\\frac{'+a+'}{x}\\right)^{x/'+a+'}\\right]^{'+a+'}\\).</p>'+
+      '<p>Внутренняя скобка стремится к \\(e\\), значит предел равен \\(e^{'+a+'}\\).</p>'+
+      '<p class="note">Через логарифм: предел равен \\(e^{\\lim x\\cdot\\frac{'+a+'}{x}}=e^{'+a+'}\\).</p>'+
+      '<p><span class="ans">\\(e^{'+a+'}\\)</span></p>'};
+};
+
+G.lim_eq = function(){
+  var a=ri(2,8), b=ri(2,8); while(b===a) b=ri(2,8);
+  var r=frac(a,b);
+  var B=build('\\('+r+'\\)',
+    [['\\('+frac(b,a)+'\\)','Дробь перевёрнута.'],
+     ['\\(1\\)','Единица была бы при одинаковых коэффициентах.'],
+     ['\\(0\\)','Это неопределённость \\(\\frac00\\) с конечным ненулевым ответом.'],
+     ['\\('+frac(a*b,1)+'\\)','Коэффициенты делятся, а не перемножаются.']],
+    'Обе эквивалентности линейные: \\(e^{'+a+'x}-1\\sim '+a+'x\\) и \\(\\operatorname{tg}'+b+'x\\sim '+b+'x\\).');
+  return {q:'Вычислить \\(\\lim\\limits_{x\\to0}\\dfrac{e^{'+a+'x}-1}{\\operatorname{tg}'+b+'x}\\).',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:a/b, p:{a:a,b:b},
+    s:'<p><span class="st">Метод</span>Таблица эквивалентностей при \\(t\\to0\\): \\(e^{t}-1\\sim t\\), \\(\\operatorname{tg}t\\sim t\\).</p>'+
+      '<p>Числитель: \\(e^{'+a+'x}-1\\sim '+a+'x\\).</p>'+
+      '<p>Знаменатель: \\(\\operatorname{tg}'+b+'x\\sim '+b+'x\\).</p>'+
+      '<p>Предел: \\(\\dfrac{'+a+'x}{'+b+'x}='+r+'\\).</p>'+
+      '<p class="note">Эквивалентности применяют к множителям дроби, но не к слагаемым внутри суммы.</p>'+
+      '<p><span class="ans">\\('+r+'\\)</span></p>'};
+};
+
+G.der_prod = function(){
+  var n=ri(2,6);
+  var B=build('\\(x^{'+(n-1)+'}('+n+'\\ln x+1)\\)',
+    [['\\('+n+'x^{'+(n-1)+'}\\ln x\\)','Это только первое слагаемое: правило произведения даёт два.'],
+     ['\\(\\dfrac{'+n+'x^{'+(n-1)+'}}{x}\\)','Так производную произведения не берут.'],
+     ['\\(x^{'+(n-1)+'}('+n+'\\ln x+'+n+')\\)','Второе слагаемое равно \\(x^{'+n+'}\\cdot\\frac1x=x^{'+(n-1)+'}\\), коэффициента там нет.'],
+     ['\\('+n+'x^{'+(n-1)+'}\\)','Логарифм не может исчезнуть.']],
+    'Правило произведения даёт \\('+n+'x^{'+(n-1)+'}\\ln x+x^{'+(n-1)+'}\\).');
+  return {q:'Найти производную \\(y=x^{'+n+'}\\ln x\\).',
+    o:B.o, w:B.w, c:B.c, l:1, p:{n:n},
+    s:'<p><span class="st">Метод</span>Правило произведения \\((uv)\'=u\'v+uv\'\\).</p>'+
+      '<p>\\(u=x^{'+n+'}\\Rightarrow u\'='+n+'x^{'+(n-1)+'}\\);  \\(v=\\ln x\\Rightarrow v\'=\\dfrac1x\\).</p>'+
+      '<p>\\(y\'='+n+'x^{'+(n-1)+'}\\ln x+x^{'+n+'}\\cdot\\dfrac1x\\).</p>'+
+      '<p>Второе слагаемое упрощается: \\(x^{'+n+'}\\cdot\\frac1x=x^{'+(n-1)+'}\\).</p>'+
+      '<p>Выносим общий множитель: \\(y\'=x^{'+(n-1)+'}\\left('+n+'\\ln x+1\\right)\\).</p>'+
+      '<p><span class="ans">\\(y\'=x^{'+(n-1)+'}('+n+'\\ln x+1)\\)</span></p>'};
+};
+
+G.der_arctg = function(){
+  var a=ri(2,9), a2=a*a;
+  var B=build('\\(\\dfrac{'+a+'}{1+'+a2+'x^2}\\)',
+    [['\\(\\dfrac{1}{1+'+a2+'x^2}\\)','Забыт множитель \\(u\'\\) — производная внутренней функции.'],
+     ['\\(\\dfrac{'+a+'}{1+'+a+'x^2}\\)','В знаменатель идёт квадрат всего аргумента: \\(('+a+'x)^2='+a2+'x^2\\).'],
+     ['\\(\\dfrac{'+a+'}{1+x^2}\\)','Аргумент в знаменателе возводится в квадрат вместе с коэффициентом.'],
+     ['\\(\\dfrac{1}{1+x^2}\\)','Это производная \\(\\operatorname{arctg}x\\) без внутренней функции.']],
+    'Формула \\((\\operatorname{arctg}u)\'=\\frac{u\'}{1+u^2}\\) при \\(u='+a+'x\\).');
+  return {q:'Найти производную \\(y=\\operatorname{arctg}'+a+'x\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{a:a},
+    s:'<p><span class="st">Метод</span>Табличная формула \\((\\operatorname{arctg}u)\'=\\dfrac{u\'}{1+u^2}\\).</p>'+
+      '<p>Здесь \\(u='+a+'x\\), значит \\(u\'='+a+'\\), а \\(u^2='+a2+'x^2\\).</p>'+
+      '<p>\\(y\'=\\dfrac{'+a+'}{1+'+a2+'x^2}\\).</p>'+
+      '<p class="note">Две частые потери: забыть множитель \\(u\'\\) и возвести в квадрат только \\(x\\).</p>'+
+      '<p><span class="ans">\\(y\'=\\dfrac{'+a+'}{1+'+a2+'x^2}\\)</span></p>'};
+};
+
+G.der_chain = function(){
+  var m=ri(2,5), a=ri(2,4), k=m*a;
+  var B=build('\\('+k+'\\sin^{'+(m-1)+'}'+a+'x\\cos '+a+'x\\)',
+    [['\\('+m+'\\sin^{'+(m-1)+'}'+a+'x\\cos '+a+'x\\)','Пропущена производная внутреннего аргумента \\('+a+'x\\).'],
+     ['\\('+m+'\\sin^{'+(m-1)+'}'+a+'x\\)','Продифференцирована только внешняя степень — пропущены два слоя.'],
+     ['\\('+k+'\\sin^{'+m+'}'+a+'x\\cos '+a+'x\\)','Степень должна понизиться на единицу.'],
+     ['\\('+k+'\\cos^{'+(m-1)+'}'+a+'x\\sin '+a+'x\\)','Синус и косинус поменялись местами.']],
+    'Три слоя цепного правила: степень, синус, аргумент — множители \\('+m+'\\), \\(\\cos '+a+'x\\) и \\('+a+'\\).');
+  return {q:'Найти производную \\(y=\\sin^{'+m+'}'+a+'x\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{m:m,a:a},
+    s:'<p><span class="st">Метод</span>Цепное правило для трёх вложенных функций: \\(u^{'+m+'}\\to\\sin\\to '+a+'x\\).</p>'+
+      '<p>Шаг 1, внешняя степень: \\('+m+'\\sin^{'+(m-1)+'}'+a+'x\\).</p>'+
+      '<p>Шаг 2, производная синуса: \\(\\cdot\\cos '+a+'x\\).</p>'+
+      '<p>Шаг 3, производная аргумента: \\(\\cdot '+a+'\\).</p>'+
+      '<p>\\(y\'='+m+'\\cdot '+a+'\\sin^{'+(m-1)+'}'+a+'x\\cos '+a+'x='+k+'\\sin^{'+(m-1)+'}'+a+'x\\cos '+a+'x\\).</p>'+
+      '<p class="note">Разворачивайте слои строго снаружи внутрь — тогда ни один множитель не потеряется.</p>'+
+      '<p><span class="ans">\\(y\'='+k+'\\sin^{'+(m-1)+'}'+a+'x\\cos '+a+'x\\)</span></p>'};
+};
+
+G.tangent = function(){
+  var x0=ri(2,7), k=2*x0, y0=x0*x0, b=y0-k*x0;   // y = kx + b, b = -x0^2
+  var bs = b<0 ? '-'+Math.abs(b) : '+'+b;
+  var B=build('\\(y='+k+'x'+bs+'\\)',
+    [['\\(y='+k+'x+'+Math.abs(b)+'\\)','Знак свободного члена противоположный: \\(y_0-kx_0='+y0+'-'+(k*x0)+'\\).'],
+     ['\\(y='+y0+'x'+bs+'\\)','Угловой коэффициент — это производная \\(2x_0='+k+'\\), а не значение функции.'],
+     ['\\(y='+k+'x\\)','Прямая обязана проходить через точку \\(('+x0+';'+y0+')\\), а не через начало координат.'],
+     ['\\(y='+k+'x+'+y0+'\\)','Свободный член посчитан без вычитания \\(kx_0\\).']],
+    'Формула \\(y=f(x_0)+f\'(x_0)(x-x_0)\\) даёт \\(y='+y0+'+'+k+'(x-'+x0+')\\).');
+  return {q:'Составить уравнение касательной к \\(y=x^2\\) в точке с абсциссой \\(x_0='+x0+'\\).',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:k, p:{x0:x0},
+    s:'<p><span class="st">Метод</span>Уравнение касательной: \\(y=f(x_0)+f\'(x_0)(x-x_0)\\).</p>'+
+      '<p>Значение: \\(f('+x0+')='+y0+'\\).</p>'+
+      '<p>Производная: \\(f\'(x)=2x\\Rightarrow f\'('+x0+')='+k+'\\).</p>'+
+      '<p>Подставляем: \\(y='+y0+'+'+k+'(x-'+x0+')='+y0+'+'+k+'x-'+(k*x0)+'='+k+'x'+bs+'\\).</p>'+
+      '<p class="note">Проверка: при \\(x='+x0+'\\) получается \\(y='+y0+'\\) — точка лежит на прямой.</p>'+
+      '<p><span class="ans">\\(y='+k+'x'+bs+'\\)</span></p>'};
+};
+
+G.perp_point = function(){
+  var x0=ri(2,6), k=2*x0, y0=x0*x0;              // перпендикуляр к прямой с k1 = -1/k
+  var B=build('\\(('+x0+';'+y0+')\\)',
+    [['\\(('+(2*x0)+';'+(4*x0*x0)+')\\)','Здесь производная равна \\('+(4*x0)+'\\), а нужна \\('+k+'\\).'],
+     ['\\((-'+x0+';'+y0+')\\)','В этой точке производная равна \\(-'+k+'\\) — перпендикулярности нет.'],
+     ['\\(('+k+';'+(k*k)+')\\)','За абсциссу взят сам угловой коэффициент.'],
+     ['\\(('+y0+';'+x0+')\\)','Координаты переставлены местами.']],
+    'Из \\(k_1k_2=-1\\) нужный коэффициент равен \\('+k+'\\), тогда \\(2x='+k+'\\).');
+  return {q:'В какой точке касательная к \\(y=x^2\\) перпендикулярна прямой \\(y=-\\dfrac{1}{'+k+'}x+'+ri(1,5)+'\\)?',
+    o:B.o, w:B.w, c:B.c, l:3, p:{x0:x0},
+    s:'<p><span class="st">Метод</span>Сначала нужный угловой коэффициент из условия перпендикулярности, потом уравнение \\(f\'(x)=k\\).</p>'+
+      '<p>У данной прямой \\(k_1=-\\dfrac{1}{'+k+'}\\).</p>'+
+      '<p>Из \\(k_1k_2=-1\\): \\(k_2=-\\dfrac{1}{k_1}='+k+'\\).</p>'+
+      '<p>Производная кривой: \\(f\'(x)=2x\\). Решаем \\(2x='+k+'\\Rightarrow x='+x0+'\\).</p>'+
+      '<p>Ордината: \\(y='+x0+'^2='+y0+'\\).</p>'+
+      '<p class="note">Спрашивают точку, значит в ответе обе координаты.</p>'+
+      '<p><span class="ans">\\(('+x0+';'+y0+')\\)</span></p>'};
+};
+
+G.int_arctg = function(){
+  var a=ri(2,9), a2=a*a;
+  var B=build('\\(\\dfrac{1}{'+a+'}\\operatorname{arctg}\\dfrac{x}{'+a+'}+C\\)',
+    [['\\(\\operatorname{arctg}\\dfrac{x}{'+a+'}+C\\)','Потерян множитель \\(\\frac1a\\) перед арктангенсом.'],
+     ['\\(\\dfrac{1}{'+a+'}\\operatorname{arctg}'+a+'x+C\\)','Внутри арктангенса стоит \\(x/a\\), а не \\(ax\\).'],
+     ['\\(\\ln(x^2+'+a2+')+C\\)','Логарифм появляется, когда в числителе стоит производная знаменателя.'],
+     ['\\(\\dfrac{1}{'+a2+'}\\operatorname{arctg}\\dfrac{x}{'+a+'}+C\\)','Множитель равен \\(\\frac1a\\), а не \\(\\frac1{a^2}\\).']],
+    'Табличная формула при \\(a='+a+'\\).');
+  return {q:'Вычислить \\(\\displaystyle\\int\\dfrac{dx}{x^2+'+a2+'}\\).',
+    o:B.o, w:B.w, c:B.c, l:1, p:{a:a},
+    s:'<p><span class="st">Метод</span>Табличный интеграл \\(\\displaystyle\\int\\frac{dx}{x^2+a^2}=\\frac1a\\operatorname{arctg}\\frac{x}{a}+C\\).</p>'+
+      '<p>Здесь \\(a^2='+a2+'\\), значит \\(a='+a+'\\).</p>'+
+      '<p>\\(\\displaystyle\\int\\frac{dx}{x^2+'+a2+'}=\\frac{1}{'+a+'}\\operatorname{arctg}\\frac{x}{'+a+'}+C\\).</p>'+
+      '<p class="note">Проверка дифференцированием: \\(\\left(\\frac1{'+a+'}\\operatorname{arctg}\\frac{x}{'+a+'}\\right)\'=\\frac{1}{'+a+'}\\cdot\\frac{1/'+a+'}{1+x^2/'+a2+'}=\\frac{1}{x^2+'+a2+'}\\).</p>'+
+      '<p><span class="ans">\\(\\frac{1}{'+a+'}\\operatorname{arctg}\\frac{x}{'+a+'}+C\\)</span></p>'};
+};
+
+G.int_subst = function(){
+  var a=ri(2,6);
+  var B=build('\\(\\dfrac{1}{'+(2*a)+'}e^{'+a+'x^2}+C\\)',
+    [['\\(e^{'+a+'x^2}+C\\)','Потерян множитель из замены: \\(dt='+(2*a)+'x\\,dx\\).'],
+     ['\\(\\dfrac{1}{'+a+'}e^{'+a+'x^2}+C\\)','В знаменателе должна стоять вся производная показателя, то есть \\('+(2*a)+'\\).'],
+     ['\\('+(2*a)+'xe^{'+a+'x^2}+C\\)','Это производная, а не первообразная.'],
+     ['\\(\\dfrac{x^2}{2}e^{'+a+'x^2}+C\\)','Множитель перед экспонентой нельзя интегрировать отдельно.']],
+    'Замена \\(t='+a+'x^2\\) даёт \\(\\frac{1}{'+(2*a)+'}\\int e^t dt\\).');
+  return {q:'Вычислить \\(\\displaystyle\\int x e^{'+a+'x^2}\\,dx\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{a:a},
+    s:'<p><span class="st">Метод</span>Замена переменной: множитель \\(x\\) отличается от производной показателя только числом.</p>'+
+      '<p>Пусть \\(t='+a+'x^2\\), тогда \\(dt='+(2*a)+'x\\,dx\\), откуда \\(x\\,dx=\\dfrac{dt}{'+(2*a)+'}\\).</p>'+
+      '<p>\\(\\displaystyle\\int xe^{'+a+'x^2}dx=\\frac{1}{'+(2*a)+'}\\int e^{t}dt=\\frac{1}{'+(2*a)+'}e^{t}+C\\).</p>'+
+      '<p>Возвращаемся к \\(x\\): \\(\\dfrac{1}{'+(2*a)+'}e^{'+a+'x^2}+C\\).</p>'+
+      '<p><span class="ans">\\(\\frac{1}{'+(2*a)+'}e^{'+a+'x^2}+C\\)</span></p>'};
+};
+
+G.ser_p = function(){
+  var conv = Math.random()<0.5;
+  var num, den, txt;
+  if(conv){ den=ri(2,4); num=ri(den+1, den+5); }      // p = num/den > 1
+  else { num=ri(1,3); den=ri(num+1, num+4); }         // p = num/den < 1
+  txt = '\\frac{'+num+'}{'+den+'}';
+  var p = num/den, right = p>1 ? 'Сходится' : 'Расходится';
+  var B=build(right,
+    [[p>1?'Расходится':'Сходится','Сравните показатель с единицей: \\(p='+txt+(p>1?'>':'<')+'1\\).'],
+     ['Сходится условно','Условная сходимость бывает только у знакочередующихся рядов.'],
+     ['Признак не применим','Эталонный ряд Дирихле работает всегда.'],
+     ['Нужен признак Даламбера','Здесь достаточно сравнения с эталонным рядом.']],
+    'Ряд Дирихле: сходится при \\(p>1\\), расходится при \\(p\\le1\\); здесь \\(p='+txt+'\\).');
+  return {q:'Исследовать на сходимость ряд \\(\\sum\\limits_{n=1}^{\\infty}\\dfrac{1}{n^{'+txt+'}}\\).',
+    o:B.o, w:B.w, c:B.c, l:1, p:{num:num,den:den},
+    s:'<p><span class="st">Метод</span>Эталонный ряд Дирихле \\(\\sum\\frac{1}{n^{p}}\\): сходится при \\(p>1\\), расходится при \\(p\\le1\\).</p>'+
+      '<p>Здесь \\(p='+txt+'\\approx'+p.toFixed(2).replace('.',',')+'\\).</p>'+
+      '<p>Сравниваем с единицей: \\(p'+(p>1?'>':'<')+'1\\), значит ряд '+(p>1?'сходится':'расходится')+'.</p>'+
+      '<p class="note">Граница ровно на \\(p=1\\): гармонический ряд \\(\\sum\\frac1n\\) уже расходится, хотя слагаемые стремятся к нулю.</p>'+
+      '<p><span class="ans">'+right+'</span></p>'};
+};
+
+G.fnp_grad = function(){
+  var x0=ri(1,5), y0=ri(1,5);
+  var B=build('\\(('+(2*x0)+';'+(2*y0)+')\\)',
+    [['\\(('+x0+';'+y0+')\\)','Это сама точка, а не градиент.'],
+     ['\\(('+(2*x0)+';'+(2*x0)+')\\)','Во вторую координату подставлено \\(x\\) вместо \\(y\\).'],
+     ['\\('+(x0*x0+y0*y0)+'\\)','Градиент — вектор, а не число.'],
+     ['\\(('+(x0*x0)+';'+(y0*y0)+')\\)','Подставлена сама функция, а не её производные.']],
+    'Градиент \\((2x;2y)\\) в точке \\(('+x0+';'+y0+')\\).');
+  return {q:'Найти градиент функции \\(z=x^2+y^2\\) в точке \\(('+x0+';'+y0+')\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{x0:x0,y0:y0},
+    s:'<p><span class="st">Метод</span>\\(\\operatorname{grad}z=\\left(\\dfrac{\\partial z}{\\partial x};\\dfrac{\\partial z}{\\partial y}\\right)\\).</p>'+
+      '<p>\\(\\dfrac{\\partial z}{\\partial x}=2x\\),  \\(\\dfrac{\\partial z}{\\partial y}=2y\\).</p>'+
+      '<p>В точке \\(('+x0+';'+y0+')\\): \\((2\\cdot'+x0+';\\ 2\\cdot'+y0+')=('+(2*x0)+';'+(2*y0)+')\\).</p>'+
+      '<p class="note">Градиент перпендикулярен линии уровня и показывает направление наискорейшего роста.</p>'+
+      '<p><span class="ans">\\(('+(2*x0)+';'+(2*y0)+')\\)</span></p>'};
+};
+
+G.mult_circle = function(){
+  var R=ri(2,6), S=R*R;
+  var B=build('\\('+S+'\\pi\\)',
+    [['\\('+(2*R)+'\\pi\\)','Это длина окружности, а не площадь круга.'],
+     ['\\('+(4*S)+'\\pi\\)','В квадрат возведён диаметр, а не радиус.'],
+     ['\\('+R+'\\pi\\)','Радиус нужно возвести в квадрат.'],
+     ['\\('+(S*S)+'\\pi\\)','Радиус возведён в четвёртую степень.']],
+    'Площадь круга \\(\\pi R^2=\\pi\\cdot'+R+'^2\\).');
+  return {q:'Вычислить площадь круга \\(x^2+y^2\\le'+S+'\\) как двойной интеграл \\(\\iint\\limits_D dx\\,dy\\).',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:S*Math.PI, p:{R:R},
+    s:'<p><span class="st">Метод</span>Переход к полярным координатам; область — круг радиуса \\(R=\\sqrt{'+S+'}='+R+'\\).</p>'+
+      '<p>Пределы: \\(0\\le\\varphi\\le2\\pi\\), \\(0\\le r\\le'+R+'\\). Якобиан равен \\(r\\).</p>'+
+      '<p>\\(\\displaystyle\\iint\\limits_D dx\\,dy=\\int_0^{2\\pi}\\!\\!\\int_0^{'+R+'} r\\,dr\\,d\\varphi\\).</p>'+
+      '<p>Внутренний: \\(\\displaystyle\\int_0^{'+R+'} r\\,dr=\\frac{r^2}{2}\\Big|_0^{'+R+'}=\\frac{'+S+'}{2}\\).</p>'+
+      '<p>Внешний: \\(\\displaystyle\\int_0^{2\\pi}\\frac{'+S+'}{2}\\,d\\varphi='+S+'\\pi\\).</p>'+
+      '<p class="note">Совпадает с формулой \\(S=\\pi R^2\\).</p>'+
+      '<p><span class="ans">\\('+S+'\\pi\\)</span></p>'};
+};
+
+G.ode_sep = function(){
+  var k=ri(2,7), neg=Math.random()<0.5, kk=neg?-k:k, ks=neg?'-'+k:String(k);
+  var B=build('\\(y=Ce^{'+ks+'x}\\)',
+    [['\\(y=Ce^{'+(neg?'':'-')+k+'x}\\)','Знак в показателе противоположен коэффициенту уравнения.'],
+     ['\\(y='+k+'e^{x}+C\\)','Постоянная входит множителем, а не слагаемым.'],
+     ['\\(y=Ce^{x/'+k+'}\\)','Коэффициент попадает в показатель как есть, без деления.'],
+     ['\\(y='+ks+'x^2/2+C\\)','Это решение уравнения \\(y\'='+ks+'x\\).']],
+    'Для \\(y\'=ky\\) ответ всегда \\(y=Ce^{kx}\\), здесь \\(k='+ks+'\\).');
+  return {q:'Решить уравнение \\(y\'='+ks+'y\\).',
+    o:B.o, w:B.w, c:B.c, l:1, p:{k:kk},
+    s:'<p><span class="st">Метод</span>Уравнение с разделяющимися переменными.</p>'+
+      '<p>\\(\\dfrac{dy}{dx}='+ks+'y\\Rightarrow\\dfrac{dy}{y}='+ks+'\\,dx\\).</p>'+
+      '<p>Интегрируем: \\(\\ln|y|='+ks+'x+C_1\\).</p>'+
+      '<p>Потенцируем: \\(y=e^{'+ks+'x+C_1}=Ce^{'+ks+'x}\\).</p>'+
+      '<p class="note">Проверка: \\(y\'='+ks+'Ce^{'+ks+'x}='+ks+'y\\).</p>'+
+      '<p><span class="ans">\\(y=Ce^{'+ks+'x}\\)</span></p>'};
+};
+
+G.ode_char = function(){
+  var r1=ri(1,5), r2=ri(1,5); while(r2===r1) r2=ri(1,5);
+  if(r1>r2){ var t=r1; r1=r2; r2=t; }
+  var sum=r1+r2, prod=r1*r2;
+  var B=build('\\(y=C_1e^{'+r1+'x}+C_2e^{'+r2+'x}\\)',
+    [['\\(y=C_1e^{-'+r1+'x}+C_2e^{-'+r2+'x}\\)','Знаки корней противоположны: сумма корней равна \\(+'+sum+'\\).'],
+     ['\\(y=(C_1+C_2x)e^{'+sum+'x}\\)','Кратный корень был бы при нулевом дискриминанте.'],
+     ['\\(y=C_1\\cos '+r1+'x+C_2\\sin '+r2+'x\\)','Тригонометрия появляется при комплексных корнях.'],
+     ['\\(y=C_1e^{'+sum+'x}+C_2e^{'+prod+'x}\\)','В показатели идут корни уравнения, а не его коэффициенты.']],
+    'Корни характеристического уравнения \\(\\lambda^2-'+sum+'\\lambda+'+prod+'=0\\) равны \\('+r1+'\\) и \\('+r2+'\\).');
+  return {q:'Решить уравнение \\(y\'\'-'+sum+'y\'+'+prod+'y=0\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{r1:r1,r2:r2},
+    s:'<p><span class="st">Метод</span>Характеристическое уравнение: \\(y\'\'\\to\\lambda^2,\\ y\'\\to\\lambda,\\ y\\to1\\).</p>'+
+      '<p>\\(\\lambda^2-'+sum+'\\lambda+'+prod+'=0\\).</p>'+
+      '<p>\\(D='+(sum*sum)+'-'+(4*prod)+'='+(sum*sum-4*prod)+'\\), корни \\(\\lambda_{1,2}=\\dfrac{'+sum+'\\pm'+Math.sqrt(sum*sum-4*prod)+'}{2}\\).</p>'+
+      '<p>\\(\\lambda_1='+r1+',\\ \\lambda_2='+r2+'\\) — действительные и различные.</p>'+
+      '<p>\\(y=C_1e^{'+r1+'x}+C_2e^{'+r2+'x}\\).</p>'+
+      '<p class="note">Проверка по Виета: сумма корней \\('+r1+'+'+r2+'='+sum+'\\), произведение \\('+r1+'\\cdot'+r2+'='+prod+'\\).</p>'+
+      '<p><span class="ans">\\(y=C_1e^{'+r1+'x}+C_2e^{'+r2+'x}\\)</span></p>'};
+};
+
+G.ode_osc = function(){
+  var w=ri(2,6), w2=w*w;
+  var B=build('\\(y=C_1\\cos '+w+'x+C_2\\sin '+w+'x\\)',
+    [['\\(y=C_1e^{'+w+'x}+C_2e^{-'+w+'x}\\)','Экспоненты отвечают действительным корням, а здесь \\(\\lambda^2=-'+w2+'\\).'],
+     ['\\(y=C_1\\cos '+w2+'x+C_2\\sin '+w2+'x\\)','Частота — модуль мнимой части корня, то есть \\('+w+'\\).'],
+     ['\\(y=(C_1+C_2x)e^{'+w+'x}\\)','Кратного корня здесь нет.'],
+     ['\\(y=C_1\\cos '+w+'x\\)','Решений два, общее решение содержит обе постоянные.']],
+    'Корни \\(\\lambda=\\pm'+w+'i\\), значит частота равна \\('+w+'\\).');
+  return {q:'Решить уравнение \\(y\'\'+'+w2+'y=0\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{w:w},
+    s:'<p><span class="st">Метод</span>Характеристическое уравнение \\(\\lambda^2+'+w2+'=0\\).</p>'+
+      '<p>\\(\\lambda^2=-'+w2+'\\Rightarrow\\lambda=\\pm'+w+'i\\), то есть \\(\\alpha=0,\\ \\beta='+w+'\\).</p>'+
+      '<p>Общий вид при комплексных корнях: \\(y=e^{\\alpha x}(C_1\\cos\\beta x+C_2\\sin\\beta x)\\).</p>'+
+      '<p>Здесь \\(e^{0}=1\\), значит \\(y=C_1\\cos '+w+'x+C_2\\sin '+w+'x\\).</p>'+
+      '<p class="note">Незатухающие колебания: действительная часть корня равна нулю, амплитуда постоянна.</p>'+
+      '<p><span class="ans">\\(y=C_1\\cos '+w+'x+C_2\\sin '+w+'x\\)</span></p>'};
+};
+
+/* ================= ЛИНЕЙНАЯ АЛГЕБРА ================= */
+
+G.det2 = function(){
+  var a=ri(1,9), b=ri(1,9), c=ri(1,9), d=ri(1,9);
+  var det=a*d-b*c;
+  var B=build('\\('+det+'\\)',
+    [['\\('+(a*d+b*c)+'\\)','Произведения диагоналей сложены вместо вычитания.'],
+     ['\\('+(b*c-a*d)+'\\)','Диагонали взяты в обратном порядке.'],
+     ['\\('+(a*d)+'\\)','Перемножена только главная диагональ.'],
+     ['\\('+(a+d-b-c)+'\\)','Элементы складываются и вычитаются, а не перемножаются.']],
+    'Формула \\(ad-bc='+a+'\\cdot'+d+'-'+b+'\\cdot'+c+'\\).');
+  return {q:'Вычислить определитель \\(\\begin{vmatrix}'+a+' & '+b+'\\\\ '+c+' & '+d+'\\end{vmatrix}\\).',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:det, p:{a:a,b:b,c:c,d:d},
+    s:'<p><span class="st">Метод</span>Для матрицы \\(2\\times2\\): \\(\\begin{vmatrix}a&b\\\\c&d\\end{vmatrix}=ad-bc\\).</p>'+
+      '<p>Главная диагональ: \\('+a+'\\cdot'+d+'='+(a*d)+'\\).</p>'+
+      '<p>Побочная: \\('+b+'\\cdot'+c+'='+(b*c)+'\\).</p>'+
+      '<p>\\(\\Delta='+(a*d)+'-'+(b*c)+'='+det+'\\).</p>'+
+      '<p class="note">Порядок важен: из произведения главной диагонали вычитается произведение побочной.</p>'+
+      '<p><span class="ans">\\(\\Delta='+det+'\\)</span></p>'};
+};
+
+G.det_scale = function(){
+  var n=ri(2,4), k=ri(2,4), d=ri(2,9), ans=Math.pow(k,n)*d;
+  var B=build('\\('+ans+'\\)',
+    [['\\('+(k*d)+'\\)','Множитель выносится из каждой строки, поэтому возводится в степень \\(n\\).'],
+     ['\\('+(Math.pow(k,n-1)*d)+'\\)','Строк ровно \\('+n+'\\), значит и множителей \\('+n+'\\).'],
+     ['\\('+d+'\\)','Умножение матрицы на число определитель меняет.'],
+     ['\\('+(Math.pow(k,n+1)*d)+'\\)','Показатель равен порядку матрицы, то есть \\('+n+'\\).']],
+    'Формула \\(\\det(kA)=k^{n}\\det A='+k+'^{'+n+'}\\cdot'+d+'\\).');
+  return {q:'Определитель матрицы \\(A\\) размера \\('+n+'\\times'+n+'\\) равен \\('+d+'\\). Чему равен \\(\\det('+k+'A)\\)?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:ans, p:{n:n,k:k,d:d},
+    s:'<p><span class="st">Свойство</span>Общий множитель выносится <b>из одной строки</b>. В матрице \\('+n+'\\times'+n+'\\) строк '+n+'.</p>'+
+      '<p>Умножение всей матрицы на \\('+k+'\\) — это умножение каждой из '+n+' строк на \\('+k+'\\).</p>'+
+      '<p>\\(\\det('+k+'A)='+k+'^{'+n+'}\\det A='+Math.pow(k,n)+'\\cdot'+d+'='+ans+'\\).</p>'+
+      '<p class="note">Общая формула: \\(\\det(kA)=k^{n}\\det A\\). Ответ \\('+k+'\\cdot'+d+'\\) — самая частая ошибка здесь.</p>'+
+      '<p><span class="ans">\\('+ans+'\\)</span></p>'};
+};
+
+G.slau_free = function(){
+  var n=ri(4,8), r=ri(2,n-1), f=n-r;
+  var B=build('\\('+f+'\\)',
+    [['\\(0\\)','Свободных переменных нет только при \\(r=n\\).'],
+     ['\\('+r+'\\)','Это число базисных переменных.'],
+     ['\\('+n+'\\)','Это общее число неизвестных.'],
+     ['\\('+(f+1)+'\\)','Считается разность \\(n-r='+n+'-'+r+'\\).']],
+    'Число свободных переменных равно \\(n-r='+n+'-'+r+'\\).');
+  return {q:'Система совместна, неизвестных \\('+n+'\\), ранг матрицы равен \\('+r+'\\). Сколько свободных переменных?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:f, p:{n:n,r:r},
+    s:'<p><span class="st">Правило</span>Число свободных переменных \\(=n-r\\), где \\(n\\) — число неизвестных, \\(r\\) — ранг.</p>'+
+      '<p>\\(n='+n+'\\), \\(r='+r+'\\).</p>'+
+      '<p>\\('+n+'-'+r+'='+f+'\\).</p>'+
+      '<p>Базисных переменных \\('+r+'\\), свободных \\('+f+'\\); фундаментальная система решений состоит из \\('+f+'\\) векторов.</p>'+
+      '<p class="note">Число уравнений в ответе не участвует — важен именно ранг.</p>'+
+      '<p><span class="ans">\\('+f+'\\)</span></p>'};
+};
+
+G.basis_t = function(){
+  var k=ri(2,6), k2=k*k;
+  var B=build('При \\(t\\neq\\pm'+k+'\\)',
+    [['При всех \\(t\\)','При \\(t=\\pm'+k+'\\) определитель обращается в нуль и векторы коллинеарны.'],
+     ['Только при \\(t='+k+'\\)','Наоборот: при \\(t='+k+'\\) базиса как раз нет.'],
+     ['Ни при каком \\(t\\)','При большинстве значений базис есть.'],
+     ['При \\(t\\neq'+k+'\\)','Отрицательный корень тоже исключается.']],
+    'Базис есть, когда определитель отличен от нуля: \\('+k2+'-t^2\\neq0\\).');
+  return {q:'При каком \\(t\\) векторы \\(\\vec a=(1;t)\\) и \\(\\vec b=(t;'+k2+')\\) образуют базис \\(\\mathbb{R}^2\\)?',
+    o:B.o, w:B.w, c:B.c, l:2, p:{k:k},
+    s:'<p><span class="st">Метод</span>Два вектора в \\(\\mathbb{R}^2\\) образуют базис \\(\\iff\\) определитель из их координат отличен от нуля.</p>'+
+      '<p>\\(\\Delta=\\begin{vmatrix}1 & t\\\\ t & '+k2+'\\end{vmatrix}='+k2+'-t^2\\).</p>'+
+      '<p>Условие базиса: \\('+k2+'-t^2\\neq0\\).</p>'+
+      '<p>Корни \\(t^2='+k2+'\\) — это \\(t='+k+'\\) и \\(t=-'+k+'\\); их исключаем.</p>'+
+      '<p class="note">«Образуют базис» — это всегда \\(\\Delta\\neq0\\). «Линейно зависимы» — наоборот, \\(\\Delta=0\\).</p>'+
+      '<p><span class="ans">\\(t\\neq'+k+'\\) и \\(t\\neq-'+k+'\\)</span></p>'};
+};
+
+G.orth_a = function(){
+  var b1=ri(1,5), b2=ri(1,5), b3=ri(1,5), a1=ri(1,5), a3=ri(1,5);
+  var a2v = (a1*b1 + a3*b3) / b2;                 // решение a: a1b1 + a*b2 + a3b3 = 0 → a = -(…)/b2
+  // подбираем так, чтобы ответ был целым
+  var tries=0;
+  while(Math.abs(a2v - Math.round(a2v))>1e-9 && tries<60){ a1=ri(1,5); a3=ri(1,5); b2=ri(1,5); a2v=(a1*b1+a3*b3)/b2; tries++; }
+  a2v = Math.round(a2v);
+  var ans = -a2v;   // a·b2 = -(a1b1+a3b3)
+  var B=build('\\(a='+ans+'\\)',
+    [['\\(a='+(-ans)+'\\)','Знак потерян при решении уравнения.'],
+     ['\\(a=0\\)','При \\(a=0\\) скалярное произведение равно \\('+(a1*b1+a3*b3)+'\\).'],
+     ['\\(a='+(ans+b2)+'\\)','Проверьте арифметику: нужно \\('+a1+'\\cdot'+b1+'+a\\cdot'+b2+'+'+a3+'\\cdot'+b3+'=0\\).'],
+     ['\\(a='+(a1*b1+a3*b3)+'\\)','Это сумма двух слагаемых, её ещё нужно разделить на \\('+b2+'\\) и сменить знак.']],
+    'Условие ортогональности — равенство нулю скалярного произведения.');
+  return {q:'При каком \\(a\\) векторы \\(('+a1+';a;'+a3+')\\) и \\(('+b1+';'+b2+';'+b3+')\\) ортогональны?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:ans, p:{a1:a1,a3:a3,b1:b1,b2:b2,b3:b3},
+    s:'<p><span class="st">Критерий</span>Векторы ортогональны \\(\\iff(\\vec a,\\vec b)=0\\).</p>'+
+      '<p>\\((\\vec a,\\vec b)='+a1+'\\cdot'+b1+'+a\\cdot'+b2+'+'+a3+'\\cdot'+b3+'='+(a1*b1+a3*b3)+'+'+b2+'a\\).</p>'+
+      '<p>Уравнение: \\('+(a1*b1+a3*b3)+'+'+b2+'a=0\\).</p>'+
+      '<p>\\(a=-\\dfrac{'+(a1*b1+a3*b3)+'}{'+b2+'}='+ans+'\\).</p>'+
+      '<p class="note">Проверка подстановкой: \\('+(a1*b1)+'+'+(ans*b2)+'+'+(a3*b3)+'=0\\).</p>'+
+      '<p><span class="ans">\\(a='+ans+'\\)</span></p>'};
+};
+
+G.eig_sym = function(){
+  var a=ri(2,8), b=ri(1,4);
+  var l1=a-b, l2=a+b;
+  var B=build('\\('+l1+'\\) и \\('+l2+'\\)',
+    [['\\('+a+'\\) и \\('+a+'\\)','Внедиагональные элементы не нулевые, поэтому диагональ ответом не является.'],
+     ['\\('+a+'\\) и \\('+b+'\\)','Это элементы матрицы, а не корни характеристического уравнения.'],
+     ['\\('+(l1*l2)+'\\) и \\('+(l1+l2)+'\\)','Перепутаны сами корни с их произведением и суммой.'],
+     ['\\(0\\) и \\('+(2*a)+'\\)','Сумма верна, но сами корни другие: \\(a\\pm b\\).']],
+    'Из \\((' +a+ '-\\lambda)^2-'+(b*b)+'=0\\) следует \\('+a+'-\\lambda=\\pm'+b+'\\).');
+  return {q:'Найти собственные значения матрицы \\(\\begin{pmatrix}'+a+' & '+b+'\\\\ '+b+' & '+a+'\\end{pmatrix}\\).',
+    o:B.o, w:B.w, c:B.c, l:2, p:{a:a,b:b},
+    s:'<p><span class="st">Метод</span>Характеристическое уравнение \\(\\det(A-\\lambda E)=0\\).</p>'+
+      '<p>\\(\\begin{vmatrix}'+a+'-\\lambda & '+b+'\\\\ '+b+' & '+a+'-\\lambda\\end{vmatrix}=('+a+'-\\lambda)^2-'+(b*b)+'=0\\).</p>'+
+      '<p>\\(('+a+'-\\lambda)^2='+(b*b)+'\\Rightarrow '+a+'-\\lambda=\\pm'+b+'\\).</p>'+
+      '<p>\\(\\lambda_1='+l1+',\\ \\lambda_2='+l2+'\\).</p>'+
+      '<p class="note">Две проверки: сумма корней равна следу \\('+(2*a)+'\\), произведение равно определителю \\('+(a*a-b*b)+'\\).</p>'+
+      '<p><span class="ans">\\(\\lambda_1='+l1+',\\ \\lambda_2='+l2+'\\)</span></p>'};
+};
+
+G.eig_viete = function(){
+  var l1=ri(1,6), l2=ri(1,6); while(l2===l1) l2=ri(1,6);
+  if(l1>l2){ var t=l1; l1=l2; l2=t; }
+  var tr=l1+l2, dt=l1*l2;
+  var B=build('\\('+l1+'\\) и \\('+l2+'\\)',
+    [['\\(1\\) и \\('+dt+'\\)','Произведение верное, но сумма этих чисел равна \\('+(1+dt)+'\\), а нужна \\('+tr+'\\).'],
+     ['\\(-'+l1+'\\) и \\(-'+l2+'\\)','Сумма получилась бы отрицательной, а след положителен.'],
+     ['\\('+tr+'\\) и \\('+dt+'\\)','Это сам след и определитель, а не корни.'],
+     ['\\(0\\) и \\('+tr+'\\)','Произведение тогда равнялось бы нулю.']],
+    'По теореме Виета сумма корней равна \\('+tr+'\\), произведение \\('+dt+'\\).');
+  return {q:'Матрица \\(2\\times2\\) имеет \\(\\operatorname{tr}A='+tr+'\\) и \\(\\det A='+dt+'\\). Чему равны её собственные значения?',
+    o:B.o, w:B.w, c:B.c, l:3, p:{l1:l1,l2:l2},
+    s:'<p><span class="st">Метод</span>Характеристический многочлен матрицы \\(2\\times2\\): \\(\\lambda^2-(\\operatorname{tr}A)\\lambda+\\det A=0\\).</p>'+
+      '<p>\\(\\lambda^2-'+tr+'\\lambda+'+dt+'=0\\).</p>'+
+      '<p>\\(D='+(tr*tr)+'-'+(4*dt)+'='+(tr*tr-4*dt)+'\\), \\(\\lambda_{1,2}=\\dfrac{'+tr+'\\pm'+Math.sqrt(tr*tr-4*dt)+'}{2}\\).</p>'+
+      '<p>\\(\\lambda_1='+l1+',\\ \\lambda_2='+l2+'\\).</p>'+
+      '<p class="note">Саму матрицу знать не обязательно: следа и определителя достаточно.</p>'+
+      '<p><span class="ans">\\('+l1+'\\) и \\('+l2+'\\)</span></p>'};
+};
+
+G.quad_syl = function(){
+  var k=ri(1,6), c=ri(1,4);        // форма: a x1^2 + 2c x1x2 + k x2^2 ; минор2 = a*k - c^2 > 0
+  var thr = (c*c)/k;
+  var isInt = Math.abs(thr-Math.round(thr))<1e-9;
+  if(!isInt){ c=k; thr=k; }        // подбираем целый порог
+  thr = Math.round(thr);
+  var B=build('\\(a>'+thr+'\\)',
+    [['\\(a>0\\)','Одного условия \\(\\Delta_1>0\\) мало — нужен ещё второй минор.'],
+     ['\\(a\\geq'+thr+'\\)','При \\(a='+thr+'\\) второй минор равен нулю, определённости нет.'],
+     ['\\(a<'+thr+'\\)','Неравенство направлено в другую сторону.'],
+     ['при любых \\(a\\)','При малых \\(a\\) форма принимает отрицательные значения.']],
+    'Система \\(a>0\\) и \\('+k+'a-'+(c*c)+'>0\\) даёт \\(a>'+thr+'\\).');
+  return {q:'При каких \\(a\\) форма \\(ax_1^2+'+(2*c)+'x_1x_2+'+k+'x_2^2\\) положительно определена?',
+    o:B.o, w:B.w, c:B.c, l:3, ansNum:thr, p:{k:k,c:c},
+    s:'<p><span class="st">Метод</span>Выписать матрицу формы и применить критерий Сильвестра.</p>'+
+      '<p>Коэффициент \\('+(2*c)+'\\) при \\(x_1x_2\\) делится пополам, матрица: \\(\\begin{pmatrix}a & '+c+'\\\\ '+c+' & '+k+'\\end{pmatrix}\\).</p>'+
+      '<p>\\(\\Delta_1=a>0\\).</p>'+
+      '<p>\\(\\Delta_2=a\\cdot'+k+'-'+c+'^2='+k+'a-'+(c*c)+'>0\\Rightarrow a>'+thr+'\\).</p>'+
+      '<p>Оба условия должны выполняться одновременно; более сильное — \\(a>'+thr+'\\).</p>'+
+      '<p class="note">Неравенство строгое: при \\(a='+thr+'\\) второй минор обращается в нуль и форма перестаёт быть определённой.</p>'+
+      '<p><span class="ans">\\(a>'+thr+'\\)</span></p>'};
+};
+
+/* ================= ДИСКРЕТНАЯ МАТЕМАТИКА ================= */
+
+G.bool_count = function(){
+  var n=ri(2,4), sets=Math.pow(2,n), fn=Math.pow(2,sets);
+  var B=build('\\('+fn+'\\)',
+    [['\\('+sets+'\\)','Это число наборов, а не функций.'],
+     ['\\('+(sets*sets)+'\\)','Это \\('+sets+'^2\\), а нужно \\(2^{'+sets+'}\\).'],
+     ['\\('+(2*sets)+'\\)','Число функций растёт как \\(2^{2^n}\\), а не линейно.'],
+     ['\\('+(fn*2)+'\\)','Показатель равен числу наборов, то есть \\('+sets+'\\).']],
+    'Наборов \\(2^{'+n+'}='+sets+'\\), на каждом два варианта: \\(2^{'+sets+'}='+fn+'\\).');
+  return {q:'Сколько существует различных булевых функций от \\('+n+'\\) переменных?',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:fn, p:{n:n},
+    s:'<p><span class="st">Метод</span>Считаем в два шага: сначала строки таблицы истинности, потом способы их заполнить.</p>'+
+      '<p><b>Шаг 1.</b> Наборов значений переменных: \\(2^{'+n+'}='+sets+'\\).</p>'+
+      '<p><b>Шаг 2.</b> На каждом наборе функция принимает \\(0\\) или \\(1\\) независимо от остальных.</p>'+
+      '<p>Всего \\(2^{'+sets+'}='+fn+'\\) функций.</p>'+
+      '<p class="note">Общая формула: \\(2^{2^{n}}\\). Рост очень быстрый: при \\(n=4\\) это уже \\(65536\\).</p>'+
+      '<p><span class="ans">\\('+fn+'\\)</span></p>'};
+};
+
+G.comb_choose = function(){
+  function C(n,k){ var r=1; for(var i=1;i<=k;i++) r=r*(n-k+i)/i; return Math.round(r); }
+  function A(n,k){ var r=1; for(var i=0;i<k;i++) r*=(n-i); return r; }
+  var n=ri(6,12), k=ri(2,4);
+  var cc=C(n,k), aa=A(n,k);
+  var B=build('\\('+cc+'\\)',
+    [['\\('+aa+'\\)','Это размещения \\(A_{'+n+'}^{'+k+'}\\) — там учитывается порядок.'],
+     ['\\('+Math.pow(n,k)+'\\)','Это \\('+n+'^{'+k+'}\\) — выбор с повторениями и с учётом порядка.'],
+     ['\\('+(n*k)+'\\)','Произведение чисел задачи к ответу не ведёт.'],
+     ['\\('+C(n,k+1)+'\\)','Выбирают \\('+k+'\\) человек, а не \\('+(k+1)+'\\).']],
+    'Порядок не важен, повторов нет — значит сочетания \\(C_{'+n+'}^{'+k+'}\\).');
+  return {q:'Сколькими способами из \\('+n+'\\) человек выбрать команду из \\('+k+'\\) человек?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:cc, p:{n:n,k:k},
+    s:'<p><span class="st">Выбор формулы</span>Два вопроса: важен ли порядок (нет) и возможны ли повторы (нет) \\(\\Rightarrow\\) сочетания.</p>'+
+      '<p>\\(C_n^k=\\dfrac{n!}{k!\\,(n-k)!}\\).</p>'+
+      '<p>\\(C_{'+n+'}^{'+k+'}=\\dfrac{'+aa+'}{'+k+'!}=\\dfrac{'+aa+'}{'+(function(){var r=1;for(var i=1;i<=k;i++)r*=i;return r;})()+'}='+cc+'\\).</p>'+
+      '<p class="note">Если бы в команде были роли, порядок стал бы важен и ответом были бы размещения \\(A_{'+n+'}^{'+k+'}='+aa+'\\).</p>'+
+      '<p><span class="ans">\\('+cc+'\\)</span></p>'};
+};
+
+G.comb_code = function(){
+  var k=ri(3,6), ans=Math.pow(10,k);
+  function A(n,kk){ var r=1; for(var i=0;i<kk;i++) r*=(n-i); return r; }
+  var B=build('\\('+ans+'\\)',
+    [['\\('+A(10,k)+'\\)','Это размещения без повторений — но цифры разрешено повторять.'],
+     ['\\('+(10*k)+'\\)','Выборы на позициях независимы, поэтому варианты перемножаются.'],
+     ['\\('+Math.pow(k,10)+'\\)','Основание и показатель переставлены местами.'],
+     ['\\('+(ans/10)+'\\)','Позиций ровно \\('+k+'\\), значит и множителей \\('+k+'\\).']],
+    'На каждую из \\('+k+'\\) позиций по \\(10\\) вариантов: \\(10^{'+k+'}\\).');
+  return {q:'Сколько существует '+(k===3?'трёх':k===4?'четырёх':k===5?'пяти':'шести')+'значных кодов из цифр \\(0\\)–\\(9\\), если цифры могут повторяться?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:ans, p:{k:k},
+    s:'<p><span class="st">Метод</span>Правило произведения: выборы на позициях независимы.</p>'+
+      '<p>Порядок важен, повторы разрешены — это размещения с повторениями, формула \\(n^{k}\\).</p>'+
+      '<p>\\(10^{'+k+'}='+ans+'\\).</p>'+
+      '<p class="note">Проверка здравым смыслом: коды от \\('+Array(k+1).join('0')+'\\) до \\('+Array(k+1).join('9')+'\\) — ровно \\('+ans+'\\) штук.</p>'+
+      '<p><span class="ans">\\('+ans+'\\)</span></p>'};
+};
+
+G.comb_balls = function(){
+  function C(n,k){ var r=1; for(var i=1;i<=k;i++) r=r*(n-k+i)/i; return Math.round(r); }
+  var m=ri(5,9), b=ri(3,4);                    // m шаров, b ящиков
+  var ans=C(m+b-1, b-1);
+  var B=build('\\('+ans+'\\)',
+    [['\\('+C(m,b-1)+'\\)','Перегородки добавляются к числу позиций: всего \\('+m+'+'+(b-1)+'\\).'],
+     ['\\('+C(m,b)+'\\)','Это вариант для различимых шаров без повторов.'],
+     ['\\('+Math.pow(b,m)+'\\)','Это ответ для различимых шаров: \\('+b+'^{'+m+'}\\).'],
+     ['\\('+(m*b)+'\\)','Произведение чисел задачи к ответу не ведёт.']],
+    'Схема «шары и перегородки»: \\(C_{'+m+'+'+b+'-1}^{'+b+'-1}=C_{'+(m+b-1)+'}^{'+(b-1)+'}\\).');
+  return {q:'Сколькими способами можно разложить \\('+m+'\\) одинаковых шаров по \\('+b+'\\) различным ящикам?',
+    o:B.o, w:B.w, c:B.c, l:3, ansNum:ans, p:{m:m,b:b},
+    s:'<p><span class="st">Метод шаров и перегородок</span>Шары одинаковы, ящики различны, ящик может остаться пустым — сочетания с повторениями.</p>'+
+      '<p>Выкладываем в ряд \\('+m+'\\) шаров и \\('+(b-1)+'\\) перегородок, разделяющих ящики.</p>'+
+      '<p>Всего позиций \\('+m+'+'+(b-1)+'='+(m+b-1)+'\\), выбираем \\('+(b-1)+'\\) из них под перегородки.</p>'+
+      '<p>\\(C_{'+(m+b-1)+'}^{'+(b-1)+'}='+ans+'\\).</p>'+
+      '<p>Общая формула: \\(C_{n+k-1}^{\\,n-1}\\), где \\(k\\) — число шаров, \\(n\\) — число ящиков.</p>'+
+      '<p class="note">Если бы шары были различны, ответ был бы \\('+b+'^{'+m+'}='+Math.pow(b,m)+'\\).</p>'+
+      '<p><span class="ans">\\('+ans+'\\)</span></p>'};
+};
+
+G.graph_hand = function(){
+  var E=ri(4,15), S=2*E, V=ri(5,12);
+  var B=build('\\('+E+'\\)',
+    [['\\('+S+'\\)','Каждое ребро учитывается в сумме степеней дважды.'],
+     ['\\('+V+'\\)','Число вершин к ответу отношения не имеет.'],
+     ['\\('+(4*E)+'\\)','Сумму нужно делить на два, а не умножать.'],
+     ['\\('+(S-V)+'\\)','Вершины из суммы степеней не вычитаются.']],
+    'Лемма о рукопожатиях: \\(\\sum\\deg v=2E\\), значит \\(E='+S+'/2\\).');
+  return {q:'В графе \\('+V+'\\) вершин, сумма степеней всех вершин равна \\('+S+'\\). Сколько в нём рёбер?',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:E, p:{V:V,E:E},
+    s:'<p><span class="st">Лемма о рукопожатиях</span>\\(\\sum\\deg v=2E\\): каждое ребро добавляет по единице к степеням обоих своих концов.</p>'+
+      '<p>\\(2E='+S+'\\Rightarrow E='+E+'\\).</p>'+
+      '<p class="note">Следствие: вершин нечётной степени в любом графе чётное число.</p>'+
+      '<p><span class="ans">\\('+E+'\\) рёбер</span></p>'};
+};
+
+G.graph_kn = function(){
+  var n=ri(5,10), e=n*(n-1)/2;
+  var B=build('\\('+e+'\\)',
+    [['\\('+(n*(n-1))+'\\)','Это удвоенный ответ: каждое ребро посчитано дважды.'],
+     ['\\('+n+'\\)','Это число вершин.'],
+     ['\\('+(n*n)+'\\)','Так учитываются и петли, и оба направления.'],
+     ['\\('+(n-1)+'\\)','Это степень одной вершины.']],
+    'Каждая пара вершин соединена: \\(C_{'+n+'}^2='+e+'\\).');
+  return {q:'Сколько рёбер в полном графе \\(K_{'+n+'}\\)?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:e, p:{n:n},
+    s:'<p><span class="st">Метод</span>В полном графе ребро соединяет каждую пару вершин — считаем пары.</p>'+
+      '<p>\\(C_{'+n+'}^2=\\dfrac{'+n+'\\cdot'+(n-1)+'}{2}='+e+'\\).</p>'+
+      '<p>Общая формула: \\(K_n\\) имеет \\(\\dfrac{n(n-1)}{2}\\) рёбер.</p>'+
+      '<p class="note">Проверка через степени: каждая вершина соединена с остальными \\('+(n-1)+'\\), сумма степеней \\('+(n*(n-1))+'\\), рёбер вдвое меньше.</p>'+
+      '<p><span class="ans">\\('+e+'\\)</span></p>'};
+};
+
+G.sets_incl = function(){
+  var both=ri(3,9), onlyA=ri(4,12), onlyB=ri(4,12), none=ri(2,8);
+  var total=onlyA+onlyB+both+none, A=onlyA+both, Bb=onlyB+both;
+  var B=build('\\('+none+'\\)',
+    [['\\('+(total-A-Bb)+'\\)','Знающие оба языка посчитаны дважды — нужно прибавить \\('+both+'\\) обратно.'],
+     ['\\('+both+'\\)','Это число знающих оба языка.'],
+     ['\\('+(none+both)+'\\)','Пересечение вычитается один раз, а не прибавляется.'],
+     ['\\(0\\)','Такие люди есть: сумма знающих меньше общего числа.']],
+    'По формуле включений-исключений хотя бы один язык знают \\('+(A+Bb-both)+'\\) человек.');
+  return {q:'В группе \\('+total+'\\) человек: \\('+A+'\\) знают английский, \\('+Bb+'\\) — немецкий, \\('+both+'\\) — оба языка. Сколько не знают ни одного?',
+    o:B.o, w:B.w, c:B.c, l:2, ansNum:none, p:{total:total,A:A,B:Bb,both:both},
+    s:'<p><span class="st">Формула включений-исключений</span>\\(|A\\cup B|=|A|+|B|-|A\\cap B|\\).</p>'+
+      '<p>Знают хотя бы один язык: \\('+A+'+'+Bb+'-'+both+'='+(A+Bb-both)+'\\).</p>'+
+      '<p>Вычитание нужно потому, что знающие оба языка посчитаны дважды.</p>'+
+      '<p>Не знают ни одного: \\('+total+'-'+(A+Bb-both)+'='+none+'\\).</p>'+
+      '<p class="note">Для трёх множеств знаки чередуются: \\(|A|+|B|+|C|-|AB|-|AC|-|BC|+|ABC|\\).</p>'+
+      '<p><span class="ans">\\('+none+'\\) человек</span></p>'};
+};
+
+G.sets_subsets = function(){
+  var n=ri(4,9), ans=Math.pow(2,n);
+  function fact(k){ var r=1; for(var i=2;i<=k;i++) r*=i; return r; }
+  var B=build('\\('+ans+'\\)',
+    [['\\('+(n*n)+'\\)','Это \\('+n+'^2\\), а нужно \\(2^{'+n+'}\\).'],
+     ['\\('+n+'\\)','Это число элементов.'],
+     ['\\('+fact(n)+'\\)','Это \\('+n+'!\\) — число перестановок.'],
+     ['\\('+(2*n)+'\\)','Число подмножеств растёт как степень двойки.']],
+    'Каждый элемент либо входит, либо нет: \\(2^{'+n+'}='+ans+'\\).');
+  return {q:'Сколько подмножеств у множества из \\('+n+'\\) элементов?',
+    o:B.o, w:B.w, c:B.c, l:1, ansNum:ans, p:{n:n},
+    s:'<p><span class="st">Метод</span>Подмножество задаётся независимым выбором для каждого элемента: входит или не входит.</p>'+
+      '<p>Элементов \\('+n+'\\), вариантов на каждый — \\(2\\).</p>'+
+      '<p>\\(2^{'+n+'}='+ans+'\\).</p>'+
+      '<p>Сюда входят пустое множество и само множество.</p>'+
+      '<p class="note">Проверка через сочетания: \\(C_{'+n+'}^0+C_{'+n+'}^1+\\dots+C_{'+n+'}^{'+n+'}=2^{'+n+'}\\).</p>'+
+      '<p><span class="ans">\\('+ans+'\\)</span></p>'};
+};
+
+
+/* страховка: генератор перезапускается, пока не получится 4 различных варианта */
+Object.keys(G).forEach(function(name){
+  var raw = G[name];
+  G[name] = function(){
+    var t, best=null;
+    for(var i=0;i<120;i++){
+      t = raw();
+      if(t && t.o && t.o.length===4){
+        var seen={}, ok=true;
+        for(var j=0;j<4;j++){ if(seen[t.o[j]]){ ok=false; break; } seen[t.o[j]]=1; }
+        if(ok) return t;
+      }
+      if(!best || (t.o && best.o && t.o.length>best.o.length)) best=t;
+    }
+    return best;
+  };
+});
+
+})();
+</script>
+<script>
+window.DRILL = {"trig": [{"l": 1, "q": "Вычислить \\(\\cos\\frac{2\\pi}{3}\\).", "o": ["\\(\\tfrac12\\)", "\\(-\\tfrac12\\)", "\\(\\tfrac{\\sqrt3}{2}\\)", "\\(-\\tfrac{\\sqrt3}{2}\\)"], "c": 1, "w": ["Это косинус \\(\\pi/3\\) — угла в первой четверти.", "Угол лежит во второй четверти, там косинус отрицателен, а по модулю равен \\(\\cos\\frac{\\pi}{3}=\\tfrac12\\).", "Это \\(\\cos\\frac{\\pi}{6}\\).", "Это \\(\\cos\\frac{5\\pi}{6}\\): модуль не тот."], "s": "<p><span class=\"st\">Метод</span>Привести к острому углу: \\(\\frac{2\\pi}{3}=\\pi-\\frac{\\pi}{3}\\).</p><p>Формула приведения: \\(\\cos(\\pi-\\alpha)=-\\cos\\alpha\\).</p><p>Значит \\(\\cos\\frac{2\\pi}{3}=-\\cos\\frac{\\pi}{3}=-\\tfrac12\\).</p><p class=\"note\">Проверка по кругу: угол \\(120^\\circ\\) — вторая четверть, там \\(x<0,\\ y>0\\), а косинус — это \\(x\\).</p><p><span class=\"ans\">\\(-\\tfrac12\\)</span></p>"}, {"l": 1, "q": "Вычислить \\(\\operatorname{tg}\\frac{5\\pi}{4}\\).", "o": ["\\(1\\)", "\\(-1\\)", "\\(\\sqrt3\\)", "\\(-\\tfrac{1}{\\sqrt3}\\)"], "c": 0, "w": ["Третья четверть: синус и косинус оба отрицательны, их отношение положительно.", "Знак минус был бы во второй или четвёртой четверти.", "Это \\(\\operatorname{tg}\\frac{\\pi}{3}\\).", "Это \\(\\operatorname{tg}\\frac{5\\pi}{6}\\)."], "s": "<p><span class=\"st\">Метод</span>У тангенса период \\(\\pi\\), поэтому \\(\\operatorname{tg}(\\alpha+\\pi)=\\operatorname{tg}\\alpha\\).</p><p>\\(\\frac{5\\pi}{4}=\\frac{\\pi}{4}+\\pi\\), значит \\(\\operatorname{tg}\\frac{5\\pi}{4}=\\operatorname{tg}\\frac{\\pi}{4}=1\\).</p><p class=\"note\">Без периода: в третьей четверти \\(\\sin<0\\) и \\(\\cos<0\\), минус на минус даёт плюс.</p><p><span class=\"ans\">\\(1\\)</span></p>"}, {"l": 2, "q": "Найти все корни уравнения \\(\\cos x=-\\tfrac12\\) на промежутке \\([0;2\\pi)\\).", "o": ["\\(\\frac{\\pi}{3};\\ \\frac{5\\pi}{3}\\)", "\\(\\frac{2\\pi}{3};\\ \\frac{4\\pi}{3}\\)", "\\(\\frac{2\\pi}{3}\\) — один корень", "\\(\\frac{\\pi}{6};\\ \\frac{11\\pi}{6}\\)"], "c": 1, "w": ["Это корни уравнения \\(\\cos x=\\tfrac12\\): знак потерян.", "Косинус отрицателен во второй и третьей четвертях, и оба корня симметричны относительно \\(\\pi\\).", "Корень не один: на полном обороте косинус принимает каждое значение из \\((-1;1)\\) дважды.", "Это корни \\(\\cos x=\\tfrac{\\sqrt3}{2}\\)."], "s": "<p><span class=\"st\">Метод</span>Косинус — это абсцисса точки на единичной окружности. Горизонтальная прямая \\(x=-\\tfrac12\\) пересекает окружность в двух точках.</p><p>Опорный угол: \\(\\cos\\alpha=\\tfrac12\\Rightarrow\\alpha=\\frac{\\pi}{3}\\).</p><p>Отрицательный косинус — вторая и третья четверти: \\(x=\\pi-\\frac{\\pi}{3}=\\frac{2\\pi}{3}\\) и \\(x=\\pi+\\frac{\\pi}{3}=\\frac{4\\pi}{3}\\).</p><p class=\"note\">Общая запись всех корней: \\(x=\\pm\\frac{2\\pi}{3}+2\\pi k\\).</p><p><span class=\"ans\">\\(x=\\frac{2\\pi}{3}\\) и \\(x=\\frac{4\\pi}{3}\\)</span></p>"}, {"l": 2, "q": "Вычислить \\(\\sin 15^\\circ\\cos 15^\\circ\\).", "o": ["\\(\\tfrac12\\)", "\\(\\tfrac14\\)", "\\(\\tfrac{\\sqrt3}{4}\\)", "\\(\\tfrac{\\sqrt2}{4}\\)"], "c": 1, "w": ["Это значение всего \\(\\sin 30^\\circ\\); произведение вдвое меньше.", "Формула двойного угла сворачивает произведение в один синус.", "Это \\(\\tfrac12\\sin 60^\\circ\\).", "Это \\(\\tfrac12\\sin 45^\\circ\\)."], "s": "<p><span class=\"st\">Метод</span>Формула двойного угла \\(\\sin2\\alpha=2\\sin\\alpha\\cos\\alpha\\), прочитанная справа налево.</p><p>\\(\\sin\\alpha\\cos\\alpha=\\tfrac12\\sin2\\alpha\\).</p><p>При \\(\\alpha=15^\\circ\\): \\(\\tfrac12\\sin30^\\circ=\\tfrac12\\cdot\\tfrac12=\\tfrac14\\).</p><p class=\"note\">Такие произведения почти всегда сворачиваются — считать \\(\\sin15^\\circ\\) отдельно не нужно.</p><p><span class=\"ans\">\\(\\tfrac14\\)</span></p>"}, {"l": 3, "q": "Упростить выражение \\(\\dfrac{1-\\cos 2x}{\\sin 2x}\\).", "o": ["\\(\\operatorname{ctg}x\\)", "\\(\\operatorname{tg}x\\)", "\\(2\\operatorname{tg}x\\)", "\\(\\operatorname{tg}2x\\)"], "c": 1, "w": ["Котангенс получится, если перепутать, какой из двух вариантов формулы косинуса двойного угла брать.", "После подстановки формул двойного угла дробь сокращается на \\(2\\sin x\\).", "Двойка сокращается: в числителе \\(2\\sin^2x\\), в знаменателе \\(2\\sin x\\cos x\\).", "Аргумент после упрощения становится одинарным."], "s": "<p><span class=\"st\">Метод</span>Разложить и числитель, и знаменатель по формулам двойного угла.</p><p>Числитель: \\(1-\\cos2x=1-(1-2\\sin^2x)=2\\sin^2x\\).</p><p>Знаменатель: \\(\\sin2x=2\\sin x\\cos x\\).</p><p>Дробь: \\(\\dfrac{2\\sin^2x}{2\\sin x\\cos x}=\\dfrac{\\sin x}{\\cos x}=\\operatorname{tg}x\\).</p><p class=\"note\">У косинуса двойного угла три записи. Здесь нужна именно \\(1-2\\sin^2x\\), чтобы единица ушла.</p><p><span class=\"ans\">\\(\\operatorname{tg}x\\)</span></p>"}, {"l": 3, "q": "Найти наибольшее значение выражения \\(3\\sin x+4\\cos x\\).", "o": ["\\(7\\)", "\\(5\\)", "\\(4\\)", "\\(\\sqrt7\\)"], "c": 1, "w": ["Семь — это сумма коэффициентов, но синус и косинус не достигают единицы одновременно.", "Амплитуда равна \\(\\sqrt{a^2+b^2}\\).", "Это только один из коэффициентов.", "Корень берётся из суммы квадратов, а не из суммы."], "s": "<p><span class=\"st\">Метод</span>Метод вспомогательного угла: \\(a\\sin x+b\\cos x=R\\sin(x+\\varphi)\\), где \\(R=\\sqrt{a^2+b^2}\\).</p><p>\\(R=\\sqrt{3^2+4^2}=\\sqrt{25}=5\\).</p><p>Значит выражение равно \\(5\\sin(x+\\varphi)\\), а синус не выходит за \\([-1;1]\\).</p><p>Наибольшее значение \\(5\\), наименьшее \\(-5\\).</p><p class=\"note\">Сумма коэффициентов \\(3+4=7\\) недостижима: при \\(\\sin x=1\\) автоматически \\(\\cos x=0\\).</p><p><span class=\"ans\">\\(5\\)</span></p>"}], "cx": [{"l": 1, "q": "Найти \\(|3-4i|\\).", "o": ["\\(7\\)", "\\(5\\)", "\\(\\sqrt7\\)", "\\(25\\)"], "c": 1, "w": ["Модуль — не сумма частей.", "Модуль — длина вектора: \\(\\sqrt{a^2+b^2}\\).", "Под корнем должна стоять сумма квадратов.", "Это квадрат модуля — корень забыт."], "s": "<p><span class=\"st\">Метод</span>\\(|a+bi|=\\sqrt{a^2+b^2}\\) — длина вектора на комплексной плоскости.</p><p>\\(\\sqrt{3^2+(-4)^2}=\\sqrt{9+16}=\\sqrt{25}=5\\).</p><p class=\"note\">Знак мнимой части на модуль не влияет: он возводится в квадрат.</p><p><span class=\"ans\">\\(5\\)</span></p>"}, {"l": 2, "q": "Найти действительную часть числа \\(z=\\dfrac{2+i}{1-i}\\).", "o": ["\\(\\tfrac12\\)", "\\(2\\)", "\\(\\tfrac32\\)", "\\(-\\tfrac12\\)"], "c": 0, "w": ["Умножение на сопряжённое даёт \\(z=\\tfrac{1+3i}{2}\\), откуда \\(\\operatorname{Re}z=\\tfrac12\\).", "Это числитель до преобразования.", "Это мнимая часть этого же числа.", "Знак потерян при раскрытии скобок: \\(i^2=-1\\) даёт \\(+1\\), а не \\(-1\\)."], "s": "<p><span class=\"st\">Метод</span>Умножить числитель и знаменатель на число, сопряжённое знаменателю.</p><p>Сопряжённое к \\(1-i\\) — это \\(1+i\\).</p><p>Знаменатель: \\((1-i)(1+i)=1-i^2=1+1=2\\).</p><p>Числитель: \\((2+i)(1+i)=2+2i+i+i^2=2+3i-1=1+3i\\).</p><p>\\(z=\\dfrac{1+3i}{2}=\\tfrac12+\\tfrac32 i\\).</p><p><span class=\"ans\">\\(\\operatorname{Re}z=\\tfrac12\\)</span></p>"}, {"l": 2, "q": "Найти аргумент числа \\(z=-1+i\\).", "o": ["\\(\\frac{\\pi}{4}\\)", "\\(\\frac{3\\pi}{4}\\)", "\\(-\\frac{\\pi}{4}\\)", "\\(\\frac{5\\pi}{4}\\)"], "c": 1, "w": ["Это аргумент числа \\(1+i\\) — четверть не та.", "Точка \\((-1;1)\\) лежит во второй четверти.", "Отрицательный аргумент отвечает четвёртой четверти.", "Это третья четверть, там обе координаты отрицательны."], "s": "<p><span class=\"st\">Метод</span>Сначала четверть по знакам \\((a;b)\\), потом опорный угол по \\(\\operatorname{tg}\\varphi=|b/a|\\).</p><p>\\(a=-1<0,\\ b=1>0\\) — вторая четверть.</p><p>Опорный угол: \\(\\operatorname{tg}\\alpha=\\left|\\tfrac{1}{-1}\\right|=1\\Rightarrow\\alpha=\\frac{\\pi}{4}\\).</p><p>Во второй четверти \\(\\varphi=\\pi-\\alpha=\\pi-\\frac{\\pi}{4}=\\frac{3\\pi}{4}\\).</p><p class=\"note\">Формула \\(\\varphi=\\operatorname{arctg}(b/a)\\) без учёта четверти даёт \\(-\\frac{\\pi}{4}\\) — это типичная потеря.</p><p><span class=\"ans\">\\(\\frac{3\\pi}{4}\\)</span></p>"}, {"l": 2, "q": "Вычислить \\((1+i)^8\\).", "o": ["\\(16\\)", "\\(16i\\)", "\\(-16\\)", "\\(256\\)"], "c": 0, "w": ["Квадрат числа \\((1+i)^2=2i\\), а четвёртая степень \\(i\\) равна единице — мнимости не остаётся.", "Степень 8 кратна четырём, поэтому \\(i^8=1\\).", "Минус появился бы при \\(i^2\\), но здесь показатель чётный вдвойне.", "Это \\(|1+i|^{16}\\): модуль возведён не в ту степень."], "s": "<p><span class=\"st\">Метод</span>Сначала возвести в квадрат, потом использовать цикличность степеней \\(i\\).</p><p>\\((1+i)^2=1+2i+i^2=2i\\).</p><p>\\((1+i)^8=\\big((1+i)^2\\big)^4=(2i)^4=2^4\\cdot i^4=16\\cdot1=16\\).</p><p class=\"note\">Через формулу Муавра: \\(|1+i|=\\sqrt2,\\ \\varphi=\\frac{\\pi}{4}\\), тогда \\((\\sqrt2)^8(\\cos2\\pi+i\\sin2\\pi)=16\\).</p><p><span class=\"ans\">\\(16\\)</span></p>"}, {"l": 3, "q": "Найти все корни уравнения \\(z^3=8\\).", "o": ["\\(2\\) — единственный корень", "\\(2,\\ -2,\\ 2i\\)", "\\(2,\\ -1+i\\sqrt3,\\ -1-i\\sqrt3\\)", "\\(2,\\ 1+i\\sqrt3,\\ 1-i\\sqrt3\\)"], "c": 2, "w": ["В комплексных числах уравнение степени \\(n\\) всегда имеет ровно \\(n\\) корней.", "Эти числа в куб не дают восьми: \\((-2)^3=-8\\).", "Корни лежат на окружности радиуса 2 через каждые \\(120^\\circ\\).", "Знак действительной части неверен: углы \\(120^\\circ\\) и \\(240^\\circ\\) дают косинус \\(-\\tfrac12\\)."], "s": "<p><span class=\"st\">Метод</span>Формула корней: \\(\\sqrt[n]{r}\\left(\\cos\\frac{\\varphi+2\\pi k}{n}+i\\sin\\frac{\\varphi+2\\pi k}{n}\\right)\\), \\(k=0,\\dots,n-1\\).</p><p>Для \\(8\\): модуль \\(r=8\\), аргумент \\(\\varphi=0\\). Модуль корней \\(\\sqrt[3]{8}=2\\).</p><p>Аргументы: \\(0,\\ \\frac{2\\pi}{3},\\ \\frac{4\\pi}{3}\\).</p><p>\\(k=0:\\ 2(\\cos0+i\\sin0)=2\\).</p><p>\\(k=1:\\ 2\\left(-\\tfrac12+i\\tfrac{\\sqrt3}{2}\\right)=-1+i\\sqrt3\\).</p><p>\\(k=2:\\ 2\\left(-\\tfrac12-i\\tfrac{\\sqrt3}{2}\\right)=-1-i\\sqrt3\\).</p><p class=\"note\">Три корня — вершины правильного треугольника на окружности радиуса 2.</p><p><span class=\"ans\">\\(2;\\ -1\\pm i\\sqrt3\\)</span></p>"}], "lim": [{"g": "lim_sin"}, {"g": "lim_rat"}, {"l": 2, "q": "Вычислить \\(\\lim\\limits_{x\\to0}\\dfrac{1-\\cos x}{x^2}\\).", "o": ["\\(0\\)", "\\(\\tfrac12\\)", "\\(1\\)", "\\(2\\)"], "c": 1, "w": ["Это неопределённость \\(\\frac00\\), предел конечен и не равен нулю.", "Эквивалентность \\(1-\\cos x\\sim\\frac{x^2}{2}\\) — её стоит помнить наизусть.", "Единица получилась бы без двойки в эквивалентности.", "Двойка стоит в знаменателе эквивалентности, а не в числителе."], "s": "<p><span class=\"st\">Метод</span>Эквивалентность \\(1-\\cos x\\sim\\dfrac{x^2}{2}\\) при \\(x\\to0\\).</p><p>\\(\\dfrac{1-\\cos x}{x^2}\\sim\\dfrac{x^2/2}{x^2}=\\dfrac12\\).</p><p><span class=\"st\">Если забыли эквивалентность</span>Через формулу половинного угла: \\(1-\\cos x=2\\sin^2\\frac{x}{2}\\), тогда \\(\\dfrac{2\\sin^2\\frac{x}{2}}{x^2}=\\dfrac12\\cdot\\left(\\dfrac{\\sin\\frac{x}{2}}{\\frac{x}{2}}\\right)^2\\to\\dfrac12\\).</p><p><span class=\"ans\">\\(\\tfrac12\\)</span></p>"}, {"g": "lim_e"}, {"g": "lim_eq"}, {"l": 3, "q": "Вычислить \\(\\lim\\limits_{x\\to0}\\dfrac{\\sqrt{1+x}-1}{x}\\).", "o": ["\\(0\\)", "\\(\\tfrac12\\)", "\\(1\\)", "\\(2\\)"], "c": 1, "w": ["Это неопределённость \\(\\frac00\\) с конечным ненулевым ответом.", "Либо через сопряжённое, либо по эквивалентности \\((1+x)^{\\alpha}-1\\sim\\alpha x\\) с \\(\\alpha=\\tfrac12\\).", "Единица была бы при \\(\\alpha=1\\), то есть без корня.", "Показатель \\(\\tfrac12\\) стоит в числителе эквивалентности."], "s": "<p><span class=\"st\">Метод</span>Умножить на сопряжённое числителю выражение.</p><p>\\(\\dfrac{\\sqrt{1+x}-1}{x}\\cdot\\dfrac{\\sqrt{1+x}+1}{\\sqrt{1+x}+1}=\\dfrac{(1+x)-1}{x\\left(\\sqrt{1+x}+1\\right)}\\).</p><p>Числитель сворачивается в \\(x\\), дробь сокращается: \\(\\dfrac{1}{\\sqrt{1+x}+1}\\).</p><p>При \\(x\\to0\\) это \\(\\dfrac{1}{1+1}=\\dfrac12\\).</p><p class=\"note\">Быстрый способ: \\((1+x)^{\\alpha}-1\\sim\\alpha x\\), здесь \\(\\alpha=\\tfrac12\\), сразу \\(\\tfrac12\\).</p><p><span class=\"ans\">\\(\\tfrac12\\)</span></p>"}], "der": [{"g": "der_prod"}, {"l": 1, "q": "Найти производную \\(y=e^{x^2}\\).", "o": ["\\(e^{x^2}\\)", "\\(2xe^{x^2}\\)", "\\(x^2e^{x^2-1}\\)", "\\(2xe^{2x}\\)"], "c": 1, "w": ["Забыта производная внутренней функции.", "Сложная функция: внешняя — экспонента, внутренняя — \\(x^2\\).", "Так дифференцируют степенную функцию, а не показательную.", "Показатель менять нельзя — он остаётся прежним."], "s": "<p><span class=\"st\">Метод</span>Производная сложной функции: \\(\\big(f(g)\\big)'=f'(g)\\cdot g'\\).</p><p>Внешняя функция — \\(e^{u}\\), её производная \\(e^{u}\\).</p><p>Внутренняя \\(u=x^2\\), её производная \\(2x\\).</p><p>\\(y'=e^{x^2}\\cdot2x\\).</p><p class=\"note\">Показатель у экспоненты при дифференцировании не меняется — меняется только множитель перед ней.</p><p><span class=\"ans\">\\(y'=2xe^{x^2}\\)</span></p>"}, {"g": "der_arctg"}, {"g": "der_chain"}, {"l": 3, "q": "Найти производную \\(y=x^{x}\\) при \\(x>0\\).", "o": ["\\(x\\cdot x^{x-1}\\)", "\\(x^{x}\\ln x\\)", "\\(x^{x}(\\ln x+1)\\)", "\\(x^{x}\\)"], "c": 2, "w": ["Степенная формула здесь не работает: показатель тоже зависит от \\(x\\).", "Показательная формула тоже не работает по той же причине — нужно логарифмическое дифференцирование.", "Логарифмическое дифференцирование даёт сумму двух слагаемых.", "Так дифференцируется только \\(e^{x}\\)."], "s": "<p><span class=\"st\">Метод</span>Логарифмическое дифференцирование: когда переменная и в основании, и в показателе.</p><p>Логарифмируем: \\(\\ln y=x\\ln x\\).</p><p>Дифференцируем обе части (слева — сложная функция): \\(\\dfrac{y'}{y}=\\ln x+x\\cdot\\dfrac1x=\\ln x+1\\).</p><p>Умножаем на \\(y\\): \\(y'=x^{x}(\\ln x+1)\\).</p><p class=\"note\">Тот же ответ даёт запись \\(x^{x}=e^{x\\ln x}\\) и обычное цепное правило.</p><p><span class=\"ans\">\\(y'=x^{x}(\\ln x+1)\\)</span></p>"}, {"l": 3, "q": "Функция задана неявно: \\(x^2+y^2=25\\). Найти \\(y'\\).", "o": ["\\(-\\dfrac{x}{y}\\)", "\\(\\dfrac{x}{y}\\)", "\\(-\\dfrac{y}{x}\\)", "\\(-2x\\)"], "c": 0, "w": ["Знак потерян при переносе \\(2x\\) в правую часть.", "Дифференцируем обе части по \\(x\\), помня, что \\(y\\) зависит от \\(x\\).", "Дробь перевёрнута.", "Делить на \\(2y\\) обязательно — оно появляется из производной \\(y^2\\)."], "s": "<p><span class=\"st\">Метод</span>Дифференцировать обе части по \\(x\\), считая \\(y=y(x)\\); производная \\(y^2\\) равна \\(2yy'\\).</p><p>\\(2x+2yy'=0\\).</p><p>\\(2yy'=-2x\\).</p><p>\\(y'=-\\dfrac{x}{y}\\).</p><p class=\"note\">Геометрически это окружность: радиус в точке касания перпендикулярен касательной, что и даёт такое отношение.</p><p><span class=\"ans\">\\(y'=-\\dfrac{x}{y}\\)</span></p>"}], "eq": [{"g": "tangent"}, {"l": 2, "q": "Составить уравнение нормали к \\(y=x^2\\) в точке с абсциссой \\(x_0=1\\).", "o": ["\\(y=2x-1\\)", "\\(y=-\\tfrac12x+\\tfrac32\\)", "\\(y=-2x+3\\)", "\\(y=-\\tfrac12x+1\\)"], "c": 1, "w": ["Это касательная, а не нормаль.", "Нормаль перпендикулярна касательной, её коэффициент равен \\(-1/f'(x_0)\\).", "Взят минус от производной, а не обратная величина со знаком минус.", "Свободный член: \\(1+\\tfrac12=\\tfrac32\\)."], "s": "<p><span class=\"st\">Метод</span>Нормаль: \\(y=f(x_0)-\\dfrac{1}{f'(x_0)}(x-x_0)\\).</p><p>Точка: \\(f(1)=1\\), то есть \\((1;1)\\).</p><p>Касательная имеет \\(k_{\\text{кас}}=f'(1)=2\\).</p><p>Условие перпендикулярности \\(k_1k_2=-1\\) даёт \\(k_{\\text{норм}}=-\\tfrac12\\).</p><p>\\(y=1-\\tfrac12(x-1)=-\\tfrac12x+\\tfrac32\\).</p><p class=\"note\">Перпендикулярность — это «перевернуть и сменить знак», а не просто сменить знак.</p><p><span class=\"ans\">\\(y=-\\tfrac12x+\\tfrac32\\)</span></p>"}, {"l": 2, "q": "В какой точке касательная к \\(y=\\ln x\\) параллельна прямой \\(y=x+5\\)?", "o": ["\\((1;0)\\)", "\\((0;1)\\)", "\\((e;1)\\)", "\\(\\left(\\tfrac12;-\\ln2\\right)\\)"], "c": 0, "w": ["Условие параллельности \\(f'(x)=1\\) даёт \\(\\frac1x=1\\), то есть \\(x=1\\), и тогда \\(y=\\ln1=0\\).", "Координаты переставлены: логарифм в нуле не определён.", "Здесь производная равна \\(\\frac1e\\), а не единице.", "Здесь производная равна \\(2\\)."], "s": "<p><span class=\"st\">Метод</span>Параллельность прямых означает равенство угловых коэффициентов.</p><p>У прямой \\(y=x+5\\) коэффициент \\(k=1\\).</p><p>Производная кривой: \\(f'(x)=\\dfrac1x\\).</p><p>Уравнение \\(\\dfrac1x=1\\Rightarrow x=1\\).</p><p>Ордината: \\(y=\\ln1=0\\).</p><p class=\"note\">Коэффициент прямой читается прямо из записи \\(y=kx+b\\) — ничего дифференцировать не нужно.</p><p><span class=\"ans\">\\((1;0)\\)</span></p>"}, {"l": 2, "q": "Составить уравнение касательной к \\(y=\\sqrt{x}\\) в точке \\(x_0=4\\).", "o": ["\\(y=\\tfrac14x+1\\)", "\\(y=\\tfrac12x\\)", "\\(y=\\tfrac14x+2\\)", "\\(y=2x-4\\)"], "c": 0, "w": ["Свободный член: \\(2-\\tfrac14\\cdot4=1\\).", "Производная корня в точке 4 равна \\(\\tfrac14\\), а не \\(\\tfrac12\\).", "Свободный член посчитан без вычитания \\(kx_0\\).", "Это значение функции перепутано с производной."], "s": "<p><span class=\"st\">Метод</span>\\(y=f(x_0)+f'(x_0)(x-x_0)\\).</p><p>\\(f(4)=\\sqrt4=2\\).</p><p>\\(f'(x)=\\dfrac{1}{2\\sqrt x}\\Rightarrow f'(4)=\\dfrac{1}{2\\cdot2}=\\dfrac14\\).</p><p>\\(y=2+\\tfrac14(x-4)=2+\\tfrac14x-1=\\tfrac14x+1\\).</p><p><span class=\"ans\">\\(y=\\tfrac14x+1\\)</span></p>"}, {"g": "perp_point"}], "int": [{"g": "int_arctg"}, {"g": "int_subst"}, {"l": 2, "q": "Вычислить \\(\\displaystyle\\int x\\ln x\\,dx\\).", "o": ["\\(\\dfrac{x^2}{2}\\ln x+C\\)", "\\(\\dfrac{x^2}{2}\\ln x-\\dfrac{x^2}{4}+C\\)", "\\(\\dfrac{x^2}{2}\\ln x-\\dfrac{x^2}{2}+C\\)", "\\(\\dfrac{x^2}{2}\\cdot\\dfrac1x+C\\)"], "c": 1, "w": ["Это только первое слагаемое формулы интегрирования по частям.", "По частям: \\(u=\\ln x\\), \\(dv=x\\,dx\\).", "Остаточный интеграл равен \\(\\int\\frac{x}{2}dx=\\frac{x^2}{4}\\), а не \\(\\frac{x^2}{2}\\).", "Так интегралы не перемножаются."], "s": "<p><span class=\"st\">Метод</span>Интегрирование по частям \\(\\int u\\,dv=uv-\\int v\\,du\\). Логарифм берём за \\(u\\).</p><p>\\(u=\\ln x\\Rightarrow du=\\dfrac{dx}{x}\\);  \\(dv=x\\,dx\\Rightarrow v=\\dfrac{x^2}{2}\\).</p><p>\\(\\displaystyle\\int x\\ln x\\,dx=\\frac{x^2}{2}\\ln x-\\int\\frac{x^2}{2}\\cdot\\frac{dx}{x}\\).</p><p>Оставшийся интеграл: \\(\\displaystyle\\int\\frac{x}{2}dx=\\frac{x^2}{4}\\).</p><p>\\(\\dfrac{x^2}{2}\\ln x-\\dfrac{x^2}{4}+C\\).</p><p class=\"note\">Правило выбора \\(u\\): логарифм и обратные тригонометрические функции всегда идут в \\(u\\).</p><p><span class=\"ans\">\\(\\frac{x^2}{2}\\ln x-\\frac{x^2}{4}+C\\)</span></p>"}, {"l": 2, "q": "Вычислить \\(\\displaystyle\\int_0^{\\pi/2}\\sin x\\,dx\\).", "o": ["\\(0\\)", "\\(1\\)", "\\(-1\\)", "\\(\\pi/2\\)"], "c": 1, "w": ["Ноль получится на промежутке \\([0;\\pi]\\) для косинуса, но не здесь.", "Первообразная \\(-\\cos x\\), подставляем пределы.", "Знак потерян: вычитается значение в нижнем пределе.", "Длина промежутка к значению интеграла отношения не имеет."], "s": "<p><span class=\"st\">Метод</span>Формула Ньютона—Лейбница: \\(\\int_a^b f=F(b)-F(a)\\).</p><p>Первообразная: \\(F(x)=-\\cos x\\).</p><p>\\(F\\left(\\tfrac{\\pi}{2}\\right)=-\\cos\\tfrac{\\pi}{2}=0\\).</p><p>\\(F(0)=-\\cos0=-1\\).</p><p>\\(0-(-1)=1\\).</p><p class=\"note\">Минус у первообразной синуса теряют чаще всего — он обязателен.</p><p><span class=\"ans\">\\(1\\)</span></p>"}, {"l": 3, "q": "Вычислить \\(\\displaystyle\\int\\dfrac{dx}{x^2-4}\\).", "o": ["\\(\\dfrac12\\operatorname{arctg}\\dfrac{x}{2}+C\\)", "\\(\\dfrac14\\ln\\left|\\dfrac{x-2}{x+2}\\right|+C\\)", "\\(\\ln|x^2-4|+C\\)", "\\(\\dfrac14\\ln\\left|\\dfrac{x+2}{x-2}\\right|+C\\)"], "c": 1, "w": ["Арктангенс даёт сумма квадратов, а здесь разность — раскладываем на множители.", "Разложение на простейшие дроби: \\(\\frac{1}{x^2-4}=\\frac{1}{4}\\left(\\frac{1}{x-2}-\\frac{1}{x+2}\\right)\\).", "В числителе нет производной знаменателя, так логарифм не получится.", "Дробь под логарифмом перевёрнута: минус стоит у слагаемого с \\(x+2\\)."], "s": "<p><span class=\"st\">Метод</span>Разложение на простейшие дроби.</p><p>\\(x^2-4=(x-2)(x+2)\\). Ищем \\(\\dfrac{1}{(x-2)(x+2)}=\\dfrac{A}{x-2}+\\dfrac{B}{x+2}\\).</p><p>\\(1=A(x+2)+B(x-2)\\). При \\(x=2\\): \\(1=4A\\Rightarrow A=\\tfrac14\\). При \\(x=-2\\): \\(1=-4B\\Rightarrow B=-\\tfrac14\\).</p><p>\\(\\displaystyle\\int=\\frac14\\int\\frac{dx}{x-2}-\\frac14\\int\\frac{dx}{x+2}=\\frac14\\ln|x-2|-\\frac14\\ln|x+2|+C\\).</p><p>Сворачиваем логарифмы: \\(\\dfrac14\\ln\\left|\\dfrac{x-2}{x+2}\\right|+C\\).</p><p class=\"note\">Табличная форма: \\(\\int\\frac{dx}{x^2-a^2}=\\frac{1}{2a}\\ln\\left|\\frac{x-a}{x+a}\\right|+C\\), здесь \\(a=2\\).</p><p><span class=\"ans\">\\(\\frac14\\ln\\left|\\frac{x-2}{x+2}\\right|+C\\)</span></p>"}, {"l": 3, "q": "Вычислить несобственный интеграл \\(\\displaystyle\\int_1^{+\\infty}\\dfrac{dx}{x^2}\\) или установить его расходимость.", "o": ["Расходится", "\\(1\\)", "\\(0\\)", "\\(\\tfrac12\\)"], "c": 1, "w": ["Расходится интеграл от \\(\\frac1x\\); при показателе \\(p>1\\) интеграл сходится.", "Первообразная \\(-\\frac1x\\) стремится к нулю на бесконечности.", "Подынтегральная функция положительна, интеграл нулём быть не может.", "В нижнем пределе значение первообразной равно \\(-1\\), а не \\(-\\tfrac12\\)."], "s": "<p><span class=\"st\">Метод</span>Несобственный интеграл считается как предел: \\(\\displaystyle\\int_1^{+\\infty}=\\lim_{b\\to\\infty}\\int_1^{b}\\).</p><p>Первообразная: \\(\\displaystyle\\int x^{-2}dx=-\\frac1x\\).</p><p>\\(\\displaystyle\\int_1^{b}\\frac{dx}{x^2}=\\left[-\\frac1x\\right]_1^{b}=-\\frac1b+1\\).</p><p>При \\(b\\to\\infty\\) слагаемое \\(\\frac1b\\to0\\), остаётся \\(1\\).</p><p class=\"note\">Общее правило: \\(\\int_1^{\\infty}\\frac{dx}{x^p}\\) сходится при \\(p>1\\) и расходится при \\(p\\le1\\). Для рядов — ровно наоборот по смыслу та же граница.</p><p><span class=\"ans\">\\(1\\) — интеграл сходится</span></p>"}], "ser": [{"g": "ser_p"}, {"l": 2, "q": "Исследовать на сходимость ряд \\(\\sum\\limits_{n=1}^{\\infty}\\dfrac{n!}{n^{n}}\\).", "o": ["Расходится", "Сходится", "Признак Даламбера даёт \\(q=1\\)", "Сходится условно"], "c": 1, "w": ["Предел отношения равен \\(\\tfrac1e<1\\) — это сходимость.", "Признак Даламбера: факториал в записи — прямое указание на него.", "Предел равен \\(\\tfrac1e\\approx0{,}37\\), а не единице.", "Ряд знакоположительный, условной сходимости здесь быть не может."], "s": "<p><span class=\"st\">Метод</span>Признак Даламбера \\(q=\\lim\\dfrac{a_{n+1}}{a_n}\\): применяют, когда есть факториалы или показательные выражения.</p><p>\\(\\dfrac{a_{n+1}}{a_n}=\\dfrac{(n+1)!}{(n+1)^{n+1}}\\cdot\\dfrac{n^{n}}{n!}\\).</p><p>Сокращаем факториалы: \\(\\dfrac{(n+1)!}{n!}=n+1\\).</p><p>\\(=\\dfrac{(n+1)\\,n^{n}}{(n+1)^{n+1}}=\\dfrac{n^{n}}{(n+1)^{n}}=\\left(\\dfrac{n}{n+1}\\right)^{n}=\\dfrac{1}{\\left(1+\\frac1n\\right)^{n}}\\).</p><p>Предел знаменателя равен \\(e\\), значит \\(q=\\dfrac1e<1\\).</p><p><span class=\"ans\">Ряд сходится</span></p>"}, {"l": 2, "q": "Исследовать ряд \\(\\sum\\limits_{n=1}^{\\infty}\\dfrac{(-1)^{n}}{n}\\).", "o": ["Расходится", "Сходится абсолютно", "Сходится условно", "Признак Лейбница не применим"], "c": 2, "w": ["Признак Лейбница даёт сходимость самого ряда.", "Ряд из модулей — гармонический, он расходится, поэтому абсолютной сходимости нет.", "Сам ряд сходится по Лейбницу, а ряд из модулей расходится — это и есть условная сходимость.", "Оба условия Лейбница выполнены: модули убывают и стремятся к нулю."], "s": "<p><span class=\"st\">Метод</span>Для знакочередующегося ряда проверяют два вопроса подряд: сходится ли сам ряд (признак Лейбница) и сходится ли ряд из модулей.</p><p><b>Шаг 1. Признак Лейбница.</b> Модули \\(\\frac1n\\) монотонно убывают и стремятся к нулю — ряд сходится.</p><p><b>Шаг 2. Ряд из модулей.</b> \\(\\sum\\frac1n\\) — гармонический, расходится.</p><p>Сходится, но не абсолютно — значит условно.</p><p class=\"note\">Схема ответа всегда одна: расходится / сходится условно / сходится абсолютно.</p><p><span class=\"ans\">Сходится условно</span></p>"}, {"l": 2, "q": "Найти радиус сходимости степенного ряда \\(\\sum\\limits_{n=0}^{\\infty}\\dfrac{x^{n}}{2^{n}}\\).", "o": ["\\(R=\\tfrac12\\)", "\\(R=1\\)", "\\(R=2\\)", "\\(R=\\infty\\)"], "c": 2, "w": ["Радиус — величина, обратная пределу \\(\\sqrt[n]{|a_n|}\\).", "Единица была бы при \\(a_n=1\\).", "Это геометрический ряд со знаменателем \\(x/2\\): сходится при \\(|x/2|<1\\).", "Бесконечный радиус бывает, например, у ряда для экспоненты."], "s": "<p><span class=\"st\">Метод</span>Ряд геометрический: знаменатель \\(q=\\dfrac{x}{2}\\), сходится при \\(|q|<1\\).</p><p>\\(\\left|\\dfrac{x}{2}\\right|<1\\iff|x|<2\\).</p><p>Радиус \\(R=2\\), интервал сходимости \\((-2;2)\\).</p><p><span class=\"st\">Через формулу</span>\\(R=\\lim\\left|\\dfrac{a_n}{a_{n+1}}\\right|=\\lim\\dfrac{2^{n+1}}{2^{n}}=2\\).</p><p class=\"note\">На концах \\(x=\\pm2\\) слагаемые равны \\(\\pm1\\) и к нулю не стремятся — ряд расходится, концы в область не входят.</p><p><span class=\"ans\">\\(R=2\\)</span></p>"}, {"l": 3, "q": "Исследовать на сходимость ряд \\(\\sum\\limits_{n=1}^{\\infty}\\left(\\dfrac{n}{2n+1}\\right)^{n}\\).", "o": ["Сходится", "Расходится", "Признак Коши даёт \\(q=1\\)", "Нужен признак Даламбера"], "c": 0, "w": ["Радикальный признак Коши даёт \\(q=\\tfrac12<1\\).", "Расходимость была бы при \\(q>1\\).", "Предел равен \\(\\tfrac12\\): дробь \\(\\frac{n}{2n+1}\\) стремится к \\(\\tfrac12\\).", "Даламбер здесь тоже сработает, но считать сложнее — вся скобка в степени \\(n\\) просит корень."], "s": "<p><span class=\"st\">Метод</span>Радикальный признак Коши \\(q=\\lim\\sqrt[n]{a_n}\\): применяют, когда всё выражение возведено в степень \\(n\\).</p><p>\\(\\sqrt[n]{a_n}=\\sqrt[n]{\\left(\\dfrac{n}{2n+1}\\right)^{n}}=\\dfrac{n}{2n+1}\\).</p><p>\\(\\lim\\limits_{n\\to\\infty}\\dfrac{n}{2n+1}=\\dfrac12\\).</p><p>\\(q=\\tfrac12<1\\), значит ряд сходится.</p><p class=\"note\">Выбор признака по виду слагаемого: степень \\(n\\) целиком — Коши; факториалы — Даламбер; дробь с многочленами — сравнение.</p><p><span class=\"ans\">Сходится</span></p>"}, {"l": 3, "q": "Исследовать на сходимость ряд \\(\\sum\\limits_{n=2}^{\\infty}\\dfrac{1}{n\\ln n}\\).", "o": ["Сходится", "Расходится", "Сходится абсолютно", "Признак Даламбера даёт \\(q<1\\)"], "c": 1, "w": ["Интегральный признак даёт расходящийся интеграл.", "Логарифм растёт слишком медленно, чтобы спасти ряд.", "Ряд знакоположительный и расходится — об абсолютной сходимости речи нет.", "Даламбер даёт \\(q=1\\) и ничего не решает."], "s": "<p><span class=\"st\">Метод</span>Интегральный признак Коши: ряд и интеграл от той же функции ведут себя одинаково.</p><p>Функция \\(f(x)=\\dfrac{1}{x\\ln x}\\) положительна и убывает при \\(x\\ge2\\).</p><p>Замена \\(t=\\ln x\\), \\(dt=\\dfrac{dx}{x}\\): \\(\\displaystyle\\int\\frac{dx}{x\\ln x}=\\int\\frac{dt}{t}=\\ln t=\\ln\\ln x\\).</p><p>\\(\\displaystyle\\int_2^{\\infty}\\frac{dx}{x\\ln x}=\\lim_{b\\to\\infty}\\big(\\ln\\ln b-\\ln\\ln2\\big)=+\\infty\\).</p><p>Интеграл расходится — значит расходится и ряд.</p><p class=\"note\">Полезный ориентир: \\(\\sum\\frac{1}{n\\ln n}\\) расходится, а \\(\\sum\\frac{1}{n\\ln^2 n}\\) уже сходится.</p><p><span class=\"ans\">Расходится</span></p>"}], "fnp": [{"l": 1, "q": "Для функции \\(z=x^2y^3\\) найти \\(\\dfrac{\\partial z}{\\partial x}\\).", "o": ["\\(2xy^3\\)", "\\(3x^2y^2\\)", "\\(2x\\cdot3y^2\\)", "\\(2xy^3+3x^2y^2\\)"], "c": 0, "w": ["При дифференцировании по \\(x\\) переменная \\(y\\) считается постоянной.", "Это производная по \\(y\\).", "Так обе переменные продифференцированы одновременно — этого делать нельзя.", "Это сумма обеих частных производных, а спрашивают одну."], "s": "<p><span class=\"st\">Метод</span>Частная производная по \\(x\\): все остальные переменные — просто числа.</p><p>Считаем \\(y^3\\) постоянным множителем.</p><p>\\(\\dfrac{\\partial z}{\\partial x}=y^3\\cdot(x^2)'_x=y^3\\cdot2x=2xy^3\\).</p><p class=\"note\">Проверка: по \\(y\\) получилось бы \\(x^2\\cdot3y^2=3x^2y^2\\).</p><p><span class=\"ans\">\\(2xy^3\\)</span></p>"}, {"l": 2, "q": "Найти смешанную производную \\(\\dfrac{\\partial^2 z}{\\partial x\\,\\partial y}\\) для \\(z=x^3y^2\\).", "o": ["\\(6x^2y\\)", "\\(3x^2y^2\\)", "\\(6xy^2\\)", "\\(2x^3y\\)"], "c": 0, "w": ["Дифференцируем последовательно по обеим переменным.", "Это только первая производная по \\(x\\).", "Это производная по \\(x\\) дважды.", "Это только первая производная по \\(y\\)."], "s": "<p><span class=\"st\">Метод</span>Дифференцируем последовательно: сначала по одной переменной, потом по другой.</p><p>Шаг 1: \\(\\dfrac{\\partial z}{\\partial y}=x^3\\cdot2y=2x^3y\\).</p><p>Шаг 2: \\(\\dfrac{\\partial}{\\partial x}\\big(2x^3y\\big)=6x^2y\\).</p><p class=\"note\">По теореме о смешанных производных порядок не важен: по \\(x\\) сначала получится \\(3x^2y^2\\), потом по \\(y\\) — те же \\(6x^2y\\).</p><p><span class=\"ans\">\\(6x^2y\\)</span></p>"}, {"l": 2, "q": "Найти стационарную точку функции \\(z=x^2+y^2-4x\\).", "o": ["\\((0;0)\\)", "\\((2;0)\\)", "\\((4;0)\\)", "\\((-2;0)\\)"], "c": 1, "w": ["В начале координат производная по \\(x\\) равна \\(-4\\), а не нулю.", "Система \\(z_x=0,\\ z_y=0\\) даёт \\(2x-4=0\\) и \\(2y=0\\).", "Четвёрка — это значение \\(2x\\), а не самого \\(x\\).", "Знак при решении уравнения \\(2x=4\\) потерян."], "s": "<p><span class=\"st\">Метод</span>Стационарные точки — решения системы из равных нулю частных производных.</p><p>\\(\\dfrac{\\partial z}{\\partial x}=2x-4=0\\Rightarrow x=2\\).</p><p>\\(\\dfrac{\\partial z}{\\partial y}=2y=0\\Rightarrow y=0\\).</p><p>Точка \\((2;0)\\).</p><p class=\"note\">Это минимум: функция равна \\((x-2)^2+y^2-4\\), наименьшее значение \\(-4\\).</p><p><span class=\"ans\">\\((2;0)\\)</span></p>"}, {"g": "fnp_grad"}, {"l": 3, "q": "Найти полный дифференциал функции \\(z=x\\ln y\\).", "o": ["\\(dz=\\ln y\\,dx+\\dfrac{x}{y}dy\\)", "\\(dz=\\ln y\\,dx+x\\,dy\\)", "\\(dz=\\dfrac{1}{y}dx+\\ln y\\,dy\\)", "\\(dz=\\ln y+\\dfrac{x}{y}\\)"], "c": 0, "w": ["Коэффициенты при \\(dx\\) и \\(dy\\) — это частные производные по соответствующим переменным.", "Производная \\(\\ln y\\) по \\(y\\) равна \\(\\frac1y\\), а не единице.", "Частные производные переставлены местами.", "В записи дифференциала обязательны множители \\(dx\\) и \\(dy\\)."], "s": "<p><span class=\"st\">Метод</span>\\(dz=\\dfrac{\\partial z}{\\partial x}dx+\\dfrac{\\partial z}{\\partial y}dy\\).</p><p>По \\(x\\) (считаем \\(\\ln y\\) числом): \\(\\dfrac{\\partial z}{\\partial x}=\\ln y\\).</p><p>По \\(y\\) (считаем \\(x\\) числом): \\(\\dfrac{\\partial z}{\\partial y}=x\\cdot\\dfrac1y=\\dfrac{x}{y}\\).</p><p>\\(dz=\\ln y\\,dx+\\dfrac{x}{y}\\,dy\\).</p><p><span class=\"ans\">\\(dz=\\ln y\\,dx+\\frac{x}{y}dy\\)</span></p>"}], "mult": [{"l": 1, "q": "Чему равен якобиан перехода к полярным координатам \\(x=r\\cos\\varphi,\\ y=r\\sin\\varphi\\)?", "o": ["\\(1\\)", "\\(r\\)", "\\(r^2\\)", "\\(\\dfrac1r\\)"], "c": 1, "w": ["Единица была бы при замене без растяжения площади.", "Определитель матрицы частных производных равен \\(r\\).", "Квадрат появляется в сферических координатах \\((\\rho^2\\sin\\theta)\\).", "Якобиан стоит множителем, а не делителем."], "s": "<p><span class=\"st\">Метод</span>Якобиан — определитель матрицы частных производных старых переменных по новым.</p><p>\\(J=\\begin{vmatrix}x_r & x_\\varphi\\\\ y_r & y_\\varphi\\end{vmatrix}=\\begin{vmatrix}\\cos\\varphi & -r\\sin\\varphi\\\\ \\sin\\varphi & r\\cos\\varphi\\end{vmatrix}\\).</p><p>\\(J=r\\cos^2\\varphi+r\\sin^2\\varphi=r\\).</p><p>Поэтому \\(dx\\,dy=r\\,dr\\,d\\varphi\\).</p><p class=\"note\">Забытое \\(r\\) — самая частая ошибка в кратных интегралах по кругу.</p><p><span class=\"ans\">\\(J=r\\)</span></p>"}, {"l": 1, "q": "Вычислить \\(\\displaystyle\\int_0^1\\!\\!\\int_0^2 xy\\,dy\\,dx\\).", "o": ["\\(1\\)", "\\(2\\)", "\\(\\tfrac12\\)", "\\(4\\)"], "c": 0, "w": ["Пределы постоянны, поэтому интеграл распадается на произведение \\(\\tfrac12\\cdot2=1\\).", "Это только внутренний интеграл.", "Это только внешний интеграл.", "Перемножены пределы, а не значения интегралов."], "s": "<p><span class=\"st\">Метод</span>Повторный интеграл с постоянными пределами и подынтегральной функцией-произведением распадается на произведение одномерных интегралов.</p><p>Внутренний: \\(\\displaystyle\\int_0^2 xy\\,dy=x\\cdot\\frac{y^2}{2}\\Big|_0^2=x\\cdot2=2x\\).</p><p>Внешний: \\(\\displaystyle\\int_0^1 2x\\,dx=x^2\\Big|_0^1=1\\).</p><p class=\"note\">Проверка разложением: \\(\\left(\\int_0^1x\\,dx\\right)\\left(\\int_0^2y\\,dy\\right)=\\tfrac12\\cdot2=1\\).</p><p><span class=\"ans\">\\(1\\)</span></p>"}, {"g": "mult_circle"}, {"l": 2, "q": "Вычислить \\(\\displaystyle\\iint\\limits_{x^2+y^2\\le1}(x^2+y^2)\\,dx\\,dy\\).", "o": ["\\(\\pi\\)", "\\(\\dfrac{\\pi}{2}\\)", "\\(\\dfrac{\\pi}{4}\\)", "\\(2\\pi\\)"], "c": 1, "w": ["Это площадь круга, а не интеграл от \\(x^2+y^2\\).", "В полярных координатах подынтегральное выражение равно \\(r^2\\cdot r=r^3\\).", "Множитель \\(2\\pi\\) из внешнего интеграла потерян.", "Забыт якобиан: без него получилось бы \\(\\frac{2\\pi}{3}\\)."], "s": "<p><span class=\"st\">Метод</span>Полярные координаты: \\(x^2+y^2=r^2\\), элемент площади \\(r\\,dr\\,d\\varphi\\).</p><p>\\(\\displaystyle\\iint=\\int_0^{2\\pi}\\!\\!\\int_0^{1} r^2\\cdot r\\,dr\\,d\\varphi=\\int_0^{2\\pi}\\!\\!\\int_0^{1} r^3\\,dr\\,d\\varphi\\).</p><p>Внутренний: \\(\\displaystyle\\int_0^1 r^3dr=\\frac{r^4}{4}\\Big|_0^1=\\frac14\\).</p><p>Внешний: \\(\\displaystyle\\int_0^{2\\pi}\\frac14\\,d\\varphi=\\frac{2\\pi}{4}=\\frac{\\pi}{2}\\).</p><p><span class=\"ans\">\\(\\dfrac{\\pi}{2}\\)</span></p>"}, {"l": 3, "q": "Найти объём тела под поверхностью \\(z=xy\\) над квадратом \\(0\\le x\\le1,\\ 0\\le y\\le1\\).", "o": ["\\(1\\)", "\\(\\tfrac12\\)", "\\(\\tfrac14\\)", "\\(\\tfrac13\\)"], "c": 2, "w": ["Это объём под плоскостью \\(z=1\\).", "Это значение одного из одномерных интегралов.", "Объём равен \\(\\iint z\\,dx\\,dy=\\tfrac12\\cdot\\tfrac12\\).", "Треть появляется при интегрировании квадрата, а здесь обе степени первые."], "s": "<p><span class=\"st\">Метод</span>Объём цилиндрического тела: \\(V=\\iint\\limits_D z(x,y)\\,dx\\,dy\\).</p><p>\\(V=\\displaystyle\\int_0^1\\!\\!\\int_0^1 xy\\,dy\\,dx\\).</p><p>Внутренний: \\(\\displaystyle\\int_0^1 xy\\,dy=x\\cdot\\frac12\\).</p><p>Внешний: \\(\\displaystyle\\int_0^1\\frac{x}{2}dx=\\frac12\\cdot\\frac12=\\frac14\\).</p><p class=\"note\">Пределы постоянные, поэтому проще сразу: \\(\\left(\\int_0^1x\\,dx\\right)\\left(\\int_0^1y\\,dy\\right)=\\tfrac12\\cdot\\tfrac12\\).</p><p><span class=\"ans\">\\(V=\\tfrac14\\)</span></p>"}], "vec": [{"l": 1, "q": "Найти \\(\\operatorname{div}\\vec F\\) для поля \\(\\vec F=(x^2;\\,y^2;\\,z^2)\\).", "o": ["\\(2x+2y+2z\\)", "\\(x^2+y^2+z^2\\)", "\\((2x;2y;2z)\\)", "\\(0\\)"], "c": 0, "w": ["Дивергенция — сумма частных производных каждой компоненты по своей переменной.", "Это модуль в квадрате, а не дивергенция.", "Дивергенция — число (скаляр), а не вектор.", "Нулевой дивергенция была бы у поля без источников."], "s": "<p><span class=\"st\">Метод</span>\\(\\operatorname{div}\\vec F=\\dfrac{\\partial P}{\\partial x}+\\dfrac{\\partial Q}{\\partial y}+\\dfrac{\\partial R}{\\partial z}\\).</p><p>\\(P=x^2\\Rightarrow P_x=2x\\).</p><p>\\(Q=y^2\\Rightarrow Q_y=2y\\).</p><p>\\(R=z^2\\Rightarrow R_z=2z\\).</p><p>Сумма: \\(2x+2y+2z\\).</p><p class=\"note\">Дивергенция — скаляр, ротор — вектор. Это первое, что стоит проверить в ответе.</p><p><span class=\"ans\">\\(2(x+y+z)\\)</span></p>"}, {"l": 2, "q": "Найти \\(\\operatorname{rot}\\vec F\\) для поля \\(\\vec F=(y;\\,-x;\\,0)\\).", "o": ["\\((0;0;2)\\)", "\\((0;0;-2)\\)", "\\(0\\)", "\\((1;-1;0)\\)"], "c": 1, "w": ["Знак: \\(Q_x-P_y=-1-1=-2\\).", "Третья компонента ротора равна \\(\\frac{\\partial Q}{\\partial x}-\\frac{\\partial P}{\\partial y}\\).", "Поле закручено, ротор нулю не равен.", "Ротор — не покомпонентные производные."], "s": "<p><span class=\"st\">Метод</span>\\(\\operatorname{rot}\\vec F=\\left(R_y-Q_z;\\ P_z-R_x;\\ Q_x-P_y\\right)\\).</p><p>Здесь \\(P=y,\\ Q=-x,\\ R=0\\).</p><p>Первая компонента: \\(R_y-Q_z=0-0=0\\).</p><p>Вторая: \\(P_z-R_x=0-0=0\\).</p><p>Третья: \\(Q_x-P_y=(-1)-(1)=-2\\).</p><p class=\"note\">Знак минус говорит, что поле закручено по часовой стрелке, если смотреть с конца оси \\(Oz\\).</p><p><span class=\"ans\">\\((0;0;-2)\\)</span></p>"}, {"l": 2, "q": "По формуле Грина вычислить \\(\\oint\\limits_{L}(-y\\,dx+x\\,dy)\\), где \\(L\\) — окружность \\(x^2+y^2=1\\) против часовой стрелки.", "o": ["\\(0\\)", "\\(\\pi\\)", "\\(2\\pi\\)", "\\(4\\pi\\)"], "c": 2, "w": ["Ноль был бы, если бы подынтегральное выражение было полным дифференциалом.", "Площадь круга равна \\(\\pi\\), но интеграл равен удвоенной площади.", "Формула Грина даёт \\(\\iint 2\\,dx\\,dy=2S=2\\pi\\).", "Радиус равен единице, площадь \\(\\pi\\)."], "s": "<p><span class=\"st\">Метод</span>Формула Грина: \\(\\oint\\limits_L P\\,dx+Q\\,dy=\\iint\\limits_D\\left(\\dfrac{\\partial Q}{\\partial x}-\\dfrac{\\partial P}{\\partial y}\\right)dx\\,dy\\).</p><p>Здесь \\(P=-y,\\ Q=x\\).</p><p>\\(\\dfrac{\\partial Q}{\\partial x}=1\\),  \\(\\dfrac{\\partial P}{\\partial y}=-1\\).</p><p>Разность: \\(1-(-1)=2\\).</p><p>\\(\\displaystyle\\iint\\limits_D 2\\,dx\\,dy=2S=2\\cdot\\pi\\cdot1^2=2\\pi\\).</p><p class=\"note\">Отсюда известная формула площади: \\(S=\\tfrac12\\oint(-y\\,dx+x\\,dy)\\).</p><p><span class=\"ans\">\\(2\\pi\\)</span></p>"}, {"l": 3, "q": "По формуле Остроградского—Гаусса найти поток поля \\(\\vec F=(x;\\,y;\\,z)\\) через сферу радиуса \\(1\\).", "o": ["\\(4\\pi\\)", "\\(\\dfrac{4\\pi}{3}\\)", "\\(3\\)", "\\(0\\)"], "c": 0, "w": ["Дивергенция равна \\(3\\), объём шара \\(\\frac{4\\pi}{3}\\), произведение — \\(4\\pi\\).", "Это объём шара без множителя — дивергенция забыта.", "Это только дивергенция, интегрирование не выполнено.", "Поле расходящееся, поток через замкнутую поверхность не нулевой."], "s": "<p><span class=\"st\">Метод</span>Формула Остроградского—Гаусса: \\(\\displaystyle\\oiint\\limits_{S}\\vec F\\cdot\\vec n\\,dS=\\iiint\\limits_{V}\\operatorname{div}\\vec F\\,dV\\).</p><p>\\(\\operatorname{div}\\vec F=1+1+1=3\\) — постоянная.</p><p>\\(\\displaystyle\\iiint\\limits_V 3\\,dV=3V\\).</p><p>Объём шара радиуса 1: \\(V=\\dfrac{4\\pi}{3}\\).</p><p>Поток: \\(3\\cdot\\dfrac{4\\pi}{3}=4\\pi\\).</p><p class=\"note\">Когда дивергенция постоянна, тройной интеграл сводится к умножению на объём — считать ничего не надо.</p><p><span class=\"ans\">\\(4\\pi\\)</span></p>"}, {"l": 3, "q": "При каком условии векторное поле \\(\\vec F\\) потенциально (является градиентом некоторой функции)?", "o": ["\\(\\operatorname{div}\\vec F=0\\)", "\\(\\operatorname{rot}\\vec F=\\vec0\\)", "\\(|\\vec F|=\\text{const}\\)", "\\(\\operatorname{div}\\vec F=\\operatorname{rot}\\vec F\\)"], "c": 1, "w": ["Нулевая дивергенция означает соленоидальность — поле без источников.", "Ротор градиента всегда равен нулю; в односвязной области это условие и достаточно.", "Постоянство модуля к потенциальности отношения не имеет.", "Скаляр и вектор сравнивать нельзя."], "s": "<p><span class=\"st\">Определение</span>Поле потенциально, если \\(\\vec F=\\operatorname{grad}u\\) для некоторой функции \\(u\\).</p><p><b>Необходимое условие.</b> Ротор любого градиента равен нулю: \\(\\operatorname{rot}(\\operatorname{grad}u)=\\vec0\\).</p><p><b>Достаточность.</b> В односвязной области из \\(\\operatorname{rot}\\vec F=\\vec0\\) следует существование потенциала.</p><p>Следствие: в потенциальном поле криволинейный интеграл не зависит от пути, а по замкнутому контуру равен нулю.</p><p class=\"note\">Не путать: \\(\\operatorname{div}\\vec F=0\\) — это соленоидальное поле (поле без источников), совсем другое свойство.</p><p><span class=\"ans\">\\(\\operatorname{rot}\\vec F=\\vec0\\)</span></p>"}], "ode": [{"g": "ode_sep"}, {"l": 1, "q": "Решить задачу Коши \\(y'+y=0,\\ y(0)=3\\).", "o": ["\\(y=3e^{x}\\)", "\\(y=3e^{-x}\\)", "\\(y=e^{-x}+3\\)", "\\(y=-3e^{x}\\)"], "c": 1, "w": ["Знак в показателе противоположный: уравнение даёт убывание.", "Общее решение \\(Ce^{-x}\\), условие даёт \\(C=3\\).", "Постоянная входит множителем.", "Начальное условие положительное."], "s": "<p><span class=\"st\">Метод</span>Сначала общее решение, потом подстановка начального условия.</p><p>\\(y'=-y\\Rightarrow y=Ce^{-x}\\).</p><p>Подставляем \\(x=0\\): \\(y(0)=Ce^{0}=C=3\\).</p><p>\\(y=3e^{-x}\\).</p><p class=\"note\">Проверка: \\(y'=-3e^{-x}\\), и \\(y'+y=-3e^{-x}+3e^{-x}=0\\).</p><p><span class=\"ans\">\\(y=3e^{-x}\\)</span></p>"}, {"g": "ode_char"}, {"g": "ode_osc"}, {"l": 3, "q": "Решить уравнение \\(y'=xy\\).", "o": ["\\(y=Ce^{x}\\)", "\\(y=Ce^{x^2/2}\\)", "\\(y=Ce^{x^2}\\)", "\\(y=\\dfrac{x^2}{2}+C\\)"], "c": 1, "w": ["Правая часть зависит от \\(x\\), поэтому в показателе будет \\(x^2/2\\).", "Разделение переменных: \\(\\int x\\,dx=\\frac{x^2}{2}\\).", "Потеряна двойка в знаменателе.", "Постоянная входит множителем после потенцирования."], "s": "<p><span class=\"st\">Метод</span>Разделяющиеся переменные: собрать \\(y\\) слева, \\(x\\) справа.</p><p>\\(\\dfrac{dy}{y}=x\\,dx\\).</p><p>\\(\\displaystyle\\int\\frac{dy}{y}=\\int x\\,dx\\Rightarrow\\ln|y|=\\frac{x^2}{2}+C_1\\).</p><p>Потенцируем: \\(y=Ce^{x^2/2}\\).</p><p class=\"note\">Проверка: \\(y'=Ce^{x^2/2}\\cdot x=xy\\).</p><p><span class=\"ans\">\\(y=Ce^{x^2/2}\\)</span></p>"}, {"l": 3, "q": "Решить уравнение \\(y''-2y'+y=0\\).", "o": ["\\(y=C_1e^{x}+C_2e^{-x}\\)", "\\((C_1+C_2x)e^{x}\\)", "\\(y=C_1e^{x}+C_2e^{2x}\\)", "\\(y=e^{x}(C_1\\cos x+C_2\\sin x)\\)"], "c": 1, "w": ["Корень один (кратный), две разные экспоненты не получатся.", "Дискриминант равен нулю, корень \\(\\lambda=1\\) кратности два.", "Корень \\(2\\) уравнению не удовлетворяет.", "Тригонометрия была бы при отрицательном дискриминанте."], "s": "<p><span class=\"st\">Метод</span>Характеристическое уравнение \\(\\lambda^2-2\\lambda+1=0\\).</p><p>\\(D=4-4=0\\), значит корень один: \\(\\lambda=1\\) кратности два.</p><p>При кратном корне второе решение получают умножением на \\(x\\).</p><p>\\(y=(C_1+C_2x)e^{x}\\).</p><p class=\"note\">Запись \\(\\lambda^2-2\\lambda+1=(\\lambda-1)^2\\) сразу показывает кратность — дискриминант можно не считать.</p><p><span class=\"ans\">\\(y=(C_1+C_2x)e^{x}\\)</span></p>"}]};
+(function(){
+  var LET = ['А','Б','В','Г','Д'];
+  function el(t,c,h){var e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;}
+  function typeset(node){ if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([node]); }
+
+  // перемешиваем варианты, чтобы правильный не стоял всё время на одном месте
+  function shuffle(task){
+    if(!task.o) return task;
+    var pairs = task.o.map(function(text,i){ return {t:text, w:(task.w?task.w[i]:''), right:(i===task.c)}; });
+    for(var i=pairs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var s=pairs[i]; pairs[i]=pairs[j]; pairs[j]=s; }
+    var out = {};
+    for(var k in task) out[k]=task[k];
+    out.o = pairs.map(function(p){return p.t;});
+    out.w = pairs.map(function(p){return p.w;});
+    out.c = 0;
+    for(var m=0;m<pairs.length;m++) if(pairs[m].right){ out.c=m; break; }
+    return out;
+  }
+
+  function makeTask(spec){
+    var base = spec;
+    if(spec.g && window.GEN && window.GEN[spec.g]){
+      base = window.GEN[spec.g]();
+      base.generated = true;
+    }
+    return shuffle(base);
+  }
+
+  function card(spec, i){
+    var box = el('div','dq');
+    function render(){
+      box.innerHTML = '';
+      box.classList.remove('done');
+      var task = makeTask(spec);
+
+      var top = el('div','dq-top');
+      top.appendChild(el('span','dq-n','ЗАДАЧА '+(i+1)));
+      var lvl = el('span','lvl');
+      for(var k=0;k<3;k++) lvl.appendChild(el('i', k<(task.l||1)?'on':''));
+      top.appendChild(lvl);
+      if(task.generated) top.appendChild(el('span','dq-gen','новые числа'));
+      box.appendChild(top);
+      box.appendChild(el('div','dq-q',task.q));
+
+      var bar = el('div','dq-b');
+      var bOpt = el('button',null,'Варианты ответа');
+      var bSol = el('button',null,'Показать решение');
+      bOpt.type = bSol.type = 'button';
+      bOpt.setAttribute('aria-expanded','false');
+      bSol.setAttribute('aria-expanded','false');
+      if(!task.o) bOpt.style.display='none';
+      bar.appendChild(bOpt); bar.appendChild(bSol);
+      if(task.generated){
+        var bNew = el('button','again','Другая задача');
+        bNew.type='button';
+        bNew.addEventListener('click', function(){ render(); typeset(box); });
+        bar.appendChild(bNew);
+      }
+      box.appendChild(bar);
+
+      var optWrap = el('div','opts'); optWrap.hidden = true;
+      var why = el('div','why'); why.hidden = true;
+      var answered = false;
+
+      if(task.o) task.o.forEach(function(text, j){
+        var b = el('button',null,'<b>'+LET[j]+'</b><span>'+text+'</span>');
+        b.type='button';
+        b.addEventListener('click', function(){
+          if(answered) return;
+          answered = true;
+          var right = (j === task.c);
+          Array.prototype.forEach.call(optWrap.children, function(o, m){
+            o.disabled = true;
+            if(m === task.c) o.classList.add('ok');
+            else if(m === j) o.classList.add('no');
+            else o.classList.add('dim');
+          });
+          why.innerHTML = (right ? '<span class="vok">Верно.</span> ' : '<span class="vno">Не этот.</span> ')
+            + (task.w ? task.w[j] : '')
+            + (right ? '' : ' <b>Правильный ответ — '+LET[task.c]+'.</b> '+(task.w ? task.w[task.c] : ''));
+          why.hidden = false;
+          box.classList.add('done');
+          typeset(why);
+        });
+        optWrap.appendChild(b);
+      });
+
+      var sol = el('div','sol', task.s); sol.hidden = true;
+      box.appendChild(optWrap); box.appendChild(why); box.appendChild(sol);
+
+      bOpt.addEventListener('click', function(){
+        optWrap.hidden = !optWrap.hidden;
+        bOpt.setAttribute('aria-expanded', String(!optWrap.hidden));
+        if(!optWrap.hidden) typeset(optWrap);
+      });
+      bSol.addEventListener('click', function(){
+        sol.hidden = !sol.hidden;
+        bSol.setAttribute('aria-expanded', String(!sol.hidden));
+        bSol.textContent = sol.hidden ? 'Показать решение' : 'Скрыть решение';
+        if(!sol.hidden) typeset(sol);
+      });
+    }
+    render();
+    return box;
+  }
+
+  document.querySelectorAll('[data-drill]').forEach(function(host){
+    var list = (window.DRILL || {})[host.getAttribute('data-drill')];
+    if(!list) return;
+    host.className = 'drill';
+    host.appendChild(el('div','drill-h','Отработка · '+list.length+' задач'));
+    list.forEach(function(t,i){ host.appendChild(card(t,i)); });
+  });
 })();
 </script>
 <script>
